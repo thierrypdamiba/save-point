@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "description": "Local MCP skill catalog for Save Point",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thierrypdamiba/save-point.git"
+  },
   "bin": {
     "save-point-mcp": "dist/src/index.js"
   },

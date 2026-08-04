@@ -1,3 +1,4 @@
+# Codex-format agent manifest. Hosts that do not use this file ignore it.
 interface:
   display_name: "Save Point"
   short_description: "Learn, tune, and recall codebase knowledge"

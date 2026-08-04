@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mcp-server/package-lock.json
+      - run: npm ci
+        working-directory: mcp-server
+      - run: npm run check
+        working-directory: mcp-server
+      - run: npm test
+        working-directory: mcp-server
+      - name: verify repository-id derivation
+        run: |
+          test "$(printf '%s' 'github.com/octo/api' | shasum -a 256 | cut -c1-20)" = "540b016418280e51939c"
+          sh save-point/scripts/derive-repo-id.sh .
+      - name: verify remote normalization fixtures
+        run: |
+          for url in 'https://GitHub.com/Octo/API.git' 'git@github.com:octo/api.git' 'ssh://git@github.com:2222/octo/api'; do
+            d=$(mktemp -d)
+            git -C "$d" init -q
+            git -C "$d" remote add origin "$url"
+            canonical=$(sh save-point/scripts/derive-repo-id.sh "$d" | head -1)
+            id=$(sh save-point/scripts/derive-repo-id.sh "$d" | tail -1)
+            test "$canonical" = "github.com/octo/api" || { echo "FAIL canonical for $url: $canonical"; exit 1; }
+            test "$id" = "540b016418280e51939c" || { echo "FAIL id for $url: $id"; exit 1; }
+          done
+          d=$(mktemp -d)
+          git -C "$d" init -q
+          sh save-point/scripts/derive-repo-id.sh "$d" | head -1 | grep -q '^/' || { echo "FAIL no-remote case"; exit 1; }
+      - name: verify install script
+        run: HOME=$(mktemp -d) sh -c 'mkdir -p "$HOME/.claude" && ./install.sh && test -f "$HOME/.claude/skills/save-point/SKILL.md"'

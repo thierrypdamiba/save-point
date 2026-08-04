@@ -1,0 +1,119 @@
+# Save Point
+
+**Quiz yourself on the code you ship — especially the code you didn't write.**
+
+AI writes more and more of your code. You review it, you merge it, and a month later you can't explain how it works. Save Point is an [Agent Skill](https://code.claude.com/docs/en/skills) that turns your coding agent into a quizmaster: it reads your repository, asks you source-grounded questions one at a time, records your answers **verbatim and honestly labeled**, and brings concepts back on a spaced schedule to test whether your understanding actually lasts.
+
+By contract, it never writes into your repositories, never puts words in your mouth, and never pretends you knew something you were told (see [Alpha status](#alpha-status) for what "by contract" means).
+
+## The five-minute version
+
+Right after you merge a change you only half-read — this is a real run on Save Point's own repo, minutes after a large refactor of it landed:
+
+```
+you    ▸ /save-point start --diff
+
+agent  ▸ The last commit is a big one — the quiz covers everything since HEAD~1.
+         World map for this diff: 4 chapters, 1 map, 1 secret, 1 boss fight
+         — New Game+ locked.
+         Entering Chapter 1: The rename and where state lives now.
+         q001 — After this change, where does a user's runtime state live,
+         what files make it up, and did any user-facing artifact deliberately
+         keep its old name? If so, which one — and why?
+
+you    ▸ (answer, in your own words)
+
+agent  ▸ Solid. You covered the top-level split, both per-repo files, and the
+         rationale.
+
+         ⋯ (three chapters and a save point later) ⋯
+
+         Boss fight.
+         q002 — A due question from repo A surfaces while you're working in
+         repo B, and you answer it on the spot. Walk me through what Save Point
+         does with your answer, what it deliberately refuses to do there, and
+         what happens next time you open repo A — including the failure case
+         where the stored record no longer checks out.
+```
+
+If that second question makes you sweat, that's the point. Sessions end at a **save point**: what you closed, chapter status, what comes back tomorrow.
+
+## Install
+
+Save Point is a plain skill directory — installing is copying it where your agent looks.
+
+```sh
+git clone https://github.com/thierrypdamiba/save-point.git
+cd save-point
+./install.sh          # installs for every host it detects
+./install.sh claude   # or pick one: claude | codex | goose
+```
+
+| Host | Skill location |
+| --- | --- |
+| Claude Code | `~/.claude/skills/save-point/` |
+| Codex | `~/.codex/skills/save-point/` |
+| Goose | `~/.agents/skills/save-point/` |
+
+Then say `/save-point` (or just "quiz me on this repo") inside any repository.
+
+To uninstall: `rm -rf ~/.claude/skills/save-point` (per host). Your answers and recall schedule live in `~/.save-point/` — delete that too if you want them gone.
+
+### Via MCP instead
+
+For MCP clients without native Agent Skills support, the companion server distributes the same skill through the `io.modelcontextprotocol/skills` extension (MCP `2026-07-28`), with `list_skills` / `load_skill` tools and a `save-point` prompt as the legacy path:
+
+```sh
+cd mcp-server && npm install && npm run build
+```
+
+```json
+{
+  "mcpServers": {
+    "save-point": {
+      "command": "node",
+      "args": ["/absolute/path/to/save-point/mcp-server/dist/src/index.js"]
+    }
+  }
+}
+```
+
+## Commands
+
+| Command | Effect |
+| --- | --- |
+| `/save-point` | Start or resume; pending evaluations, then due recall, then new questions |
+| `/save-point start --diff [ref]` | Quiz on what changed since `ref` — the post-merge check |
+| `/save-point start [--level new-engineer\|maintainer\|operator]` | Full walkthrough, optionally at an explicit difficulty |
+| `/save-point recall` | Serve due recall now, across repositories |
+| `/save-point setup` / `settings` | Configure / inspect preferences |
+| `/save-point repetition intensive\|adaptive` | Daily 30-day drilling vs. spaced (1 → 7 → 30 → 90 days) |
+| `/save-point flow 4h` / `flow today` / `resume` | Pause interruptions; resume them |
+| `/save-point interruptions off\|on` | Manual-only recall, permanently |
+
+Everything also works as plain conversation — "too hard", "less trivia", "spam me for 30 days", "pause questions until tomorrow".
+
+## How it holds the line
+
+- **Your words only.** `~/.save-point/` holds plain Markdown you can read: your verbatim answers (`walkthrough.md`), the recall schedule (`recall.md`), your preferences, and nothing generated in your voice.
+- **Honest labels.** Any assistance — a hint, a source trail, an explanation — marks the work `assisted`, permanently. Asking to be taught after a question closes is free and encouraged; it just can't advance your recall stage.
+- **No answer leaks.** While a question is open the agent probes; it never confirms, completes, or reveals *for free* — a full explanation is always one ask away, but taking it marks the attempt `assisted`. A bare guess can't buy a confirmation.
+- **Polite by contract.** Unsolicited recall: at most 3 prompts a day with 90-minute gaps by default (both tunable), only at natural boundaries (tests pass, commits land), never during focused work — and never once you say `interruptions off`.
+- **One identity everywhere.** `save-point/scripts/derive-repo-id.sh` derives the same repository ID on every host, so your history follows you across Claude Code, Codex, and Goose.
+
+The behavior contract lives in [`save-point/features/`](save-point/features) as Gherkin scenarios; [`save-point/SKILL.md`](save-point/SKILL.md) is the runtime contract itself.
+
+## Alpha status
+
+This is an alpha. Tested end-to-end on Claude Code (live multi-session runs, including `--diff`); the MCP server has an automated test suite (`cd mcp-server && npm test`). Known limitations:
+
+- Contract enforcement is only as strong as the host model following it.
+- Renaming a repository's remote re-keys its identity; recall history under the old ID is orphaned (migration rule planned).
+- Boundary-triggered recall depends on host events; hosts without them get recall on invocation only.
+- Codex and Goose install paths are wired but not yet battle-tested.
+
+Issues and war stories welcome.
+
+## License
+
+[MIT](LICENSE)

@@ -38,5 +38,7 @@ else
   }')
 fi
 
+sha256() { if command -v shasum >/dev/null 2>&1; then shasum -a 256; else sha256sum; fi; }
+
 printf '%s\n' "$canonical"
-printf '%s' "$canonical" | shasum -a 256 | cut -c1-20
+printf '%s' "$canonical" | sha256 | cut -c1-20
