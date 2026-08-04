@@ -6,6 +6,7 @@ set -eu
 here=$(cd "$(dirname "$0")" && pwd)
 src="$here/save-point"
 [ -f "$src/SKILL.md" ] || { echo "error: $src/SKILL.md not found — run from the repo root" >&2; exit 1; }
+: "${HOME:?HOME must be set}"
 
 target=${1:-all}
 installed=0
@@ -18,6 +19,7 @@ install_to() {
   mkdir -p "$base"
   rm -rf "$dest"
   cp -R "$src" "$dest"
+  rm -rf "$dest/features" "$dest/reference"   # maintainer docs, not runtime context
   echo "installed for $host: $dest"
   installed=$((installed + 1))
 }

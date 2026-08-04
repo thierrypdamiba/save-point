@@ -112,6 +112,21 @@ Feature: Resurface repository knowledge for active recall
     Then Save Point re-derives the answer key from current source before judging
     And the current code is the ground truth, even if it changed since the question was written
 
+  Scenario: Distinguish code drift from forgetting
+    Given an item's "source_paths" changed materially after its "created_at"
+    And the engineer's answer was right for the code as it was
+    When the question closes
+    Then it closes "superseded", never "failed"
+    And the item resets to stage 0 for relearning
+    And the entry is labeled honestly: right for code that has since changed
+
+  Scenario: Keep every repository's questions at home when configured
+    Given "cross_repo_recall" is "off" in the profile
+    And a recall item from "payments-service" is due
+    When any boundary occurs outside "payments-service"
+    Then the question is not delivered there
+    And it waits for the next "payments-service" session, because question text describes that repository
+
   Scenario: Disclose deferred grading before the answer, not after
     Given a recall item from "payments-service" is due
     And the engineer is working in "catalog-service"

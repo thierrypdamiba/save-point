@@ -59,6 +59,26 @@ Then say `/save-point` (or just "quiz me on this repo") inside any repository.
 
 To uninstall: `rm -rf ~/.claude/skills/save-point` (per host). Your answers and recall schedule live in `~/.save-point/` — delete that too if you want them gone.
 
+### Enable unsolicited recall (Claude Code)
+
+Out of the box, recall is served when you invoke Save Point. To get the spaced schedule delivered *to* you, register the bundled boundary check as a prompt hook — it reads only scheduling frontmatter, honors every cap, and nudges the session when something is due:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      { "hooks": [ { "type": "command", "command": "$HOME/.claude/skills/save-point/scripts/check-due.sh" } ] }
+    ]
+  }
+}
+```
+
+Add that to `~/.claude/settings.json`. The skill still owns actual delivery: at most 3 prompts a day with 90-minute gaps by default, never mid-task, and `interruptions off` silences it permanently.
+
+### What lives in `~/.save-point` — and why you shouldn't sync it
+
+Plain Markdown you can read: your preferences, the recall schedule, and your verbatim answers. Be deliberate about it — question prompts name the load-bearing parts of each codebase, importance rankings literally tag data-loss and security paths, and `canonical_remote` records private remote hostnames. Save Point creates the directory `0700`, but dotfile sync tools don't care about your permissions: exclude `~/.save-point` from chezmoi/Mackup/iCloud unless you mean it. Consultants juggling client repos can also set `cross_repo_recall: off` so one client's questions never surface while working for another.
+
 ### Via MCP instead
 
 For MCP clients without native Agent Skills support, the companion server distributes the same skill through the `io.modelcontextprotocol/skills` extension (MCP `2026-07-28`), with `list_skills` / `load_skill` tools and a `save-point` prompt as the legacy path:
@@ -83,15 +103,16 @@ cd mcp-server && npm install && npm run build
 | Command | Effect |
 | --- | --- |
 | `/save-point` | Start or resume; pending evaluations, then due recall, then new questions |
-| `/save-point start --diff [ref]` | Quiz on what changed since `ref` — the post-merge check |
+| `/save-point start --diff [ref]` | Quiz on what changed since `ref` — post-merge check, or run it on a branch as a merge gate |
+| `/save-point dispute q014` | Contest a verdict: the key is re-derived with evidence shown; wrong verdicts get an `amended` entry |
 | `/save-point start [--level new-engineer\|maintainer\|operator]` | Full walkthrough, optionally at an explicit difficulty |
-| `/save-point recall` | Serve due recall now, across repositories |
+| `/save-point recall` | Serve due recall now, across repositories (unless `cross_repo_recall` is off) |
 | `/save-point setup` / `settings` | Configure / inspect preferences |
 | `/save-point repetition intensive\|adaptive` | Daily 30-day drilling vs. spaced (1 → 7 → 30 → 90 days) |
 | `/save-point flow 4h` / `flow today` / `resume` | Pause interruptions; resume them |
 | `/save-point interruptions off\|on` | Manual-only recall, permanently |
 
-Everything also works as plain conversation — "too hard", "less trivia", "spam me for 30 days", "pause questions until tomorrow".
+Everything also works as plain conversation — "too hard", "less trivia", "spam me for 30 days", "pause questions until tomorrow". If chapters and boss fights aren't your thing, say "plain labels" and the game framing disappears.
 
 ## How it holds the line
 
@@ -99,7 +120,8 @@ Everything also works as plain conversation — "too hard", "less trivia", "spam
 - **Honest labels.** Any assistance — a hint, a source trail, an explanation — marks the work `assisted`, permanently. Asking to be taught after a question closes is free and encouraged; it just can't advance your recall stage.
 - **No answer leaks.** While a question is open the agent probes; it never confirms, completes, or reveals *for free* — a full explanation is always one ask away, but taking it marks the attempt `assisted`. A bare guess can't buy a confirmation.
 - **Polite by contract.** Unsolicited recall: at most 3 prompts a day with 90-minute gaps by default (both tunable), only at natural boundaries (tests pass, commits land), never during focused work — and never once you say `interruptions off`.
-- **One identity everywhere.** `save-point/scripts/derive-repo-id.sh` derives the same repository ID on every host, so your history follows you across Claude Code, Codex, and Goose.
+- **The grader is on the record too.** LLM verdicts can be wrong, so wrong verdicts are appealable: `/save-point dispute` re-derives the answer key with the evidence shown openly, and a vindicated dispute costs you nothing. And when a teammate's refactor invalidates an old answer, the close is `superseded` — reset and relearn — never `failed`, because the world changing is not you forgetting.
+- **One identity everywhere.** `save-point/scripts/derive-repo-id.sh` derives the same repository ID on every host, so your history follows you across Claude Code, Codex, and Goose — the one thing a built-in platform feature will never give you. Deterministic bookkeeping (scheduling math, digests, due checks) ships as scripts, not model improvisation.
 
 The behavior contract lives in [`save-point/features/`](save-point/features) as Gherkin scenarios; [`save-point/SKILL.md`](save-point/SKILL.md) is the runtime contract itself.
 
@@ -107,9 +129,9 @@ The behavior contract lives in [`save-point/features/`](save-point/features) as 
 
 This is an alpha. Tested end-to-end on Claude Code (live multi-session runs, including `--diff`); the MCP server has an automated test suite (`cd mcp-server && npm test`). Known limitations:
 
-- Contract enforcement is only as strong as the host model following it.
-- Renaming a repository's remote re-keys its identity; recall history under the old ID is orphaned (migration rule planned).
-- Boundary-triggered recall depends on host events; hosts without them get recall on invocation only.
+- Contract enforcement is only as strong as the host model following it — so it's measured, not asserted: [`eval/`](eval) replays scripted sessions against the live skill and asserts on the state files it produces (currently 3 scenarios, 17 assertions, passing on the default model). Broadening coverage to every `@integrity` scenario is the next milestone.
+- Identity follows the remote, so adding a first remote or renaming one re-keys a repository. The contract now includes a migration offer (scan for the previous identity, move the history), but it's young.
+- Unsolicited recall needs the prompt hook above (Claude Code) or host boundary events; without either, recall is served on invocation only.
 - Codex and Goose install paths are wired but not yet battle-tested.
 
 Issues and war stories welcome.

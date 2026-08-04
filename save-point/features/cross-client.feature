@@ -41,6 +41,14 @@ Feature: Use the same Save Point skill across coding agents
     Then the absolute resolved repository root path is used verbatim
     And no lowercasing or normalization is applied to it
 
+  Scenario: Migrate history when identity changes
+    Given a repository was quizzed while keyed by its local path
+    And it has since gained its first remote
+    When Save Point derives an ID that has no directory
+    Then it scans existing directories' "canonical_remote" values for the repository's previous identity
+    And it offers to migrate the matching directory to the new ID
+    And declining starts fresh without deleting the old history
+
   Scenario: Claude Code activates the MCP skills extension
     Given current Claude Code can connect to the Save Point MCP server
     When it discovers "io.modelcontextprotocol/skills"

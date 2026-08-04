@@ -65,6 +65,21 @@ Feature: Preserve active recall and human authorship
     And the item is marked "last_assisted: true" so the next attempt cannot advance the stage
     And the gap becomes a new stage-0 follow-up question
 
+  Scenario: A vindicated dispute costs nothing
+    Given a question closed with a verdict the engineer contests
+    When the engineer runs "/save-point dispute" for it
+    Then Save Point re-derives the answer key and shows its evidence openly
+    And if the verdict was wrong, an "amended" entry with the corrected signal is appended under the same question ID
+    And the schedule is recomputed as if the original close had carried the corrected signal
+    And no assistance is recorded
+    But the original entry is never rewritten
+
+  Scenario: A failed dispute converts the shown evidence to assistance
+    Given a question closed with a correct verdict
+    When the engineer disputes it and the verdict stands
+    Then the item is marked "last_assisted: true", since the evidence was revealed
+    And the record is unchanged
+
   Scenario: A pre-due re-answer has no scheduling effect
     Given a question closed and its next due date has not arrived
     When the engineer answers it again
@@ -94,12 +109,13 @@ Feature: Preserve active recall and human authorship
       | "the first word of the answer" |
       | "confirmation of a guess"      |
 
-  Scenario: The record is not user-editable
+  Scenario: Outside edits are detected best-effort, not prevented
     Given any agent-maintained field outside "profile.md" was altered outside a session
     When the alteration is apparent — a digest mismatch, an impossible value, or a label contradicting session history
     Then Save Point marks the affected item "unresolved" rather than trusting the edit
     And a pending answer whose text no longer matches its "answer_sha256" closes as "unresolved"
     And user edits are honored as-is only in "profile.md"
+    And nothing prevents edits — the record's integrity is a mirror for the user, not a proof for an auditor
 
   Scenario: Skip before any answer exists
     Given a question was asked and no answer text was given
@@ -111,5 +127,5 @@ Feature: Preserve active recall and human authorship
     Given the engineer has answered, skipped, and deferred questions
     When Save Point updates "walkthrough.md"
     Then explanatory prose comes only from engineer-authored responses
-    And every item is labeled "unaided", "assisted", "skipped", "deferred", "unresolved", or "pending-evaluation"
+    And every item carries one status from the walkthrough template's list, honestly applied
     And internal answer keys are absent

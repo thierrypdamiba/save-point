@@ -20,7 +20,7 @@ Feature: Let the engineer control Save Point
 
   Scenario: Check due items on demand
     When the engineer runs "/save-point recall"
-    Then due questions are served across all repositories
+    Then due questions are served across all repositories, unless "cross_repo_recall" is "off"
     And delivery caps and flow mode do not block the user-invoked check
     And "prompts_today" is not incremented
 

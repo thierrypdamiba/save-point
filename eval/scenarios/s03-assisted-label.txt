@@ -1,0 +1,11 @@
+/save-point
+===
+skip
+===
+honestly no idea
+===
+hint please
+===
+OK, with that nudge: a throwing handler routes to queue.fail(), which bumps the attempts counter. Under five attempts the job is re-enqueued on a setTimeout of 2^attempts times 100ms — exponential backoff — and at five it moves to the dead array instead, a dead-letter list nothing retries. So a failing job either eventually succeeds or is parked in dead after five strikes. KINGFISHER final answer.
+===
+that's all for today

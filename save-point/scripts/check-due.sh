@@ -1,0 +1,81 @@
+#!/bin/sh
+# Delivery-boundary check, suitable as a host prompt hook (e.g. Claude Code
+# UserPromptSubmit). Reads only frontmatter, honors the delivery caps, and
+# emits hook JSON with a one-line nudge when recall is due — otherwise nothing.
+# The skill itself still owns actual delivery, suppression, and counter updates.
+# State root: $SAVE_POINT_HOME if set, else ~/.save-point.
+set -eu
+
+root=${SAVE_POINT_HOME:-"$HOME/.save-point"}
+[ -d "$root" ] || exit 0
+
+here=$(cd "$(dirname "$0")" && pwd)
+now=$(date +%s)
+today=$(date +%Y-%m-%d)
+
+# frontmatter <file> <key> -> value (CRLF-tolerant, trailing space trimmed; empty if missing)
+frontmatter() {
+  [ -f "$1" ] || { echo ""; return; }
+  awk -v key="$2" '
+    { sub(/\r$/, "") }
+    /^---$/ { fence++; next }
+    fence == 1 && index($0, key ":") == 1 {
+      sub(/^[^:]*:[ ]*/, ""); sub(/[ \t]+$/, ""); print; exit
+    }
+    fence >= 2 { exit }
+  ' "$1"
+}
+
+iso_to_epoch() {
+  [ -n "$1" ] || { echo 0; return; }
+  date -u -j -f %Y-%m-%dT%H:%M:%SZ "$1" +%s 2>/dev/null || date -u -d "$1" +%s 2>/dev/null || echo 0
+}
+
+digits_or() { case "$1" in ''|*[!0-9]*) echo "$2" ;; *) echo "$1" ;; esac; }
+
+# Profile: manual-only means never nudge.
+style=$(frontmatter "$root/profile.md" interruption_style)
+[ "$style" = "manual_only" ] && exit 0
+limit=$(digits_or "$(frontmatter "$root/profile.md" daily_limit)" 3)
+qpi=$(digits_or "$(frontmatter "$root/profile.md" questions_per_interruption)" 1)
+gap=$(frontmatter "$root/profile.md" minimum_gap)
+case "$gap" in
+  *m) gap_s=$(( $(digits_or "${gap%m}" 90) * 60 )) ;;
+  *h) gap_s=$(( $(digits_or "${gap%h}" 2) * 3600 )) ;;
+  *) gap_s=5400 ;;   # unparseable values fall back to the 90m default
+esac
+
+# Scheduler: flow mode, daily cap, minimum gap.
+flow=$(iso_to_epoch "$(frontmatter "$root/scheduler.md" flow_until)")
+[ "$flow" -gt "$now" ] && exit 0
+if [ "$(frontmatter "$root/scheduler.md" prompt_date)" = "$today" ]; then
+  count=$(digits_or "$(frontmatter "$root/scheduler.md" prompts_today)" 0)
+  [ "$count" -ge "$limit" ] && exit 0
+fi
+last=$(iso_to_epoch "$(frontmatter "$root/scheduler.md" last_prompt_at)")
+[ $((now - last)) -lt "$gap_s" ] && exit 0
+
+# With cross_repo_recall off, only the current repository's queue may nudge here.
+only_repo=""
+if [ "$(frontmatter "$root/profile.md" cross_repo_recall)" = "off" ]; then
+  only_repo=$(sh "$here/derive-repo-id.sh" . 2>/dev/null | tail -1) || true
+  [ -n "$only_repo" ] || exit 0
+fi
+
+# Recall queues: collect repositories whose next_due_at has passed.
+due_names=""; due_count=0
+for f in "$root"/repositories/*/recall.md; do
+  [ -f "$f" ] || continue
+  if [ -n "$only_repo" ]; then
+    case "$f" in */"$only_repo"/recall.md) ;; *) continue ;; esac
+  fi
+  next=$(iso_to_epoch "$(frontmatter "$f" next_due_at)")
+  [ "$next" -gt 0 ] && [ "$next" -le "$now" ] || continue
+  name=$(frontmatter "$f" repository_name | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+  due_names="$due_names${due_names:+, }${name:-unknown}"
+  due_count=$((due_count + 1))
+done
+[ "$due_count" -gt 0 ] || exit 0
+
+printf '{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"Save Point: recall is due for %s (%s). At the next natural boundary, offer at most %s question(s) per the save-point skill; it applies suppression rules and updates scheduler.md."}}\n' \
+  "$due_count repository/ies" "$due_names" "$qpi"

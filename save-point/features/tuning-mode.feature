@@ -66,6 +66,12 @@ Feature: Apply the engineer's configured assistance policy
     Then Save Point declines until the follow-up is due
     And parroting a minutes-old explanation is not recall
 
+  Scenario: Drop the game framing on request
+    When the engineer says "plain labels"
+    Then user-facing vocabulary switches to neutral terms: sections, data flow, invariants, failure scenarios, review summary
+    But stored field values like "section: boss-fight" and question IDs are unchanged
+    And chapter-status computation keeps working
+
   Scenario: Ask for intensive drilling conversationally
     When the engineer says "spam me for 30 days"
     Then "repetition_mode" changes to "intensive_30d"

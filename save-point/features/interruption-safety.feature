@@ -84,6 +84,14 @@ Feature: Protect the engineer's active workflow
     And it does not read any "walkthrough.md"
     And delivery then reads just the due item's section
 
+  Scenario: A host prompt hook surfaces due counts
+    Given "scripts/check-due.sh" is registered as a host prompt hook
+    When it runs
+    Then it reads only "profile.md", "scheduler.md", and "recall.md" frontmatter
+    And it stays silent under flow mode, manual-only style, the daily cap, or the minimum gap
+    And when recall is due it emits a one-line nudge naming the repositories
+    But delivery, suppression, and counter updates remain the skill's job
+
   Scenario: Host cannot deliver workflow boundaries
     Given the host exposes no accepted workflow boundaries
     When Save Point schedules a future recall item
