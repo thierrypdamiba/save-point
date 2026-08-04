@@ -1,11 +1,11 @@
 {
-  "name": "walkthrough-mcp-server",
+  "name": "save-point-mcp-server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Local MCP skill catalog for Walkthrough",
+  "description": "Local MCP skill catalog for Save Point",
   "bin": {
-    "walkthrough-mcp": "dist/src/index.js"
+    "save-point-mcp": "dist/src/index.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

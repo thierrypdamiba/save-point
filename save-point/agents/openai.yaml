@@ -1,0 +1,4 @@
+interface:
+  display_name: "Save Point"
+  short_description: "Learn, tune, and recall codebase knowledge"
+  default_prompt: "Use $save-point to teach me this repository, adapt to my feedback, and test my recall later."

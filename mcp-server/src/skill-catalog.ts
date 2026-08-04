@@ -6,7 +6,7 @@ import { z } from "zod";
 import { INVALID_PARAMS, ProtocolError, type McpServer } from "@modelcontextprotocol/server";
 import { parse as parseYaml } from "yaml";
 
-const CATALOG_PREFIX = "skill://walkthrough-local/walkthrough";
+const CATALOG_PREFIX = "skill://save-point-local/save-point";
 
 const SkillResourceSchema = z.object({ uri: z.string(), digest: z.string() });
 const SkillEntrySchema = z.object({
@@ -46,7 +46,7 @@ export async function registerSkillCatalog(server: McpServer, skillRoot: string)
   }
 
   const skillDocument = resources.find((resource) => resource.uri === `${CATALOG_PREFIX}/SKILL.md`);
-  if (!skillDocument) throw new Error("Walkthrough skill is missing SKILL.md");
+  if (!skillDocument) throw new Error("Save Point skill is missing SKILL.md");
   const skill: PublishedSkill = {
     uri: skillDocument.uri,
     frontmatter: parseFrontmatter(skillDocument.content),
@@ -61,10 +61,10 @@ export async function registerSkillCatalog(server: McpServer, skillRoot: string)
 
   for (const resource of resources) {
     server.registerResource(
-      `walkthrough-${relative(resolvedRoot, resource.path).split(sep).join("-")}`,
+      `save-point-${relative(resolvedRoot, resource.path).split(sep).join("-")}`,
       resource.uri,
       {
-        title: `Walkthrough: ${relative(resolvedRoot, resource.path)}`,
+        title: `Save Point: ${relative(resolvedRoot, resource.path)}`,
         mimeType: mimeType(resource.path),
         cacheHint: { ttlMs: 60_000, cacheScope: "private" },
       },

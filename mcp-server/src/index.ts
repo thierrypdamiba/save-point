@@ -8,14 +8,14 @@ import { createCatalogServer } from "./server.js";
 
 async function main(): Promise<void> {
   const here = dirname(fileURLToPath(import.meta.url));
-  const skillRoot = process.env.WALKTHROUGH_SKILL_DIR || resolve(here, "../../../walkthrough");
+  const skillRoot = process.env.SAVE_POINT_SKILL_DIR || resolve(here, "../../../save-point");
   serveStdio(() => createCatalogServer(skillRoot), {
     legacy: "serve",
-    onerror: (error) => console.error("Walkthrough MCP transport error:", error),
+    onerror: (error) => console.error("Save Point MCP transport error:", error),
   });
 }
 
 main().catch((error: unknown) => {
-  console.error("Walkthrough MCP server failed:", error);
+  console.error("Save Point MCP server failed:", error);
   process.exitCode = 1;
 });

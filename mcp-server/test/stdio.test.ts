@@ -17,12 +17,12 @@ test("serves the skill through a real stdio process", async () => {
     cwd: projectRoot,
     env: {
       ...environment,
-      WALKTHROUGH_SKILL_DIR: resolve(projectRoot, "../walkthrough"),
+      SAVE_POINT_SKILL_DIR: resolve(projectRoot, "../save-point"),
     },
     stderr: "pipe",
   });
   const client = new Client(
-    { name: "walkthrough-stdio-test", version: "1.0.0" },
+    { name: "save-point-stdio-test", version: "1.0.0" },
     { versionNegotiation: { mode: "auto" } },
   );
   await client.connect(transport);
@@ -51,10 +51,10 @@ test("keeps the legacy MCP initialization path", async () => {
     command: process.execPath,
     args: ["--import", "tsx", resolve(projectRoot, "src/index.ts")],
     cwd: projectRoot,
-    env: { ...environment, WALKTHROUGH_SKILL_DIR: resolve(projectRoot, "../walkthrough") },
+    env: { ...environment, SAVE_POINT_SKILL_DIR: resolve(projectRoot, "../save-point") },
     stderr: "pipe",
   });
-  const client = new Client({ name: "walkthrough-legacy-test", version: "1.0.0" });
+  const client = new Client({ name: "save-point-legacy-test", version: "1.0.0" });
   await client.connect(transport);
 
   try {

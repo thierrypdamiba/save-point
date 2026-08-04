@@ -5,7 +5,7 @@ import { registerSkillCatalog } from "./skill-catalog.js";
 
 export async function createCatalogServer(skillRoot: string): Promise<McpServer> {
   const server = new McpServer(
-    { name: "walkthrough-skills", version: "0.1.0" },
+    { name: "save-point-skills", version: "0.1.0" },
     {
       capabilities: { extensions: { "io.modelcontextprotocol/skills": { directoryRead: true } } },
       cacheHints: {
@@ -16,7 +16,7 @@ export async function createCatalogServer(skillRoot: string): Promise<McpServer>
         "resources/read": { ttlMs: 60_000, cacheScope: "private" },
       },
       instructions:
-        "This server distributes the Walkthrough Agent Skill. Hosts with native Agent Skills support should activate walkthrough directly. Other hosts should call list_skills, then load_skill before running a codebase learning or recall session. Runtime state stays in user-readable Markdown under ~/.walkthrough; MCP tools do not store user data.",
+        "This server distributes the Save Point Agent Skill. Hosts with native Agent Skills support should activate save-point directly. Other hosts should call list_skills, then load_skill before running a codebase learning or recall session. Runtime state stays in user-readable Markdown under ~/.save-point; MCP tools do not store user data.",
     },
   );
   const skill = await registerSkillCatalog(server, skillRoot);
@@ -51,10 +51,10 @@ export async function createCatalogServer(skillRoot: string): Promise<McpServer>
     "load_skill",
     {
       title: "Load an Agent Skill",
-      description: "Load the complete Walkthrough instructions when a user wants to learn, quiz, or test themselves on a codebase.",
-      inputSchema: z.object({ name: z.literal("walkthrough") }),
+      description: "Load the complete Save Point instructions when a user wants to learn, quiz, or test themselves on a codebase.",
+      inputSchema: z.object({ name: z.literal("save-point") }),
       outputSchema: z.object({
-        name: z.literal("walkthrough"),
+        name: z.literal("save-point"),
         instructions: z.string(),
         resourceUris: z.array(z.string()),
       }),
@@ -62,7 +62,7 @@ export async function createCatalogServer(skillRoot: string): Promise<McpServer>
     },
     async () => ({
       structuredContent: {
-        name: "walkthrough" as const,
+        name: "save-point" as const,
         instructions: skill.content,
         resourceUris: skill.resources.map((resource) => resource.uri),
       },
@@ -71,10 +71,10 @@ export async function createCatalogServer(skillRoot: string): Promise<McpServer>
   );
 
   server.registerPrompt(
-    "walkthrough",
+    "save-point",
     {
-      title: "Start Walkthrough",
-      description: "Teach or test codebase understanding with the Walkthrough skill.",
+      title: "Start Save Point",
+      description: "Teach or test codebase understanding with the Save Point skill.",
       argsSchema: z.object({ request: z.string().optional() }),
     },
     async ({ request }) => ({
@@ -83,7 +83,7 @@ export async function createCatalogServer(skillRoot: string): Promise<McpServer>
           role: "user",
           content: {
             type: "text",
-            text: `${skill.content}\n\nUser request: ${request || "Start Walkthrough in the current repository."}`,
+            text: `${skill.content}\n\nUser request: ${request || "Start Save Point in the current repository."}`,
           },
         },
       ],
