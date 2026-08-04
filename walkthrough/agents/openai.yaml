@@ -1,0 +1,4 @@
+interface:
+  display_name: "Walkthrough"
+  short_description: "Learn, tune, and recall codebase knowledge"
+  default_prompt: "Use $walkthrough to teach me this repository, adapt to my feedback, and test my recall later."
