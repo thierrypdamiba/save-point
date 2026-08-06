@@ -52,3 +52,15 @@ jobs:
           mkdir -p "$S/repositories/x"
           printf -- '---\nrepository_name: api\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
           SAVE_POINT_HOME=$S sh save-point/scripts/check-due.sh | grep -q additionalContext
+      - name: verify stats script
+        run: |
+          d=$(mktemp -d)
+          printf -- '## q001 — unaided @ 2026-01-01T00:00:00Z\n## q001 — amended @ 2026-01-02T00:00:00Z\n## q002 — pending-evaluation (unaided) @ 2026-01-03T00:00:00Z\n' > "$d/savepoint.md"
+          printf -- '## q001\n- stage: 1\n- last_quality: solid\n- last_assisted: false\n' > "$d/recall.md"
+          out=$(sh save-point/scripts/stats.sh "$d")
+          echo "$out" | grep -qx 'closes: 1' || { echo "FAIL closes"; echo "$out"; exit 1; }
+          echo "$out" | grep -qx 'amended: 1' || { echo "FAIL amended"; echo "$out"; exit 1; }
+          echo "$out" | grep -qx 'pending: 1' || { echo "FAIL pending"; echo "$out"; exit 1; }
+          echo "$out" | grep -qx 'items: 1' || { echo "FAIL items"; echo "$out"; exit 1; }
+          echo "$out" | grep -qx 'stage1: 1' || { echo "FAIL stage"; echo "$out"; exit 1; }
+          sh save-point/scripts/stats.sh "$(mktemp -d)" | grep -qx 'closes: 0'

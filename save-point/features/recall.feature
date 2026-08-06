@@ -77,7 +77,7 @@ Feature: Resurface repository knowledge for active recall
 
   Scenario: Record assisted recall
     Given a due question is shown
-    When the engineer opens the old repository, saved walkthrough, or another aid before answering
+    When the engineer opens the old repository, the save file, or another aid before answering
     Then the attempt is recorded as assisted recall
     And the item does not advance a stage
     But the attempt is not misrepresented as unaided recall
@@ -139,7 +139,7 @@ Feature: Resurface repository knowledge for active recall
     Given a recall item from "payments-service" is due
     And the engineer is working in "catalog-service"
     When the engineer chooses to answer
-    Then the answer is blindly appended to the "payments-service" walkthrough headed "pending-evaluation" with the attempt's classification
+    Then the answer is blindly appended to the "payments-service" save file headed "pending-evaluation" with the attempt's classification
     And the item records "pending_evaluation: true" and the answer's digest as "answer_sha256"
     And "last_assisted" is set true only if the attempt was assisted, and an existing true is never cleared
     And the "recall.md" frontmatter summary is refreshed — a permitted scan

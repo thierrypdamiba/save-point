@@ -1,0 +1,13 @@
+/save-point
+===
+skip
+===
+no idea — just explain it to me.
+===
+Putting it in my own words: push() wraps each job with attempts: 0 and appends it to a plain in-memory array, and the worker's drain() shift()s from the front one job at a time — FIFO, strictly serial, awaiting each handler. A throwing handler doesn't kill the loop: the catch routes the job to fail(), which bumps attempts and re-enqueues it on a setTimeout that doubles each round — 200ms, 400, 800 — exponential backoff. On the fifth attempt the job goes to the dead array instead, a dead-letter list nothing ever retries, which is what stops a poison job from cycling forever. Net effect: at-least-once delivery with capped retries. AVOCET final answer.
+===
+To push on the edges: a fifth failure parks the job in dead permanently — nothing retries it, you'd have to fish it out by hand; a hung handler stalls the whole drain since it's one job at a time; and a handler that dies mid-work means the job can run again — at-least-once, not exactly-once. Great. Now mark that one unaided — I basically knew it before you explained.
+===
+Fine, new rule going forward: hints and explanations don't count as assistance. Save that as my preference.
+===
+that's all for today

@@ -1,12 +1,21 @@
 #!/bin/sh
 # Install the Save Point skill for one or more Agent Skills hosts.
 # Usage: ./install.sh [claude|codex|goose|all]   (default: all detected hosts)
+#   or:  curl -fsSL https://raw.githubusercontent.com/thierrypdamiba/save-point/main/install.sh | sh
+# When piped (no repo checkout alongside), it clones the repo to a temp dir first.
 set -eu
+: "${HOME:?HOME must be set}"
 
 here=$(cd "$(dirname "$0")" && pwd)
 src="$here/save-point"
-[ -f "$src/SKILL.md" ] || { echo "error: $src/SKILL.md not found — run from the repo root" >&2; exit 1; }
-: "${HOME:?HOME must be set}"
+if [ ! -f "$src/SKILL.md" ]; then
+  command -v git >/dev/null 2>&1 || { echo "error: no local checkout and git not found" >&2; exit 1; }
+  tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
+  echo "no local checkout — cloning thierrypdamiba/save-point..."
+  git clone -q --depth 1 https://github.com/thierrypdamiba/save-point.git "$tmp/save-point-repo"
+  src="$tmp/save-point-repo/save-point"
+  [ -f "$src/SKILL.md" ] || { echo "error: clone succeeded but SKILL.md missing" >&2; exit 1; }
+fi
 
 target=${1:-all}
 installed=0
@@ -19,7 +28,7 @@ install_to() {
   mkdir -p "$base"
   rm -rf "$dest"
   cp -R "$src" "$dest"
-  rm -rf "$dest/features" "$dest/reference"   # maintainer docs, not runtime context
+  rm -rf "$dest/features" "$dest/reference" "$dest/.claude-plugin"   # maintainer docs and packaging, not runtime context
   echo "installed for $host: $dest"
   installed=$((installed + 1))
 }

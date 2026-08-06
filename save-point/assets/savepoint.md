@@ -5,7 +5,7 @@ repository_name: REPLACE_ME
 canonical_remote: REPLACE_ME
 ---
 
-# Repository Walkthrough
+# Save File
 
 Only user-authored answers, recorded verbatim the moment they are given. Never add generated explanations as user prose, and never store answer keys. `canonical_remote` is the normalized identity string from the repository-ID derivation; `repository_name` is its final path segment.
 

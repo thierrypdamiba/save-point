@@ -1,5 +1,5 @@
 @mvp @integrity
-Feature: Start a repository walkthrough
+Feature: Start a repository playthrough
   As an engineer using AI-assisted development
   I want questions grounded in the repository
   So that I can test whether I understand the system
@@ -27,7 +27,7 @@ Feature: Start a repository walkthrough
     And questions cover what changed, why, what it touches, and what could break
     And the session is scoped to minutes, not a full curriculum
 
-  Scenario: Organize questions as a walkthrough
+  Scenario: Organize questions as a playthrough
     When Save Point creates a question path
     Then major flows and subsystems are grouped as "Chapters"
     And data movement and component relationships are grouped as "Maps"
@@ -36,7 +36,7 @@ Feature: Start a repository walkthrough
     And synthesis questions are grouped as "New Game+", unlocked when every chapter reaches solid
 
   Scenario: Show the shape of the journey
-    When a walkthrough session starts
+    When a playthrough session starts
     Then Save Point presents the world map, such as "4 chapters, 2 secrets, 1 boss fight"
     And it announces chapter transitions, boss fights, and uncovered secrets as they arrive
     And at each chapter boundary and session end it shows a save point: what closed, chapter status, and what is due next

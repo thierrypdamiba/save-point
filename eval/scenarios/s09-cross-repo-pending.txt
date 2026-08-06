@@ -1,0 +1,24 @@
+/save-point
+===
+skip
+===
+One question today please — the happy path of a job through the queue.
+===
+A producer calls push(), which wraps the job with an attempts counter starting at zero and appends it to the jobs array. drain() pulls from the front with next() — a shift(), so FIFO — and awaits the handler on each job before touching the next, strictly serial. On success the job is already gone: the shift removed it, there's no ack step. The try/catch routes to fail() only when a handler throws, which never happens on the happy path. PELICAN final answer.
+===
+that's all for today
+===
+!!! mkdir -p "$REPO2/src"
+!!! printf '%s\n' '// Sliding-window rate limiter: at most limit calls per windowMs.' 'export class RateLimiter {' '  constructor(limit, windowMs) { this.limit = limit; this.windowMs = windowMs; this.hits = []; }' '  allow(now = Date.now()) {' '    this.hits = this.hits.filter((t) => now - t < this.windowMs);' '    if (this.hits.length >= this.limit) return false;' '    this.hits.push(now);' '    return true;' '  }' '}' > "$REPO2/src/limiter.js"
+!!! git -C "$REPO2" init -q && git -C "$REPO2" add -A && git -C "$REPO2" -c user.name=harness -c user.email=harness@example.com commit -qm init && git -C "$REPO2" remote add origin https://github.com/octo/web.git
+!!! "$EVAL/elapse-days.sh" 1 "$STATE"/repositories/*/recall.md "$STATE"/repositories/*/savepoint.md
+===
+I've switched projects — my current working repository is now {{REPO2}} (same state dir). /save-point recall
+===
+I'll answer now, from memory, no peeking: push() wraps each job with attempts at zero and appends it to the jobs array; drain() pulls from the front with next(), which is a shift, so it's FIFO, and awaits the handler one job at a time — serial. On success the shift already removed the job, there's no ack step. The try/catch only routes to fail() when a handler throws, never on the happy path. CORMORANT final answer.
+===
+!!! mkdir -p "$STATE/snap" && cp "$STATE"/repositories/540b016418280e51939c/recall.md "$STATE"/repositories/540b016418280e51939c/savepoint.md "$STATE/snap/"
+===
+Back in {{REPO}} now. /save-point
+===
+that's a wrap, thanks

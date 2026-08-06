@@ -8,7 +8,7 @@ due_count: 0
 
 # Recall Queue
 
-One section per question. No answer keys and no user answers — answer text lives in `walkthrough.md`, keys are re-derived from source; `answer_sha256` holds only a digest.
+One section per question. No answer keys and no user answers — answer text lives in `savepoint.md`, keys are re-derived from source; `answer_sha256` holds only a digest.
 
 An item is **deliverable unsolicited** when `pending_evaluation` is false, max(`due_at`, `snoozed_until`) has passed, and `dismissed_on` is not the current local date. Maintain the frontmatter summary on every write: `next_due_at` is the earliest instant at which any item becomes deliverable unsolicited — possibly already in the past; boundary checks test whether it has passed. A snoozed item contributes max(`due_at`, `snoozed_until`); a dismissed item contributes no earlier than its next local midnight; a pending item contributes nothing. `due_count` is the deliverable count as of the last write, advisory only — dueness is always decided by `next_due_at`.
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Derive the Walkthrough repository ID for the git repository at $1 (default: cwd).
+# Derive the Save Point repository ID for the git repository at $1 (default: cwd).
 # Prints two lines: the canonical identity string, then the 20-hex-char ID.
 # Every client must produce identical output for the same repository.
 set -eu

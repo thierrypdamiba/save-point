@@ -2,7 +2,7 @@
 Feature: Preserve active recall and human authorship
   As an engineer
   I want my understanding tested without leaked answers
-  So that the resulting walkthrough represents what I know
+  So that the resulting save file represents what I know
 
   Background:
     Given Save Point has asked a repository-grounded question
@@ -10,7 +10,7 @@ Feature: Preserve active recall and human authorship
 
   Scenario: Record an answer before evaluating it
     When the engineer answers in their own words
-    Then Save Point appends the response verbatim to "walkthrough.md" immediately, headed with the provisional status "open"
+    Then Save Point appends the response verbatim to "savepoint.md" immediately, headed with the provisional status "open"
     And the close, skip, or defer relabels the heading to the final status
     And an interrupted session loses no recorded answers
     But it does not rewrite the response as if the engineer authored the rewrite
@@ -121,11 +121,11 @@ Feature: Preserve active recall and human authorship
     Given a question was asked and no answer text was given
     When the engineer skips it
     Then a recall item is created or kept so the question returns
-    But no "walkthrough.md" entry is written, since there is nothing verbatim to record
+    But no "savepoint.md" entry is written, since there is nothing verbatim to record
 
-  Scenario: Assemble the saved walkthrough
+  Scenario: Assemble the save file
     Given the engineer has answered, skipped, and deferred questions
-    When Save Point updates "walkthrough.md"
+    When Save Point updates "savepoint.md"
     Then explanatory prose comes only from engineer-authored responses
-    And every item carries one status from the walkthrough template's list, honestly applied
+    And every item carries one status from the savepoint template's list, honestly applied
     And internal answer keys are absent

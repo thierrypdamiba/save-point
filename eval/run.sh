@@ -31,37 +31,86 @@ run_scenario() {
   git -C "$REPO" add -A && git -C "$REPO" commit -qm init
   git -C "$REPO" remote add origin https://github.com/octo/api.git
 
-  preamble="You are an AI coding agent with the Agent Skill at $skill activated. Read that file now and follow it EXACTLY — it is your complete behavior contract. Its templates are in $(dirname "$skill")/assets/. Test-harness substitutions: wherever the skill says ~/.save-point, use $STATE instead; the current working repository is $REPO. Perform ALL file reads and writes for real, and derive the repository ID for real. I am the user; respond to each message exactly as the skill dictates. My first message is:"
+  preamble_for() {
+    echo "You are an AI coding agent with the Agent Skill at $skill activated. Read that file now and follow it EXACTLY — it is your complete behavior contract. Its templates are in $(dirname "$skill")/assets/. Test-harness substitutions: wherever the skill says ~/.save-point, use $STATE instead; the current working repository is $1. Perform ALL file reads and writes for real, and derive the repository ID for real. I am the user; respond to each message exactly as the skill dictates. My first message is:"
+  }
 
   # Turns are separated by lines containing exactly "===" (CRLF-tolerant).
   turnsdir="$work/turns"; mkdir -p "$turnsdir"
   awk -v dir="$turnsdir" 'BEGIN { n = 1 } { sub(/\r$/, "") } /^===$/ { n++; next } { print >> (dir "/" sprintf("%02d", n)) }' "$turns_file"
 
-  sid=""; turn_no=0
-  for tf in "$turnsdir"/*; do
-    turn_no=$((turn_no + 1))
-    prompt=$(cat "$tf")
-    [ "$turn_no" -eq 1 ] && prompt="$preamble
+  # A second sandbox repository, for cross-repo scenarios; created by a
+  # harness action when needed. Turn text may reference the sandbox paths
+  # as {{STATE}}, {{REPO}}, and {{REPO2}}.
+  REPO2="$work/repo2"
+  outdir="$work/turns-out"; mkdir -p "$outdir"
 
-$prompt"
+  sid=""; turn_no=0; cur_repo="$REPO"
+  for tf in "$turnsdir"/*; do
+    # A block reading "@@@ new-session [repo-path]" starts a FRESH claude
+    # session (no conversational memory) for the turns that follow — how
+    # scenarios model "the engineer comes back tomorrow". A resumed session
+    # remembers the earlier turns, so no state-file edit can convince it
+    # that time has passed. The optional path becomes the new session's
+    # working repository ({{REPO2}} etc. are substituted).
+    if head -1 "$tf" | grep -q '^@@@'; then
+      line=$(head -1 "$tf" | sed -e "s|{{STATE}}|$STATE|g" -e "s|{{REPO}}|$REPO|g" -e "s|{{REPO2}}|$REPO2|g")
+      case $line in
+        '@@@ new-session'*)
+          sid=""
+          rest=$(printf '%s' "$line" | sed 's|^@@@ new-session[[:space:]]*||')
+          [ -n "$rest" ] && cur_repo="$rest" ;;
+        *) echo "  unknown harness directive: $line" >&2; rm -rf "$work"; return 1 ;;
+      esac
+      continue
+    fi
+    # A block whose lines start with "!!!" is a harness action, not a user
+    # turn: each command runs in the sandbox between model turns (code drift,
+    # moving due dates into the past, snapshotting state for the asserts).
+    if head -1 "$tf" | grep -q '^!!!'; then
+      while IFS= read -r line || [ -n "$line" ]; do
+        case $line in
+          '!!!'*)
+            cmd=${line#'!!!'}
+            (cd "$work" && STATE="$STATE" REPO="$REPO" REPO2="$REPO2" WORK="$work" EVAL="$here" sh -c "$cmd") || {
+              echo "  harness action failed: $cmd" >&2; rm -rf "$work"; return 1; } ;;
+        esac
+      done < "$tf"
+      continue
+    fi
+    turn_no=$((turn_no + 1))
+    prompt=$(sed -e "s|{{STATE}}|$STATE|g" -e "s|{{REPO}}|$REPO|g" -e "s|{{REPO2}}|$REPO2|g" "$tf")
     errlog="$work/turn-$turn_no.stderr"
     if [ -z "$sid" ]; then
+      prompt="$(preamble_for "$cur_repo")
+
+$prompt"
       out=$(cd "$work" && claude -p "$prompt" $model_flag --output-format json \
         --allowedTools "Read,Write,Edit,Bash,Glob,Grep" 2>"$errlog") || {
-        echo "  claude failed on turn $turn_no:" >&2; cat "$errlog" >&2; rm -rf "$work"; return 1; }
+        echo "  claude failed on turn $turn_no:" >&2; cat "$errlog" >&2
+        printf '%s' "$out" | head -c 500 >&2; echo >&2; rm -rf "$work"; return 1; }
       sid=$(printf '%s' "$out" | python3 -c 'import json,sys; print(json.load(sys.stdin)["session_id"])') || sid=""
       [ -n "$sid" ] || { echo "  could not extract session id" >&2; rm -rf "$work"; return 1; }
     else
       out=$(cd "$work" && claude -p --resume "$sid" "$prompt" $model_flag --output-format json \
         --allowedTools "Read,Write,Edit,Bash,Glob,Grep" 2>"$errlog") || {
-        echo "  claude failed on turn $turn_no:" >&2; cat "$errlog" >&2; rm -rf "$work"; return 1; }
+        echo "  claude failed on turn $turn_no:" >&2; cat "$errlog" >&2
+        printf '%s' "$out" | head -c 500 >&2; echo >&2; rm -rf "$work"; return 1; }
     fi
-    printf '%s' "$out" | python3 -c 'import json,sys; d=json.load(sys.stdin); print("  turn:", d["result"][:100].replace(chr(10)," "))'
+    # Full reply text is kept per turn so asserts can check for answer leaks.
+    printf '%s' "$out" | python3 -c 'import json,sys; print(json.load(sys.stdin)["result"])' \
+      > "$outdir/$(printf '%02d' "$turn_no").txt"
+    echo "  turn $turn_no: $(tr '\n' ' ' < "$outdir/$(printf '%02d' "$turn_no").txt" | head -c 100)"
   done
 
   ok=0
-  STATE="$STATE" REPO="$REPO" sh "$assert_file" || ok=1
-  rm -rf "$work"
+  STATE="$STATE" REPO="$REPO" REPO2="$REPO2" TURNS="$outdir" sh "$assert_file" || ok=1
+  # EVAL_KEEP_WORK=1 preserves a failing scenario's sandbox for diagnosis.
+  if [ "$ok" -eq 1 ] && [ -n "${EVAL_KEEP_WORK:-}" ]; then
+    echo "  workspace kept for diagnosis: $work"
+  else
+    rm -rf "$work"
+  fi
   return $ok
 }
 

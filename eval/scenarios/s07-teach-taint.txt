@@ -1,0 +1,11 @@
+/save-point
+===
+skip
+===
+One question is all I have time for — make it the happy path of a job through the queue.
+===
+push() takes whatever the producer hands it, copies the job with an attempts counter set to zero, and appends it to the jobs array. On the worker side drain() loops on next(), and next() is a shift off the front, so jobs leave in FIFO order; each handler is awaited before the loop takes another job, so processing is strictly serial. Success needs no ack — the shift already removed the job from the array — and the try/catch is only there for a throwing handler, which routes to fail(); on the happy path that branch never runs. SANDPIPER final answer.
+===
+Before I go — teach me the failure path properly: the backoff math and what ends up in the dead array. Walk me through the code.
+===
+that's all for today

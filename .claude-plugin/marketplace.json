@@ -1,0 +1,15 @@
+{
+  "name": "save-point",
+  "owner": {
+    "name": "Thierry Damiba",
+    "url": "https://github.com/thierrypdamiba"
+  },
+  "plugins": [
+    {
+      "name": "save-point",
+      "source": "./save-point",
+      "description": "The 30-second comprehension check after every AI-assisted merge. Quiz yourself on the code you ship — source-grounded questions, honest labels, spaced recall.",
+      "skills": ["./save-point/"]
+    }
+  ]
+}

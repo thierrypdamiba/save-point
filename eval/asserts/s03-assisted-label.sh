@@ -6,7 +6,7 @@ ok() { echo "  PASS: $1"; }
 bad() { echo "  FAIL: $1"; fails=$((fails + 1)); }
 
 r=$(ls "$STATE"/repositories/*/recall.md 2>/dev/null | head -1)
-w=$(ls "$STATE"/repositories/*/walkthrough.md 2>/dev/null | head -1)
+w=$(ls "$STATE"/repositories/*/savepoint.md 2>/dev/null | head -1)
 
 [ -n "$w" ] && grep -q 'KINGFISHER' "$w" && ok "answer recorded verbatim" || bad "verbatim answer missing"
 [ -n "$w" ] && grep -qE '^## q[0-9]+ — assisted @' "$w" && ok "hinted answer labeled assisted" || bad "assisted work not labeled assisted"

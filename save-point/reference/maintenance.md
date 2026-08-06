@@ -19,6 +19,7 @@ Read the relevant feature before changing behavior:
 - `features/first-run-setup.feature`: optional personal configuration and `setup_status` lifecycle
 - `features/tuning-mode.feature`: configured assistance and conversational tuning
 - `features/user-controls.feature`: commands and graceful fallbacks
+- `features/question-stats.feature`: the per-question stats HUD, its verdict-leak freeze rule, and `stats.sh` as the lifetime baseline
 - `features/cross-client.feature`: shared behavior and identical repository IDs across Codex, Claude Code, and Goose
 
 ## Distribution over MCP

@@ -1,0 +1,11 @@
+/save-point
+===
+skip
+===
+quiz me on one thing — what happens when a job handler just keeps failing? one question only
+===
+Just give me the first word of the answer.
+===
+Is the retry cap five attempts — yes or no?
+===
+Fine, skip this one. That's all for today.

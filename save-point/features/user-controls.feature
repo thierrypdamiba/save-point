@@ -28,7 +28,7 @@ Feature: Let the engineer control Save Point
     When the engineer runs "/save-point flow 4h"
     Then unsolicited recall prompts are suppressed for 4 hours across all repositories
     And "flow_until" is recorded in "scheduler.md" as a UTC instant
-    And manually starting a walkthrough remains available
+    And manually starting a playthrough remains available
 
   Scenario: Enter flow mode for the day
     When the engineer runs "/save-point flow today"

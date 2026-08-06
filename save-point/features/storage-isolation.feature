@@ -12,10 +12,10 @@ Feature: Isolate Save Point state from repositories and coding agents
 
   Scenario: Keep state categories separate
     When Save Point persists a repository session
-    Then user-authored prose is stored in "walkthrough.md"
+    Then user-authored prose is stored in "savepoint.md"
     And questions and schedules are stored in "recall.md"
     And global delivery state is stored in "~/.save-point/scheduler.md"
-    And internal answer keys are not included in "walkthrough.md"
+    And internal answer keys are not included in "savepoint.md"
     And answer text is not included in "recall.md"
 
   Scenario: Prevent cross-context answer leakage
@@ -30,8 +30,8 @@ Feature: Isolate Save Point state from repositories and coding agents
     Given a due item from another repository is being delivered
     When Save Point reads that repository's "recall.md" for the due item
     Then the read is permitted
-    And blindly appending to that repository's "walkthrough.md" is permitted
-    But reading that repository's "walkthrough.md" content is not
+    And blindly appending to that repository's "savepoint.md" is permitted
+    But reading that repository's "savepoint.md" content is not
 
   Scenario: Distinguish repositories with the same folder name
     Given two repositories have the same local folder name

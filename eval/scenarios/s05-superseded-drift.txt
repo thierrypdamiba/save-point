@@ -1,0 +1,20 @@
+/save-point
+===
+skip
+===
+Before you ask anything — make your one question about the retry and failure path. If you'd already picked a different topic, refocus that same question instead of queueing a second one; one item on the books is all I want today.
+===
+When a handler throws, drain() catches it and hands the job to fail(), which bumps its attempts counter. Under the cap of five attempts the job gets re-enqueued on a setTimeout of 2^attempts times 100ms — exponential backoff, so the wait doubles every strike. The fifth failure is terminal: the job is pushed onto the dead array, a dead-letter list nothing ever retries. HERON final answer.
+===
+that's all for today
+===
+!!! sed -i.bak -e 's/job.attempts >= 5/job.attempts >= 3/' -e 's/capped at 5 attempts/capped at 3 attempts/' "$REPO/src/queue.js" && rm -f "$REPO/src/queue.js.bak" && git -C "$REPO" -c user.name=harness -c user.email=harness@example.com commit -qam 'refactor: tighten retry cap to 3'
+!!! "$EVAL/elapse-days.sh" 1 "$STATE"/repositories/*/recall.md "$STATE"/repositories/*/savepoint.md "$STATE/scheduler.md"
+===
+@@@ new-session
+===
+/save-point recall
+===
+From memory: a failed job goes through fail(), which increments attempts. Under the cap of five attempts it's re-enqueued with exponential backoff — 2^attempts * 100ms, doubling each time. On the fifth strike it's parked in the dead array, the dead-letter list, and nothing retries it from there. PLOVER final answer.
+===
+ok, done for now

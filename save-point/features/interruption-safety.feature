@@ -81,7 +81,7 @@ Feature: Protect the engineer's active workflow
     Then it reads only "profile.md" frontmatter, "scheduler.md", and each "recall.md" frontmatter
     And dueness is decided by whether "next_due_at" has passed, never by the advisory "due_count"
     And an item is deliverable unsolicited when "pending_evaluation" is false, max("due_at", "snoozed_until") has passed, and "dismissed_on" is not today
-    And it does not read any "walkthrough.md"
+    And it does not read any "savepoint.md"
     And delivery then reads just the due item's section
 
   Scenario: A host prompt hook surfaces due counts

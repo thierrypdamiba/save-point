@@ -1,0 +1,11 @@
+/save-point
+===
+skip
+===
+Before you ask anything — quiz me on the retry and failure path. One question is all I have time for.
+===
+Simple: when a handler throws, fail() re-enqueues the job on a fixed 10-second setTimeout — the delay is hardcoded, no backoff. There's no attempts cap, so a bad job just retries forever, and there's no dead-letter list anywhere in this code. The retries don't even run on the drain loop — they're handed off to a worker thread pool so they can't block fresh jobs. OSPREY final answer.
+===
+That verdict was wrong and I want to contest it — run /save-point dispute on that question. I'm confident I had it right; show me the evidence.
+===
+that's all for today
