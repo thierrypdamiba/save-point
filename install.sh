@@ -23,7 +23,9 @@ installed=0
 install_to() {
   host=$1; base=$2
   dest="$base/save-point"
-  [ -d "$base" ] || echo "note: $base did not exist — creating it; this takes effect once $host is installed"
+  # Only warn when the host itself looks absent; a missing skills/ subdir
+  # under an existing host dir is normal and created silently.
+  [ -d "$base" ] || [ -d "$(dirname "$base")" ] || echo "note: $(dirname "$base") does not exist — installing anyway; this takes effect once $host is installed"
   [ -d "$dest" ] && echo "replacing existing install at $dest"
   mkdir -p "$base"
   rm -rf "$dest"

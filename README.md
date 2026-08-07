@@ -50,7 +50,7 @@ If that second question makes you sweat, that's the point. Sessions end at a **s
 
 ## Install
 
-One line:
+One line (append `-s -- claude` to install for one host only):
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/thierrypdamiba/save-point/main/install.sh | sh
@@ -78,9 +78,9 @@ cd save-point
 | Codex | `~/.codex/skills/save-point/` |
 | Goose | `~/.agents/skills/save-point/` |
 
-Then say `/save-point` (or just "quiz me on this repo") inside any repository.
+Then say `/save-point` (or just "quiz me on this repo") inside any repository — in a session started *after* the install; an already-running session won't see a newly installed skill.
 
-To uninstall: `rm -rf ~/.claude/skills/save-point` (per host). Your answers and recall schedule live in `~/.save-point/` — delete that too if you want them gone.
+To uninstall: `rm -rf ~/.claude/skills/save-point` (per host), or `/plugin uninstall save-point` if you installed as a plugin — and if you registered the recall hook below, remove it from `~/.claude/settings.json` too, or every prompt will complain about the missing script. Your answers and recall schedule live in `~/.save-point/` — delete that too if you want them gone.
 
 ### Enable unsolicited recall (Claude Code)
 
@@ -96,7 +96,7 @@ Out of the box, recall is served when you invoke Save Point. To get the spaced s
 }
 ```
 
-Add that to `~/.claude/settings.json`. The skill still owns actual delivery: at most 3 prompts a day with 90-minute gaps by default, never mid-task, and `interruptions off` silences it permanently.
+Add that to `~/.claude/settings.json` — merging into your existing `hooks` key if you have one; the snippet is the whole-file shape for a fresh settings file. The skill still owns actual delivery: at most 3 prompts a day with 90-minute gaps by default, never mid-task, and `interruptions off` silences it permanently.
 
 ### What lives in `~/.save-point` — and why you shouldn't sync it
 
@@ -104,7 +104,7 @@ Plain Markdown you can read: your preferences, the recall schedule, and your ver
 
 ### Via MCP instead
 
-For MCP clients without native Agent Skills support, the companion server distributes the same skill through the `io.modelcontextprotocol/skills` extension (MCP `2026-07-28`), with `list_skills` / `load_skill` tools and a `save-point` prompt as the legacy path:
+For MCP clients without native Agent Skills support, the companion server distributes the same skill through the `io.modelcontextprotocol/skills` extension (MCP `2026-07-28`), with `list_skills` / `load_skill` tools and a `save-point` prompt as the legacy path. Needs Node 20+; run it from the checkout — the server resolves the skill directory relative to its own build (set `SAVE_POINT_SKILL_DIR` to serve a skill directory from somewhere else):
 
 ```sh
 cd mcp-server && npm install && npm run build

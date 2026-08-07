@@ -24,9 +24,9 @@ Read the relevant feature before changing behavior:
 
 ## Distribution over MCP
 
-The companion server in `mcp-server/` distributes this skill and its templates through the `io.modelcontextprotocol/skills` extension on MCP `2026-07-28`, while retaining legacy MCP compatibility. It implements `skills/list`, `skills/get`, `resources/read`, and `resources/directory/read`, with SHA-256 content binding and private cache hints. For clients that support MCP but do not activate the skills extension, it also exposes read-only `list_skills` and `load_skill` tools plus a `save-point` prompt. Runtime state remains in Markdown and requires no stateful MCP tools.
+The companion server in `mcp-server/` distributes this skill and its asset templates (`assets/`) through the `io.modelcontextprotocol/skills` extension on MCP `2026-07-28`, while retaining legacy MCP compatibility. It implements `skills/list`, `skills/get`, `resources/read`, and `resources/directory/read`, with SHA-256 content binding and private cache hints. For clients that support MCP but do not activate the skills extension, it also exposes read-only `list_skills` and `load_skill` tools plus a `save-point` prompt. Runtime state remains in Markdown and requires no stateful MCP tools.
 
-Use this exact skill directory across Agent Skills hosts — do not maintain host-specific copies of `SKILL.md` or the templates:
+Use this exact skill directory across Agent Skills hosts — do not maintain host-specific copies of `SKILL.md` or the asset templates:
 
 - Codex: personal skills directory
 - Claude Code: `~/.claude/skills/save-point/`
