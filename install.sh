@@ -38,7 +38,45 @@ install_to() {
 want() { [ "$target" = "all" ] || [ "$target" = "$1" ]; }
 detected() { [ "$target" != "all" ] || [ -d "$2" ]; }
 
-want claude && detected claude "$HOME/.claude"  && install_to "Claude Code" "$HOME/.claude/skills"
+# Register the recall boundary check as a Claude Code prompt hook so spaced
+# recall is delivered by default. The script itself honors every off switch
+# ("interruptions off", flow mode, daily caps); non-destructive JSON merge,
+# idempotent across reinstalls, and the file is written only on success.
+register_claude_hook() {
+  settings="$HOME/.claude/settings.json"
+  if ! command -v python3 >/dev/null 2>&1; then
+    echo "note: python3 not found — register the recall hook manually (snippet in the README)"
+    return 0
+  fi
+  # A literal $HOME keeps the settings file portable; the shell expands it
+  # when the hook runs.
+  python3 - "$settings" '$HOME/.claude/skills/save-point/scripts/check-due.sh' <<'PY' 2>/dev/null \
+    || echo "note: could not update $settings safely — register the recall hook manually (snippet in the README)"
+import json, os, sys, tempfile
+path, cmd = sys.argv[1], sys.argv[2]
+data = {}
+if os.path.exists(path):
+    text = open(path).read()
+    if text.strip():
+        data = json.loads(text)          # malformed JSON -> abort, file untouched
+hooks = data.setdefault("hooks", {})
+entries = hooks.setdefault("UserPromptSubmit", [])
+for e in entries:
+    for h in e.get("hooks", []):
+        if "save-point/scripts/check-due.sh" in h.get("command", ""):
+            print("recall hook already registered in " + path)
+            sys.exit(0)
+entries.append({"hooks": [{"type": "command", "command": cmd}]})
+fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path) or ".", prefix=".save-point-")
+with os.fdopen(fd, "w") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+os.replace(tmp, path)
+print("recall hook registered in " + path + "  (say 'interruptions off' to silence, or delete that entry)")
+PY
+}
+
+want claude && detected claude "$HOME/.claude"  && install_to "Claude Code" "$HOME/.claude/skills" && register_claude_hook
 want codex  && detected codex  "$HOME/.codex"   && install_to "Codex"       "$HOME/.codex/skills"
 want goose  && detected goose  "$HOME/.agents"  && install_to "Goose"       "$HOME/.agents/skills"
 

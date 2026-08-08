@@ -82,9 +82,11 @@ Then say `/save-point` (or just "quiz me on this repo") inside any repository �
 
 To uninstall: `rm -rf ~/.claude/skills/save-point` (per host), or `/plugin uninstall save-point` if you installed as a plugin — and if you registered the recall hook below, remove it from `~/.claude/settings.json` too, or every prompt will complain about the missing script. Your answers and recall schedule live in `~/.save-point/` — delete that too if you want them gone.
 
-### Enable unsolicited recall (Claude Code)
+### Unsolicited recall is on by default (Claude Code)
 
-Out of the box, recall is served when you invoke Save Point. To get the spaced schedule delivered *to* you, register the bundled boundary check as a prompt hook — it reads only scheduling frontmatter, honors every cap, and nudges the session when something is due:
+The installer (and the plugin) registers the bundled boundary check as a prompt hook, so the spaced schedule is delivered *to* you out of the box — it reads only scheduling frontmatter, honors every cap, and nudges the session when something is due. The skill still owns actual delivery: at most 3 prompts a day with 90-minute gaps by default, never mid-task.
+
+Turning it off is one move, at whichever layer you prefer: say **`/save-point interruptions off`** (permanent, in-product — the hook then stays silent), `flow 4h` to pause, or delete the Save Point entry from `hooks.UserPromptSubmit` in `~/.claude/settings.json`. If you installed by copying files yourself (or the installer couldn't touch your settings safely), this is the entry it would have added:
 
 ```json
 {
@@ -95,8 +97,6 @@ Out of the box, recall is served when you invoke Save Point. To get the spaced s
   }
 }
 ```
-
-Add that to `~/.claude/settings.json` — merging into your existing `hooks` key if you have one; the snippet is the whole-file shape for a fresh settings file. The skill still owns actual delivery: at most 3 prompts a day with 90-minute gaps by default, never mid-task, and `interruptions off` silences it permanently.
 
 ### What lives in `~/.save-point` — and why you shouldn't sync it
 
@@ -154,7 +154,7 @@ This is an alpha. Tested end-to-end on Claude Code (live multi-session runs, inc
 
 - Contract enforcement is only as strong as the host model following it — so it's measured, not asserted: [`eval/`](eval) replays scripted sessions against the live skill and asserts on the state files it produces (currently 9 scenarios, 96 assertions, passing on the default model — including answer-leak refusal, dispute handling, code drift, and the full cross-repo pending flow). Publishing per-model pass rates is the next milestone.
 - Identity follows the remote, so adding a first remote or renaming one re-keys a repository. The contract now includes a migration offer (scan for the previous identity, move the history), but it's young.
-- Unsolicited recall needs the prompt hook above (Claude Code) or host boundary events; without either, recall is served on invocation only.
+- Unsolicited recall is automatic on Claude Code (the installer and plugin register the prompt hook). Other hosts need boundary events; without them, recall is served on invocation only.
 - Codex and Goose install paths are wired but not yet battle-tested.
 
 Issues and war stories welcome.
