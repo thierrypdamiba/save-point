@@ -1,2 +1,13 @@
 mcp-server/dist/
 mcp-server/node_modules/
+
+# Local secrets and machine state
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.save-point/
+.DS_Store
