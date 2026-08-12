@@ -9,7 +9,7 @@ Feature: Resurface repository knowledge for active recall
     When Save Point records it
     Then a recall item links the question to its repository and concept
     And the item starts at stage 0 with a 1-day interval, whatever the close quality
-    And importance is assigned at creation: 4-5 for load-bearing paths, 3 by default, 1-2 for details
+    And importance is assigned at creation: 4-5 for critical paths, 3 by default, 1-2 for details
 
   Scenario: Schedule an untested outcome
     Given a question closes as a bare guess, or work ends by skip or defer

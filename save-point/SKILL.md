@@ -146,9 +146,9 @@ A new recall item always starts at stage 0, whatever the close quality; the rule
 3. Assistance used on this attempt, or `last_assisted: true` → keep the current stage, then clear the flag. The flag is cleared only by a superseded close or the close of a due attempt.
 4. `solid` → advance one stage (maximum 3).
 5. `shaky` or `untested` → keep the current stage.
-6. Clamp: items with importance 4–5 never exceed stage 2 — durable review beats a 90-day gap for load-bearing concepts.
+6. Clamp: items with importance 4–5 never exceed stage 2 — durable review beats a 90-day gap for critical concepts.
 
-Every close sets `due_at` = close time + the resulting stage's interval. At creation, assign importance — 4–5 for load-bearing invariants and data-loss, security, or incident paths; 3 (default) for core flows; 1–2 for details — and record the item's `section`, its `chapter` for chapter questions (empty otherwise; such items never affect chapter status), its `created_at`, and the `source_paths` its answer key rests on, for the drift-vs-forgetting distinction at recall.
+Every close sets `due_at` = close time + the resulting stage's interval. At creation, assign importance — 4–5 for core invariants and data-loss, security, or incident paths; 3 (default) for core flows; 1–2 for details — and record the item's `section`, its `chapter` for chapter questions (empty otherwise; such items never affect chapter status), its `created_at`, and the `source_paths` its answer key rests on, for the drift-vs-forgetting distinction at recall.
 
 `intensive_30d` mode — every active concept is due daily until its `intensive_until` date (creation + 30 days), rotating wording under stable IDs. After day 30 the item graduates to adaptive at its current stage with full history.
 

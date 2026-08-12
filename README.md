@@ -100,7 +100,7 @@ Turning it off is one move, at whichever layer you prefer: say **`/save-point in
 
 ### What lives in `~/.save-point` — and why you shouldn't sync it
 
-Plain Markdown you can read: your preferences, the recall schedule, and your verbatim answers. Be deliberate about it — question prompts name the load-bearing parts of each codebase, importance rankings literally tag data-loss and security paths, and `canonical_remote` records private remote hostnames. Save Point creates the directory `0700`, but dotfile sync tools don't care about your permissions: exclude `~/.save-point` from chezmoi/Mackup/iCloud unless you mean it. Consultants juggling client repos can also set `cross_repo_recall: off` so one client's questions never surface while working for another.
+Plain Markdown you can read: your preferences, the recall schedule, and your verbatim answers. Be deliberate about it — question prompts name the critical parts of each codebase, importance rankings literally tag data-loss and security paths, and `canonical_remote` records private remote hostnames. Save Point creates the directory `0700`, but dotfile sync tools don't care about your permissions: exclude `~/.save-point` from chezmoi/Mackup/iCloud unless you mean it. Consultants juggling client repos can also set `cross_repo_recall: off` so one client's questions never surface while working for another.
 
 ### Via MCP instead
 
