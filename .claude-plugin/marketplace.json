@@ -8,7 +8,7 @@
     {
       "name": "save-point",
       "source": "./",
-      "description": "The 30-second comprehension check after every AI-assisted merge. Quiz yourself on the code you ship — source-grounded questions, honest labels, spaced recall.",
+      "description": "The 30-second comprehension check after every AI-assisted merge. Quiz yourself on the code you ship, with source-grounded questions, honest labels, and spaced recall.",
       "skills": ["./save-point/"]
     }
   ]
