@@ -104,6 +104,21 @@ jobs:
             grep -qw -e "$c" README.md || { echo "FAIL command not in README: $c"; exit 1; }
           done
           grep -q 'docs/quickstart.md' README.md
+      - name: verify team guide matches the tool
+        run: |
+          t=docs/teams.md
+          test -f "$t"
+          # Every profile setting the guide names must exist in the profile template.
+          for s in interruption_style daily_limit minimum_gap questions_per_interruption default_snooze question_stats cross_repo_recall recall_intervals repetition_mode persona setup_status; do
+            grep -q -e "$s" "$t" || { echo "FAIL teams.md lacks: $s"; exit 1; }
+            grep -q "^$s:" save-point/assets/profile.md || { echo "FAIL profile template lacks: $s"; exit 1; }
+          done
+          # Every flag and command the guide names must exist.
+          grep -q -e '--uninstall' install.sh && grep -q -e '--ref' install.sh
+          grep -o '`/save-point [a-z]*' "$t" | cut -d' ' -f2 | sort -u | while read -r c; do
+            grep -qw -e "$c" README.md || { echo "FAIL command not in README: $c"; exit 1; }
+          done
+          grep -q 'docs/teams.md' README.md
       - name: verify install script
         run: HOME=$(mktemp -d) sh -c 'mkdir -p "$HOME/.claude" && ./install.sh && test -f "$HOME/.claude/skills/save-point/SKILL.md" && test -x "$HOME/.claude/skills/save-point/scripts/check-due.sh" && test -x "$HOME/.claude/skills/save-point/scripts/hash-source.sh" && test ! -d "$HOME/.claude/skills/save-point/features"'
       - name: verify scheduling and hook scripts
