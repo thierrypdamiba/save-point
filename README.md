@@ -50,6 +50,8 @@ If that second question makes you sweat, that's the point. Sessions end at a **s
 
 ## Install
 
+New here? Follow the [ten-minute quickstart](docs/quickstart.md), which also has troubleshooting.
+
 One line (append `-s -- claude` to install for one host only):
 
 ```sh
