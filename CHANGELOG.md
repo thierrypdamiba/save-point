@@ -4,8 +4,6 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 ## Unreleased
 
-### Added
-- CI job `mcp-node20`: runs `npm ci`, `npm run check` and `npm test` for the MCP server on Node 20, the minimum in `package.json`. The Node 22 job is unchanged. CI only, no code changed.
 
 ### Changed
 - The long inline script checks in `ci.yml` now live in `scripts/test-repo-id.sh`, `scripts/test-reschedule.sh`, `scripts/test-persona.sh` and `scripts/test-stats.sh`. CI calls them. A contributor can run each with `sh scripts/<name>.sh` from any directory. The checks are the same text as before. No skill script changed.
@@ -14,6 +12,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 - `save-point/scripts/stats.sh` now reads files with CRLF line endings and trailing spaces. Before, a CRLF `recall.md` showed every stage as 0 and no tainted items, and a CRLF `savepoint.md` printed keys like `closes_failed^M`. The output for LF files is unchanged. No record format changed. A CI step checks a CRLF case.
 
 ### Added
+- CI job `mcp-node20`: runs `npm ci`, `npm run check` and `npm test` for the MCP server on Node 20, the minimum in `package.json`. The Node 22 job is unchanged. CI only, no code changed.
 - `mcp-server/test/errors.test.ts`: 6 tests for MCP server failure paths. Bad directory URIs (`..`, file, http, foreign scheme, non-directory), unknown `skills/get` URI, wrong `load_skill` name, missing `SKILL.md`, bad frontmatter, and dotfiles not served. Tests only. No server code changed.
 - ROADMAP.md items 13 to 16 from a fresh audit. Docs only.
 - `eval/record-results.sh`, `eval/RESULTS.md` and `eval/results/`: turns saved `eval/run.sh` output into a dated table row and keeps the raw log. It refuses a run that did not finish or whose summary disagrees with its scenario lines. `scripts/test-record-results.sh` (8 checks) runs in CI. One real run is recorded: s01, 1 of 1. No harness or assert changed.
