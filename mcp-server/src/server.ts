@@ -5,7 +5,7 @@ import { registerSkillCatalog } from "./skill-catalog.js";
 
 export async function createCatalogServer(skillRoot: string): Promise<McpServer> {
   const server = new McpServer(
-    { name: "save-point-skills", version: "0.11.0" },
+    { name: "save-point-skills", version: "0.11.1" },
     {
       capabilities: { extensions: { "io.modelcontextprotocol/skills": { directoryRead: true } } },
       cacheHints: {
