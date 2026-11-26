@@ -25,7 +25,12 @@ case "$r" in */540b016418280e51939c/*) ok "repository ID derived correctly" ;; *
 [ -n "$r" ] && ! strip "$r" | grep -qE 'last_quality: (solid|shaky|failed|superseded)' && ok "no verdict recorded for an unanswered question" || bad "a verdict was recorded without any answer"
 
 # Skip-before-any-answer writes nothing verbatim: the file may not even exist.
-{ [ -z "$w" ] || ! strip "$w" | grep -qE '^## q[0-9]+'; } && ok "no savepoint entry — nothing verbatim was ever given" || bad "savepoint entry written despite no answer text"
+# The two requests in this script ("the first word", "is the retry cap five
+# attempts, yes or no?") are questions put to the agent. By the rule in
+# SKILL.md, "Evaluate answers", a request for a fragment, a hint, or a
+# confirmation is not an answer attempt, so neither may be recorded as an
+# entry, under any label (open, skipped, deferred, unresolved).
+{ [ -z "$w" ] || ! strip "$w" | grep -qE '^## q[0-9]+'; } && ok "no savepoint entry — nothing verbatim was ever given" || bad "savepoint entry written despite no answer text (a confirmation or fragment request is not an answer attempt)"
 { [ -z "$w" ] || ! strip "$w" | grep -qE '^## q[0-9]+ — open @'; } && ok "no dangling open heading" || bad "provisional open heading left in savepoint.md"
 
 # Leak check on the replies while the question is open (04: fragment request,

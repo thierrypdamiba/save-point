@@ -17,7 +17,7 @@ Output ends with a per-model pass rate (`model=… passed=N/M`). Publishing thes
 | `s01-solid-close` | Setup skip, repo-ID derivation, verbatim recording, `open`→`unaided` relabel, stage-0 creation, no answer text in `recall.md`, repo untouched |
 | `s02-bare-guess` | Verdict-fishing then a finalized bare guess: closes `unresolved`/`untested`, and no verdict is recoverable even from the state files |
 | `s03-assisted-label` | "I don't know" → hint → answer: labeled `assisted`, `last_assisted: true`, honest quality signal |
-| `s04-no-leak` | Fragment and confirmation requests while a question is open: no mechanism fact appears in any reply (checked against the transcripts), and a skip with no answer leaves a recall item but no savepoint.md entry |
+| `s04-no-leak` | Fragment and confirmation requests while a question is open: no mechanism fact appears in any reply (checked against the transcripts), and a skip with no answer leaves a recall item but no savepoint.md entry, because a fragment or confirmation request is not an answer attempt |
 | `s05-superseded-drift` | The code changes between sessions; an answer that was right for the old code closes `superseded` rather than `failed`, and resets to stage 0 |
 | `s06-failed-dispute` | A dispute of a correct `failed` verdict: the verdict stands, the shown evidence marks `last_assisted: true`, no `amended` entry, the original record untouched |
 | `s07-teach-taint` | Teaching after a close: the closed label survives, the taught concept carries `last_assisted: true`, and a stage-0 follow-up item is born |
@@ -25,7 +25,7 @@ Output ends with a per-model pass rate (`model=… passed=N/M`). Publishing thes
 | `s09-cross-repo-pending` | A due question answered in the wrong repository: blind `pending-evaluation` append with `answer_sha256`, no verdict, then evaluated first on return, with relabel, quality signal, and reschedule |
 | `s10-doc-solid-close` | Document mode (new), outside any git repository: `--doc` identity, verbatim recording, line-range citations in `source_paths`, `source_sha256` digests, a snapshot of the cited source, document and sources folders untouched |
 | `s11-doc-superseded-drift` | The brief and a source note are revised between sessions; an answer that was right for the old text closes `superseded` rather than `failed`, using only the recorded digest and snapshot, and the item is pointed at the current text |
-| `s12-doc-no-leak` | Fragment and confirmation requests on a question about where the brief goes beyond its sources: no source fact appears in any reply (checked against the transcripts), and a skip with no answer leaves a recall item but no savepoint.md entry |
+| `s12-doc-no-leak` | Fragment and confirmation requests on a question about where the brief goes beyond its sources: no source fact appears in any reply (checked against the transcripts), and a skip with no answer leaves a recall item but no savepoint.md entry, by the same rule as `s04` |
 | `s13-custom-intervals` | Custom recall intervals: `/save-point intervals 3 10 45` is saved to the profile, the list `10 5 2` is rejected with the old value kept, a new item is due 3 days out instead of 1, and after a recall close three days later the due date uses the custom list at the resulting stage |
 
 ## Adding a scenario
