@@ -13,7 +13,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - `install.sh` has an uninstall (item 3) and `--ref` pinning (item 4). It has no dry run. The curl one-liner installs whatever is on `main` unless `--ref` is given.
 - The installer's hook merge is now tested (item 3).
 - CI runs shell checks and the MCP tests on one OS (ubuntu). The scripts target macOS users too. `sh -n` and `shellcheck` now run in CI (item 7); there is still no macOS job.
-- The eval harness is not run in CI and no pass rates are published in the repo.
+- The eval harness is not run in CI. `eval/RESULTS.md` now holds one recorded run (s01, 1/1). The full suite is not yet recorded.
 - Team use is documented in `docs/teams.md`. Fleet rollout through device management is untested.
 
 ## Items
@@ -64,7 +64,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: write a small script that turns `eval/run.sh` output into a dated table in `eval/RESULTS.md` with model, scenario count, and passes. Commit results only from runs someone actually made.
 - Benefits: a reviewer who wants evidence that the integrity rules hold, and the owner for the study.
 - Verify: the table matches the raw run output saved next to it. Needs a model CLI, so this run type may be "not run" in some environments.
-- Size: medium. Status: ready, but a run needs the `claude` CLI and a login.
+- Size: medium. Status: done (dev, see CHANGELOG). `eval/record-results.sh` and `eval/RESULTS.md`. One real run is recorded so far: s01 only, 1 of 1. The full 15 scenario run has not been made. Anyone with a login can run it and record it.
 
 ### 9. Upgrade-safe state format note
 - Change: document the on-disk formats of `savepoint.md`, `recall.md`, `profile.md`, `scheduler.md` and add a `format_version` check plan. Do not change the formats.

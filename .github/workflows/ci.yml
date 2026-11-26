@@ -140,6 +140,8 @@ jobs:
             grep -qw -e "$c" README.md || { echo "FAIL command not in README: $c"; exit 1; }
           done
           grep -q 'docs/teams.md' README.md
+      - name: verify eval results recorder
+        run: sh scripts/test-record-results.sh
       - name: verify state format doc matches the templates
         run: |
           f=docs/state-formats.md
