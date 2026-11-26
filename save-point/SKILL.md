@@ -21,7 +21,7 @@ Invariants, in every session:
 | `/save-point` | Start or resume: evaluate pending answers, offer due recall (this repository's items, plus a labeled count from others), then new questions. Only the new-questions phase needs a repository — due recall works anywhere |
 | `/save-point start [--level new-engineer\|maintainer\|operator]` | Start a playthrough of the current repository at an explicit difficulty |
 | `/save-point start --diff [ref]` | Quiz on what changed since `ref` (default: the last merge, else `HEAD~1`) instead of the whole repository |
-| `/save-point start --doc <file-or-folder> [--sources <folder>]` | Experimental. Start a playthrough of a written document and, when sources are given, of whether they support it. Works outside a git repository. `--doc` also works on bare `/save-point` and on `recall`. See Document workspaces |
+| `/save-point start --doc <file-or-folder> [--sources <folder>]` | New. Start a playthrough of a written document and, when sources are given, of whether they support it. Works outside a git repository. `--doc` also works on bare `/save-point` and on `recall`. See Document workspaces |
 | `/save-point recall` | Serve due recall items now, across repositories unless `cross_repo_recall` is `off` (user-invoked, uncapped) |
 | `/save-point setup` | Run or rerun the setup session, pre-filled with current values |
 | `/save-point settings` | Show active preferences; never shows repository answers |
@@ -85,7 +85,7 @@ Identity follows the remote, so it changes when a local-only repository gains it
 4. Ask one concise, open question at a time at the configured difficulty and depth. Assign each question an ID — `q` plus a per-repository ordinal (`q014`) — that never changes, even when wording is later rotated. The vocabulary is tunable: on "plain labels", swap the game framing for neutral terms (sections, data flow, invariants, failure scenarios, review summary) everywhere user-facing.
 5. Rebuild the path each session from current source; skip concepts already covered by items in `recall.md`.
 
-## Document workspaces (experimental)
+## Document workspaces (new)
 
 `/save-point start --doc <file-or-folder> [--sources <folder>]` runs a playthrough on written work: an AI-drafted brief, report, memo, or literature summary, optionally with the source documents it was built from. A document workspace takes the place of a repository everywhere in this contract. It has the same state files, labels, answer hashing, disputes, schedule, isolation, and interruption limits. Wherever a rule says code, read it as the text of the document and its sources. Only the differences are listed here.
 
