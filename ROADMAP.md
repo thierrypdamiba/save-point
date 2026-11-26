@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -89,6 +89,30 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Benefits: contributors, who today must copy shell out of YAML to test a script change.
 - Verify: CI passes with the same checks. Each block runs locally to the same result.
 - Size: medium. Status: done (dev, see CHANGELOG). Four files under `scripts/`: repo id and document identity, reschedule and hooks, persona, stats (LF and CRLF). Text moved unchanged. Other CI steps (network, shell hygiene, doc checks) stay inline since they grep the repo and are short.
+
+### 13. MCP server error-path tests
+- Change: add tests for the failure paths of the MCP server. Today the 3 tests only cover the working paths. Cases: `resources/directory/read` with a `..` URI, a foreign scheme, and a file URI (all must be refused); `skills/get` with an unknown URI; `load_skill` with a name other than `save-point`; a skill directory with no `SKILL.md` makes startup fail with a clear error; frontmatter without a string name or description is refused; dotfiles in the skill directory are not served.
+- Benefits: a security reviewer who wants proof that the server only serves the skill directory, and a maintainer changing the catalog code.
+- Verify: `npm test` runs the new cases and passes. Each refusal case fails when the guard in `skill-catalog.ts` is removed. The audit run tried the first five by hand: all behaved correctly, none are tested.
+- Size: small. Status: ready.
+
+### 14. Run the MCP tests on the oldest supported Node
+- Change: `mcp-server/package.json` says `node >=20` and the README and quickstart tell people Node 20 works. CI only runs Node 22. Add a Node 20 leg to the CI matrix for `npm ci`, `npm run check` and `npm test`. If Node 20 fails, change the stated minimum instead.
+- Benefits: an MCP-only user on Node 20, who is told it works and has no evidence.
+- Verify: CI shows both legs green, or the docs and `engines` name the real minimum.
+- Size: small. Status: ready.
+
+### 15. Recall hook should not fail open on absurd numbers
+- Change: in `save-point/scripts/check-due.sh`, a number with more than 18 digits in `daily_limit`, `prompts_today` or `minimum_gap` overflows shell arithmetic. Found in the run 13 audit: a huge `prompts_today` printed `[: Illegal number` on stderr on every prompt and the daily cap was skipped, so the nudge still fired. A huge `minimum_gap` wrapped and also let the nudge through. Make `digits_or` fall back to its default for values longer than 9 digits. The hook must still print nothing and exit 0 for any state file content.
+- Benefits: anyone who hand-edits `profile.md` or `scheduler.md`, who today could get a stray error line on every prompt and a cap that does nothing. The change only touches values no honest file holds, so ordinary behavior and the study are unaffected.
+- Verify: add cases to `scripts/test-reschedule.sh` (or a new `scripts/test-check-due.sh`) for each oversized field: stderr empty, exit 0, and the cap still holds. Ordinary values give the same output as before.
+- Size: small. Status: ready.
+
+### 16. Installer dry run
+- Change: `./install.sh --dry-run [host]` prints what it would copy and which settings entry it would add, and writes nothing. Test with a temp HOME that no file appears.
+- Benefits: an IT reviewer who wants to see the effect before approving the install on a managed machine.
+- Verify: a test compares the file tree and `settings.json` bytes before and after a dry run. Output names every path that a real install writes.
+- Size: small. Status: ready.
 
 ## Needs the owner
 
