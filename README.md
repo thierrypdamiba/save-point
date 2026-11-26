@@ -129,7 +129,7 @@ cd mcp-server && npm install && npm run build
 | `/save-point start --diff [ref]` | Quiz on what changed since `ref`, as a post-merge check or a merge gate on a branch |
 | `/save-point dispute q014` | Contest a verdict: the key is re-derived with evidence shown; wrong verdicts get an `amended` entry |
 | `/save-point start [--level new-engineer\|maintainer\|operator]` | Full playthrough, optionally at an explicit difficulty |
-| `/save-point start --doc <file-or-folder> [--sources <folder>]` | New and experimental: quiz on a written document and on whether its sources support it. No git repository needed |
+| `/save-point start --doc <file-or-folder> [--sources <folder>]` | New: quiz on a written document and on whether its sources support it. No git repository needed |
 | `/save-point recall` | Serve due recall now, across repositories (unless `cross_repo_recall` is off) |
 | `/save-point setup` / `settings` | Configure / inspect preferences |
 | `/save-point repetition intensive\|adaptive` | Daily 30-day drilling vs. spaced (1 → 7 → 30 → 90 days) |
@@ -138,7 +138,7 @@ cd mcp-server && npm install && npm run build
 
 Everything also works as plain conversation: "too hard", "less trivia", "spam me for 30 days", "pause questions until tomorrow". If chapters and boss fights aren't your thing, say "plain labels" and the game framing disappears. Every question carries a one-line HUD showing this session's tally plus the repository's lifetime numbers, and "stats off" removes it.
 
-### Written work (new, experimental)
+### Written work (new)
 
 Save Point also runs on prose. Point it at an AI-drafted brief, report, memo, or literature summary, and optionally at the folder of sources it was built from:
 
@@ -188,7 +188,7 @@ The tool already keeps the records such a study needs. It records each answer ve
 
 The planned study uses a within-person design. Save Point asks questions about a random half of a person's AI-written changes and stays silent on the other half. Both halves are tested later. The protocol will be published in this repository before any data is collected.
 
-Save Point works on code repositories. It also has a new, experimental mode for written research and analysis (see [Written work](#written-work-new-experimental)), so the same question can be asked of people who delegate research and writing to AI.
+Save Point works on code repositories. It also has a new mode for written research and analysis (see [Written work](#written-work-new)), so the same question can be asked of people who delegate research and writing to AI.
 
 To take part, or to review the protocol, open an issue.
 
