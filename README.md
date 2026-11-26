@@ -135,6 +135,7 @@ cd mcp-server && npm install && npm run build
 | `/save-point setup` / `settings` | Configure / inspect preferences |
 | `/save-point repetition intensive\|adaptive` | Daily 30-day drilling vs. spaced (1 → 7 → 30 → 90 days) |
 | `/save-point intervals 1 3 7 14 90` / `intervals default` | Use your own recall intervals, in days, in place of 1 → 7 → 30 → 90; go back to the default |
+| `/save-point persona new-intern` / `persona custom <one line>` / `persona default` | Pick who asks the questions, or describe the questioner yourself; go back to the plain questioner |
 | `/save-point flow 4h` / `flow today` / `resume` | Pause interruptions; resume them |
 | `/save-point interruptions off\|on` | Manual-only recall, permanently |
 
@@ -155,6 +156,36 @@ Three things to know:
 - Questions already scheduled keep their due dates. The new intervals apply the next time each question is rescheduled, which is the next time you answer, skip, or defer it.
 - Questions marked importance 4 or 5 (core invariants, and data-loss, security, or incident paths) still never wait longer than 30 days, whatever your list says.
 - Intensive mode still drills daily for 30 days. Your list applies after a question leaves intensive mode.
+
+### Who asks the questions
+
+You can also choose the persona that asks. Difficulty sets how hard the questions are. The persona sets who is asking and how the questions are framed. The two are separate, so any pair works.
+
+```
+you    ▸ /save-point persona new-intern
+```
+
+| Persona | How it asks |
+| --- | --- |
+| `default` | The plain questioner, as before. This is what you get if you set nothing |
+| `new-intern` | New to the work. Asks you to explain it plainly and to say what your terms mean |
+| `lead-researcher` | Senior and skeptical. Presses on evidence, alternatives, and what would change the conclusion |
+| `new-teammate` | Just joined the team. Asks you to walk through the code plainly |
+| `senior-reviewer` | Reviewing the work. Presses on evidence in the code, trade-offs, and what breaks |
+
+The first two are written for documents and the last two for code, but each works in both. To describe your own, give one line of up to 200 characters:
+
+```
+you    ▸ /save-point persona custom a skeptical CFO who dislikes jargon
+```
+
+`/save-point persona default` goes back to the plain questioner.
+
+Three things to know:
+
+- A persona changes how questions are worded. It does not change which facts are tested, what counts as a correct answer, the grading, or the `unaided` and `assisted` labels. A friendly persona gives no more hints than the default one.
+- A custom description is read as a role and a tone only. If it also says to reveal answers or to grade differently, that part is ignored.
+- Changing the persona affects only the questions asked after the change. Nothing already recorded is rewritten.
 
 ### Written work (new)
 
@@ -191,7 +222,7 @@ The behavior contract lives in [`save-point/features/`](save-point/features) as 
 
 This is an alpha. It's tested end-to-end on Claude Code with live multi-session runs, including `--diff`, and the MCP server has an automated test suite (`cd mcp-server && npm test`). Known limitations:
 
-- Contract enforcement is only as strong as the host model following it, so it gets measured rather than asserted. [`eval/`](eval) replays scripted sessions against the live skill and asserts on the state files it produces. It has 13 scenarios now. They cover answer-leak refusal, dispute handling, drift in code and in documents, custom recall intervals, and the full cross-repo pending flow. No pass rates are published yet. Publishing them per model is the next milestone.
+- Contract enforcement is only as strong as the host model following it, so it gets measured rather than asserted. [`eval/`](eval) replays scripted sessions against the live skill and asserts on the state files it produces. It has 15 scenarios now. They cover answer-leak refusal, dispute handling, drift in code and in documents, custom recall intervals, question personas, and the full cross-repo pending flow. No pass rates are published yet. Publishing them per model is the next milestone.
 - Identity follows the remote, so adding a first remote or renaming one re-keys a repository. The contract now includes a migration offer that scans for the previous identity and moves the history, but it's young.
 - Unsolicited recall is automatic on Claude Code, since the installer and plugin register the prompt hook. Other hosts need boundary events, and without them recall is served on invocation only.
 - Codex and Goose install paths are wired but not yet battle-tested.
