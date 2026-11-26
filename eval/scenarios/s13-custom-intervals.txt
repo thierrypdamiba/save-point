@@ -1,0 +1,26 @@
+/save-point
+===
+skip
+===
+Before you ask anything, two things. First, please run /save-point intervals 3 10 45 for me. Then make your one question about the happy path of a job through the queue. If you'd already picked a different topic, refocus that same question instead of queueing a second one; one item on the books is all I want today.
+===
+!!! mkdir -p "$STATE/snap" && cp "$STATE/profile.md" "$STATE/snap/profile-set.md"
+===
+Hold that question for a moment. Also try /save-point intervals 10 5 2 and tell me what happened. Then repeat the question.
+===
+!!! cp "$STATE/profile.md" "$STATE/snap/profile-rejected.md"
+===
+A producer calls push() on the JobQueue, which wraps the job with an attempts counter starting at zero and appends it to the jobs array. The worker's drain() pulls from the front with next(), which is a shift, so it's FIFO, and awaits the handler serially, one job at a time. On success the job is already gone: the shift removed it, there's no ack step. The try/catch only matters when a handler throws, routing to fail(), which never runs on the happy path. KESTREL final answer.
+===
+that's all for today
+===
+!!! "$EVAL/elapse-days.sh" 3 "$STATE"/repositories/*/recall.md "$STATE"/repositories/*/savepoint.md "$STATE/scheduler.md"
+!!! cp "$STATE"/repositories/*/recall.md "$STATE/snap/recall-day3.md"
+===
+@@@ new-session
+===
+/save-point recall, and if more than one question is due, start with the one about the happy path of a job.
+===
+From memory: push() on the JobQueue wraps the job with attempts set to zero and appends it to the jobs array. drain() in the worker takes jobs from the front with next(), a shift, so the order is FIFO, and it awaits each handler before taking the next job, so one job runs at a time. A job that succeeds is already gone, because the shift removed it and there is no separate ack. The catch that calls fail() only runs when a handler throws, so it plays no part on the happy path. MERLIN final answer.
+===
+ok, done for now
