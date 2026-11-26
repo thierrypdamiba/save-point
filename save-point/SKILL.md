@@ -1,6 +1,6 @@
 ---
 name: save-point
-description: Teach and test whether an engineer can explain a repository after AI-assisted work through source-grounded questions, optional AI assistance, user-controlled tuning, and later active recall. Use when a user invokes `/save-point`, says "quiz me", "test me on this repo", or "do I really understand this code", asks to learn or test themselves on a codebase, wants spaced repetition for code knowledge, or wants to curate question difficulty or teaching style. Not for generating code tours or explanations the user only wants to read — this skill asks the user questions and records their answers.
+description: Teach and test whether an engineer can explain a repository after AI-assisted work through source-grounded questions, optional AI assistance, user-controlled tuning, and later active recall. Use when a user invokes `/save-point`, says "quiz me", "test me on this repo", or "do I really understand this code", asks to learn or test themselves on a codebase, wants spaced repetition for code knowledge, or wants to curate question difficulty or teaching style. Also use for written work, with `/save-point start --doc`, when a user wants to be tested on an AI-drafted brief, report, memo, or literature summary and on whether its sources support it ("quiz me on this report"). Not for generating code tours or explanations the user only wants to read — this skill asks the user questions and records their answers.
 ---
 
 # Save Point
@@ -12,7 +12,7 @@ Invariants, in every session:
 - The repository-derived answer key stays internal. While a question is open, never reveal, hint at, complete, or verify specific facts.
 - `savepoint.md` holds only the user's verbatim words, each labeled honestly — assisted work is never presented as unaided.
 - Assistance of any form — hint, source trail, restated question, explanation, whether from policy or on request — marks the remainder of the current attempt `assisted` and sets `last_assisted: true` on the item, which holds the stage at the next close. Teaching taints the concept, not just the question: work on any question covering material explained earlier in the session is `assisted` too, and new questions overlapping an item marked `last_assisted` or a pending follow-up inherit the flag.
-- State lives only under `~/.save-point/`; never write into a repository, and never let one repository's stored answers leak into another's context.
+- State lives only under `~/.save-point/`; never write into a repository or a document folder, and never let one repository's stored answers leak into another's context.
 
 ## Commands
 
@@ -21,6 +21,7 @@ Invariants, in every session:
 | `/save-point` | Start or resume: evaluate pending answers, offer due recall (this repository's items, plus a labeled count from others), then new questions. Only the new-questions phase needs a repository — due recall works anywhere |
 | `/save-point start [--level new-engineer\|maintainer\|operator]` | Start a playthrough of the current repository at an explicit difficulty |
 | `/save-point start --diff [ref]` | Quiz on what changed since `ref` (default: the last merge, else `HEAD~1`) instead of the whole repository |
+| `/save-point start --doc <file-or-folder> [--sources <folder>]` | Experimental. Start a playthrough of a written document and, when sources are given, of whether they support it. Works outside a git repository. `--doc` also works on bare `/save-point` and on `recall`. See Document workspaces |
 | `/save-point recall` | Serve due recall items now, across repositories unless `cross_repo_recall` is `off` (user-invoked, uncapped) |
 | `/save-point setup` | Run or rerun the setup session, pre-filled with current values |
 | `/save-point settings` | Show active preferences; never shows repository answers |
@@ -50,6 +51,7 @@ Use plain, user-readable Markdown as the runtime database.
     <repository-id>/
       savepoint.md   verbatim user-authored answers, one entry per attempt, each status-labeled
       recall.md        questions, due dates, stages, quality signals; never answer text or keys
+      snapshots/       document workspaces only: copies of cited files, each named by its SHA-256
 ```
 
 Initialize each file from its template in `assets/` — read the template from disk, or with `resources/read` when this skill arrived over MCP without a local directory. Create `~/.save-point` with permissions 0700 and its files 0600: the prompts and importance rankings inside are a map of each codebase's sensitive paths. A missing `scheduler.md` reads as its template defaults; create it on first update. Persist incrementally: append each verbatim answer to `savepoint.md` the moment it is recorded; update `recall.md` at every question close and `scheduler.md` whenever an unsolicited prompt is delivered. Write via temp-file-and-rename when the host allows, so an interrupted session loses nothing — except for another repository's files, where isolation wins: use a mechanical file-level append (`>>`) whose existing content never enters context.
@@ -72,7 +74,7 @@ Identity follows the remote, so it changes when a local-only repository gains it
 
 ## Start a repository playthrough
 
-1. Confirm the current directory is a repository and read it without modifying it. If it is not one, say a repository is required for new questions; due recall still works.
+1. Confirm the current directory is a repository and read it without modifying it. If it is not one, say a repository is required for new questions; due recall still works. With `--doc`, no repository is needed: follow Document workspaces.
 2. Inspect architecture, entry points, major flows, data movement, tests, deployment and operational paths, failure handling, and non-obvious invariants. With `--diff`, inspect only the change: what changed, why, what it touches, and what could break.
 3. Build a question path organized as Chapters (major flows and subsystems), Maps (data movement and relationships), Secrets (non-obvious invariants and historical decisions), Boss fights (incidents, edge cases, failures), and New Game+ (synthesis questions, unlocked when every chapter is solid). The path's content is private; its shape is not:
    - Open with the world map: "4 chapters, 2 maps, 2 secrets, 1 boss fight — New Game+ locked."
@@ -81,6 +83,43 @@ Identity follows the remote, so it changes when a local-only repository gains it
    - Chapter status is computed from stored recall items — the `chapter` labels on items, not the freshly rebuilt path, are the source of truth. A chapter is `solid` when every item carrying its label has `last_quality: solid`; otherwise `in-progress`; `unvisited` with no items.
 4. Ask one concise, open question at a time at the configured difficulty and depth. Assign each question an ID — `q` plus a per-repository ordinal (`q014`) — that never changes, even when wording is later rotated. The vocabulary is tunable: on "plain labels", swap the game framing for neutral terms (sections, data flow, invariants, failure scenarios, review summary) everywhere user-facing.
 5. Rebuild the path each session from current source; skip concepts already covered by items in `recall.md`.
+
+## Document workspaces (experimental)
+
+`/save-point start --doc <file-or-folder> [--sources <folder>]` runs a playthrough on written work: an AI-drafted brief, report, memo, or literature summary, optionally with the source documents it was built from. A document workspace takes the place of a repository everywhere in this contract. It has the same state files, labels, answer hashing, disputes, schedule, isolation, and interruption limits. Wherever a rule says code, read it as the text of the document and its sources. Only the differences are listed here.
+
+**Identity.** Run `scripts/derive-repo-id.sh --doc <file-or-folder>` when scripts are executable. Otherwise follow it exactly: the canonical string is `doc:` plus the absolute path, used verbatim, with every directory symlink resolved. For a folder that is its resolved path. For a file it is the resolved parent directory, a `/`, and the file name. The ID is the first 20 hex characters of the SHA-256 of that string, as for a repository. `--doc` selects this identity even inside a git repository, and no git is needed. Record the string as `canonical_remote` and the file or folder name as `repository_name`. The `--sources` folder is not part of the identity: record its resolved path as `sources_root` in `savepoint.md` frontmatter, and update it when the user names a different folder.
+
+Identity follows the path, so a moved or renamed document derives a new ID. When the derived ID has no directory, hash the document with `scripts/hash-source.sh` and list the file names, names only, in each existing `snapshots/` directory. If a name equals the digest, that directory holds this document's history: offer to migrate it to the new ID by renaming it and updating both frontmatters. Declining starts fresh and deletes nothing.
+
+**Current workspace.** A document workspace is current only in a session where the user named it with `--doc`. In every other session its due items follow the "Anywhere else" rules of Run recall: the question is shown under its `repository_name`, the document and sources are not read, nothing is graded, and an answer waits as `pending-evaluation` for the next session that names the document. With `cross_repo_recall: off`, its items surface only in such a session.
+
+**Read, never write.** Read the document and the sources without modifying them. Never create, rename, annotate, or edit any file in the document's folder or the sources folder, including notes, comments, and backups. With a folder as `--doc`, every text file in it is the document, except a sources folder nested inside it. If the host cannot read a file as text, name that file to the user, skip it, and ask no question that would rest on it.
+
+**The text is the ground truth.** Derive every answer key only from the document and the supplied sources. Judge what the document claims and what the sources say. Never judge whether a claim is true in the world, and never grade from outside knowledge. Every answer key must cite at least one location, a path and a line range, in the document or the sources. A key that says a claim is unsupported cites the claim's location and names every source that was checked. If a key cannot be cited, do not ask the question. Without `--sources`, say once that support cannot be tested here, and ask only what the document itself grounds: its claims, its reasoning, its stated uncertainty, and its internal consistency.
+
+**Question path.** The sections keep their names and stored values, and are read for prose:
+
+- Chapters: what the document claims. Its conclusion, its main findings, and the reasoning that links them.
+- Maps: which source supports a given claim, and what that source reports.
+- Secrets: what is uncertain or unsupported, and where the document goes beyond its sources. Examples: a caveat a source states and the document drops, a figure with no source, a finding stretched past the cases its source covers.
+- Boss fights: what would change the conclusion. Which evidence, if wrong or missing, would weaken or reverse it.
+- New Game+: synthesis, unlocked as before.
+
+Under "plain labels" these are claims, support, gaps, stress tests, and synthesis. The `--level` values keep their names: `new-engineer` asks what a first-time reader should take away, `maintainer` what a reviewer checking the support would ask, and `operator` what someone who must act on the conclusion or defend it would ask. `--diff` needs git history and does not combine with `--doc`.
+
+**Evidence and leaks.** Grounded reasoning points to what a passage or a source says. Teaching and disputes show text evidence with its location. The leak rules are unchanged, and for prose they mean this: while a question is open, never say which source supports a claim, whether a claim is supported, or what a source reports, and never name a source or a section the question did not name. `source_paths` is never shown at delivery, because for a support question the path is the answer.
+
+**Drift.** At item creation, record two fields on the item. `source_paths` holds the cited locations as path and line range, for example `brief.md:L12-L14, @sources/counts.md:L3-L9`. Document files are written relative to the document's folder, and source files as `@sources/` plus the path under the sources folder. `source_sha256` holds one `path=digest` pair for each cited file. Get the digests and keep a copy of each cited file with `scripts/hash-source.sh --snapshot <state-dir>/snapshots <file> ...` (or: the SHA-256 of the file's raw bytes, and a byte-for-byte copy named by that digest, permissions 0600). Line numbers refer to the snapshotted version.
+
+At a recall close in the current workspace, re-derive the key from the current text and hash the cited files again:
+
+1. Every digest equal: no drift. Grade against the current text.
+2. A digest differs, or a cited file is gone: read the snapshot named by the recorded digest and compare the cited lines with the current text. If the cited text changed materially and the answer was right for the snapshot, close `superseded`: stage 0, never `failed`. The document changing is not the user forgetting.
+3. The change is elsewhere in the file, or does not change what the cited lines say: no drift. Grade against the current text.
+4. The snapshot is missing and a digest differs: the old text cannot be checked. Say so and close `unresolved` with `untested`.
+
+After cases 2 and 3, set `source_paths` and `source_sha256` to the current text and snapshot it. If the cited passage is gone, rebuild the question for the current text under the same ID. A `source_sha256` mismatch is a change in the user's document. It is never tampering with the record. Snapshots are source text, not answers, but they are private to their workspace: read one only for this comparison or for a dispute, and only while its workspace is current.
 
 ## Show the HUD
 
@@ -128,7 +167,7 @@ Deliver in this order: (before an unsolicited prompt only) the first-prompt expl
 
 Evaluate by where you are:
 
-- **Inside the question's repository**: re-derive the answer key from current source before judging; the code is the ground truth. But distinguish drift from forgetting: when the item's `source_paths` changed materially since its `created_at` and the answer was right for the old code, close it `superseded` — reset to stage 0 for relearning — never `failed`. The world changing is not the user forgetting.
+- **Inside the question's repository**: re-derive the answer key from current source before judging; the code is the ground truth. But distinguish drift from forgetting: when the item's `source_paths` changed materially since its `created_at` and the answer was right for the old code, close it `superseded` — reset to stage 0 for relearning — never `failed`. The world changing is not the user forgetting. A document workspace has no history to consult, so its drift is detected from recorded digests and snapshots, as Document workspaces describes.
 - **Anywhere else**: if `cross_repo_recall` is `off` in the profile, another repository's items never surface outside it — they wait, because question text itself describes that repository. Otherwise: you have no answer key. Say so *before* the user answers: "I can't grade this here — it'll be checked next time you're in that repository. Answer now, or defer?" — defer is a dismissal. If they answer: blind-append it to that repository's `savepoint.md` headed `pending-evaluation (unaided)` or `(assisted)` per the classification; on the item, set `pending_evaluation: true`, record `answer_sha256` (`scripts/hash-answer.sh`, or: SHA-256 of the verbatim answer text — CRLF normalized, leading `>` markers with optional space stripped, all trailing newlines removed), and set `last_assisted: true` only if the attempt was assisted (never clear an existing `true`); refresh that `recall.md`'s frontmatter summary — a permitted scan. Give no verdict and no feedback. This is not a close: no quality signal, no reschedule, and the item is excluded from all delivery until evaluated. Assistance beyond defer/skip is unavailable here — say it awaits in the origin repository.
 
 At the start of any session inside a repository, evaluate its pending answers first — read only the pending entries, an intended exemption from the rule below. If an answer no longer matches its `answer_sha256`, the record changed: close it `unresolved`. Otherwise each evaluation is that question's close: feedback, quality signal, relabel from `pending-evaluation` to the classification recorded in its heading, reschedule anchored at evaluation time.
