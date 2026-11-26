@@ -188,7 +188,7 @@ The tool already keeps the records such a study needs. It records each answer ve
 
 The planned study uses a within-person design. Save Point asks questions about a random half of a person's AI-written changes and stays silent on the other half. Both halves are tested later. The protocol will be published in this repository before any data is collected.
 
-Today Save Point works on code repositories. A planned extension is a mode for written research and analysis, so the same question can be asked of people who delegate research and writing to AI.
+Save Point works on code repositories. It also has a new, experimental mode for written research and analysis (see [Written work](#written-work-new-experimental)), so the same question can be asked of people who delegate research and writing to AI.
 
 To take part, or to review the protocol, open an issue.
 
