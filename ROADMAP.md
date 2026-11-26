@@ -12,7 +12,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - SECURITY.md and `docs/security-and-privacy.md` now exist (item 2). CHANGELOG.md exists.
 - `install.sh` has an uninstall (item 3) and `--ref` pinning (item 4). It has no dry run. The curl one-liner installs whatever is on `main` unless `--ref` is given.
 - The installer's hook merge is now tested (item 3).
-- CI runs shell checks and the MCP tests on one OS (ubuntu). The scripts target macOS users too. No `shellcheck`, no `sh -n` pass.
+- CI runs shell checks and the MCP tests on one OS (ubuntu). The scripts target macOS users too. `sh -n` and `shellcheck` now run in CI (item 7); there is still no macOS job.
 - The eval harness is not run in CI and no pass rates are published in the repo.
 - Team use is documented in `docs/teams.md`. Fleet rollout through device management is untested.
 
@@ -58,7 +58,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: run `sh -n` on every script and `shellcheck` if it can be installed in the runner. Fix findings that do not change behavior. Add a macOS job for the script steps, since `date -d` and `shasum` differ.
 - Benefits: macOS users, who are likely most of the audience, and maintainers.
 - Verify: CI green on both runners. Report any finding left unfixed.
-- Size: medium. Status: ready.
+- Size: medium. Status: partly done (dev, see CHANGELOG). Done: `sh -n` on all 27 tracked `.sh` files and `shellcheck` at warning level on every script outside `eval/`, with a check that it can fail. Not done: the macOS job (blocked on Needs the owner 6), and 5 shellcheck warnings in `eval/asserts` (the string test `\>` in s05, s09, s11, and an unused variable in s13). Those files hold integrity asserts, so they are only syntax checked until someone reviews a rewrite with the owner.
 
 ### 8. Published eval pass rates
 - Change: write a small script that turns `eval/run.sh` output into a dated table in `eval/RESULTS.md` with model, scenario count, and passes. Commit results only from runs someone actually made.

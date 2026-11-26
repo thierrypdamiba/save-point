@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-26 (run 7).
+Last updated: 2026-11-26 (run 8).
 
 ## On dev now
 
@@ -15,6 +15,7 @@ Last updated: 2026-11-26 (run 7).
 - `./install.sh --ref <tag>` pins, upgrades or rolls back the install, and a `VERSION` file records what is installed. 46 installer tests in CI.
 - A ten-minute quickstart with troubleshooting (docs/quickstart.md), linked from the README. CI checks it against the installer.
 - A team guide (docs/teams.md): what never to share, shared machines, client separation, turning interruptions down, pinning, removal. Docs only. CI checks it against the profile template.
+- CI now runs `sh -n` and `shellcheck` on all scripts. No script changed. Eval assert scripts are syntax checked only.
 - This digest.
 
 The only behavior changes are the new uninstall and `--ref` options. The quickstart and team guide are docs only. Install, question selection, grading and record formats are unchanged, so the study is not affected.
@@ -25,4 +26,4 @@ See "Needs the owner" in ROADMAP.md. The most important: whether to tag a releas
 
 ## Next up
 
-Roadmap item 7: shell hygiene in CI (sh -n, shellcheck). The macOS runner part needs your answer (Needs the owner 6).
+Roadmap item 7 is half done. The macOS runner needs your answer (Needs the owner 6). Next ready item: 8 (published eval pass rates), which needs a model CLI, then the doc part of 9. A fresh audit is due when those run out.
