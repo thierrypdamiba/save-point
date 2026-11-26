@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-26 (run 11).
+Last updated: 2026-11-26 (run 12).
 
 ## On dev now
 
@@ -19,6 +19,7 @@ Last updated: 2026-11-26 (run 11).
 - A state formats page (docs/state-formats.md) that lists every field in the state files. Docs only. CI checks it against the templates.
 - `eval/record-results.sh` and `eval/RESULTS.md`: a way to publish eval results from real runs, with the raw log kept. One run is recorded (s01, 1 of 1). Evals and asserts are unchanged.
 - Fix: `stats.sh` now counts correctly in files with Windows line endings. Normal files give the same output.
+- CI script checks moved into `scripts/test-*.sh` so you can run them locally. Same checks. No skill script changed.
 - This digest.
 
 The only behavior changes are the new uninstall and `--ref` options. The quickstart, team guide and state formats page are docs only. Install, question selection, grading and record formats are unchanged, so the study is not affected.
@@ -29,4 +30,4 @@ See "Needs the owner" in ROADMAP.md. The most important: whether to tag a releas
 
 ## Next up
 
-Roadmap item 7 is half done. The macOS runner needs your answer (Needs the owner 6). Item 12 (run the CI script checks locally) is ready. A full 15 scenario eval run is worth making by someone with time and a login (about 90 model calls).
+Roadmap item 7 is half done. The macOS runner needs your answer (Needs the owner 6). No roadmap item is ready after this. The next run will do a fresh audit. A full 15 scenario eval run is worth making by someone with time and a login (about 90 model calls).

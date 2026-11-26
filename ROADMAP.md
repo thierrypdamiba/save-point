@@ -88,7 +88,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: move the long inline `run:` blocks in `ci.yml` for the skill scripts into files under `scripts/` that CI calls, so a contributor can run them with `sh`. No check may be weakened in the move.
 - Benefits: contributors, who today must copy shell out of YAML to test a script change.
 - Verify: CI passes with the same checks. Each block runs locally to the same result.
-- Size: medium. Status: ready.
+- Size: medium. Status: done (dev, see CHANGELOG). Four files under `scripts/`: repo id and document identity, reschedule and hooks, persona, stats (LF and CRLF). Text moved unchanged. Other CI steps (network, shell hygiene, doc checks) stay inline since they grep the repo and are short.
 
 ## Needs the owner
 
