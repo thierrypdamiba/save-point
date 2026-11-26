@@ -93,5 +93,38 @@ check "nothing-to-remove message" sh -c "sh '$root/install.sh' --uninstall | gre
 newhome
 nocheck "no hosts present fails" inst
 
+# 10. pinned installs from a local fixture repo (no network)
+fix=$(mktemp -d)
+mkdir -p "$fix/.claude-plugin" "$fix/save-point/scripts"
+printf '{\n  "version": "1.0.0"\n}\n' > "$fix/.claude-plugin/plugin.json"
+echo "skill v1" > "$fix/save-point/SKILL.md"
+( cd "$fix" && git init -q && git config user.email t@example.com && git config user.name t \
+  && git add -A && git commit -qm v1 && git tag v1.0.0 \
+  && printf '{\n  "version": "2.0.0"\n}\n' > .claude-plugin/plugin.json && echo "skill v2" > save-point/SKILL.md \
+  && git add -A && git commit -qm v2 && git tag v2.0.0 ) >/dev/null 2>&1
+export SAVE_POINT_REPO_URL="file://$fix"
+newhome; mkdir "$HOME/.claude" "$HOME/.save-point"; echo keep > "$HOME/.save-point/state"
+inst --ref v1.0.0 claude >/dev/null 2>&1
+check "pinned v1 installs v1 skill" grep -q 'skill v1' "$HOME/.claude/skills/save-point/SKILL.md"
+check "pinned v1 writes VERSION" test "$(cat "$HOME/.claude/skills/save-point/VERSION")" = 1.0.0
+check "pinned install prints version" sh -c "sh '$root/install.sh' --ref v1.0.0 claude | grep -q 'version 1.0.0'"
+inst --ref v2.0.0 claude >/dev/null 2>&1
+check "upgrade to v2" grep -q 'skill v2' "$HOME/.claude/skills/save-point/SKILL.md"
+check "upgrade writes VERSION 2.0.0" test "$(cat "$HOME/.claude/skills/save-point/VERSION")" = 2.0.0
+inst --ref v1.0.0 claude >/dev/null 2>&1
+check "rollback to v1" test "$(cat "$HOME/.claude/skills/save-point/VERSION")" = 1.0.0
+check "state untouched by pin, upgrade, rollback" test "$(cat "$HOME/.save-point/state")" = keep
+nocheck "missing ref refused" inst --ref nope claude
+nocheck "--ref without value refused" inst --ref
+nocheck "--ref with uninstall refused" inst --ref v1.0.0 --uninstall claude
+check "failed ref leaves install in place" test "$(cat "$HOME/.claude/skills/save-point/VERSION")" = 1.0.0
+unset SAVE_POINT_REPO_URL
+
+# 11. a normal checkout install records its version
+newhome; mkdir "$HOME/.claude"
+inst claude >/dev/null 2>&1
+want=$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' "$root/.claude-plugin/plugin.json" | head -1)
+check "checkout install writes VERSION from plugin.json" test "$(cat "$HOME/.claude/skills/save-point/VERSION")" = "$want"
+
 echo "install tests: $run run, $pass passed, $fail failed"
 [ "$fail" = 0 ]

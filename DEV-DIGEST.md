@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-26 (run 4).
+Last updated: 2026-11-26 (run 5).
 
 ## On dev now
 
@@ -12,9 +12,10 @@ Last updated: 2026-11-26 (run 4).
 - A CI check that the four version numbers agree, and `docs/maintenance.md`.
 - A security policy (SECURITY.md) and a page on what Save Point reads, writes and sends. CI now fails if a script gains a network call.
 - `./install.sh --uninstall [host]` removes the skill and the recall hook entry, and leaves your records alone. 34 installer tests run in CI. Normal installs behave as before.
+- `./install.sh --ref <tag>` pins, upgrades or rolls back the install, and a `VERSION` file records what is installed. 46 installer tests in CI.
 - This digest.
 
-The only behavior change is the new uninstall option. Install, question selection, grading and record formats are unchanged, so the study is not affected.
+The only behavior changes are the new uninstall and `--ref` options. Install, question selection, grading and record formats are unchanged, so the study is not affected.
 
 ## Decisions waiting for you
 
@@ -22,4 +23,4 @@ See "Needs the owner" in ROADMAP.md. The most important: whether to tag a releas
 
 ## Next up
 
-Roadmap item 4: pinned installs and an upgrade path.
+Roadmap item 5: quickstart and troubleshooting doc.

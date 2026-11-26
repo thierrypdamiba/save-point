@@ -80,6 +80,16 @@ cd save-point
 
 Then say `/save-point` (or just "quiz me on this repo") inside any repository, in a session started *after* the install. An already-running session won't see a newly installed skill.
 
+To pin a version, or to upgrade or roll back, give the installer a tag or branch. It clones that ref and replaces the installed skill. Your `~/.save-point/` records are not touched. The installed version is written to `VERSION` inside the skill folder and printed on install.
+
+```sh
+./install.sh --ref v0.9.0 claude    # install exactly this tag
+./install.sh --ref main claude      # back to the latest main
+cat ~/.claude/skills/save-point/VERSION
+```
+
+Tags exist only when the owner publishes them. If the ref does not exist, the installer stops and leaves the current install in place.
+
 To uninstall: `./install.sh --uninstall` (or `--uninstall claude`) removes the skill and the recall hook entry and leaves `~/.save-point/` alone. By hand: `rm -rf ~/.claude/skills/save-point` (per host), or `/plugin uninstall save-point` if you installed as a plugin. If you registered the recall hook below, remove it from `~/.claude/settings.json` too, or every prompt will complain about the missing script. Your answers and recall schedule live in `~/.save-point/`, so delete that too if you want them gone.
 
 ### Unsolicited recall is on by default (Claude Code)

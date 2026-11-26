@@ -10,7 +10,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 
 - Version `0.12.0` is written in four places by hand: `.claude-plugin/plugin.json`, `mcp-server/package.json`, `mcp-server/package-lock.json`, `mcp-server/src/server.ts`. The only git tag is `v0.9.0`. CI now checks that they agree.
 - SECURITY.md and `docs/security-and-privacy.md` now exist (item 2). CHANGELOG.md exists.
-- `install.sh` has an uninstall now (item 3). It has no `--version`, and no dry run. The curl one-liner installs whatever is on `main`, with no pin to a release.
+- `install.sh` has an uninstall (item 3) and `--ref` pinning (item 4). It has no dry run. The curl one-liner installs whatever is on `main` unless `--ref` is given.
 - The installer's hook merge is now tested (item 3).
 - CI runs shell checks and the MCP tests on one OS (ubuntu). The scripts target macOS users too. No `shellcheck`, no `sh -n` pass.
 - The eval harness is not run in CI and no pass rates are published in the repo.
@@ -40,7 +40,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: let the installer take `--ref <tag>` so a team can pin a release. Print the installed version. Document upgrade and rollback in the README. Keeps `~/.save-point` state untouched, with a test that proves it.
 - Benefits: a team lead who needs everyone on the same version, and the research study, which needs a fixed version.
 - Verify: install with a ref from a local fixture repo, check the version file, check state files unchanged.
-- Size: medium. Status: ready. Depends on item 1 for a single version source.
+- Size: medium. Status: done (dev, see CHANGELOG). `--ref`, a `VERSION` file, and README upgrade and rollback notes. Tests use a local fixture repo through `SAVE_POINT_REPO_URL`. The curl one-liner still follows `main` (see Needs the owner 4).
 
 ### 5. Ten-minute quickstart and troubleshooting doc
 - Change: add `docs/quickstart.md`: install, first session, what you will see, how to turn off interruptions, how to remove. Add a troubleshooting list: skill not found in a running session, hook complaints after uninstall, python3 missing, Node too old for the MCP server.
