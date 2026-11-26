@@ -5,6 +5,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 ## Unreleased
 
 ### Added
+- `scripts/check-versions.sh` and a CI step that fails when the version differs between `plugin.json`, `package.json`, `package-lock.json` and `server.ts`. `docs/maintenance.md` says where to edit.
 - ROADMAP.md: a ranked list of what stands between Save Point and team adoption.
 - CHANGELOG.md and DEV-DIGEST.md.
 - AGENTS.md and the `dev` branch track (already on dev before this entry).
