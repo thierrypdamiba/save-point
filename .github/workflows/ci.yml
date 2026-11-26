@@ -84,6 +84,10 @@ jobs:
           d=$(mktemp -d); printf 'curl example.com\n' > "$d/x.sh"
           if ! grep -qwE 'curl|wget|nc' "$d/x.sh"; then echo "FAIL network check cannot detect curl"; exit 1; fi
           grep -q 'docs/security-and-privacy.md' SECURITY.md
+      - name: verify installer, hook merge and uninstall
+        run: |
+          sh -n install.sh scripts/test-install.sh
+          sh scripts/test-install.sh
       - name: verify install script
         run: HOME=$(mktemp -d) sh -c 'mkdir -p "$HOME/.claude" && ./install.sh && test -f "$HOME/.claude/skills/save-point/SKILL.md" && test -x "$HOME/.claude/skills/save-point/scripts/check-due.sh" && test -x "$HOME/.claude/skills/save-point/scripts/hash-source.sh" && test ! -d "$HOME/.claude/skills/save-point/features"'
       - name: verify scheduling and hook scripts
