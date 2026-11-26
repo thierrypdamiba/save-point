@@ -38,12 +38,14 @@ if [ -f "$r" ]; then
   awk '
     /<!--/ { c = 1 } /-->/ { c = 0; next }
     !c && /^## q[0-9]+/ { items++ }
-    !c && /^[[:space:]]*([-*][[:space:]])?stage: [0-3]$/ { s = $NF; stage[s]++ }
+    !c && /^[[:space:]]*([-*][[:space:]])?stage: [0-7]$/ { s = $NF; stage[s]++ }
     !c && /^[[:space:]]*([-*][[:space:]])?last_quality: / { quality[$NF]++ }
     !c && /^[[:space:]]*([-*][[:space:]])?last_assisted: true$/ { tainted++ }
     END {
       printf "items: %d\n", items
       for (s = 0; s <= 3; s++) printf "stage%d: %d\n", s, stage[s]
+      # Stages 4-7 exist only under a custom recall_intervals list longer than four.
+      for (s = 4; s <= 7; s++) if (stage[s]) printf "stage%d: %d\n", s, stage[s]
       for (q in quality) printf "quality_%s: %d\n", q, quality[q]
       printf "tainted: %d\n", tainted
     }
