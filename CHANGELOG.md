@@ -5,6 +5,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 ## Unreleased
 
 ### Added
+- `eval/record-results.sh`, `eval/RESULTS.md` and `eval/results/`: turns saved `eval/run.sh` output into a dated table row and keeps the raw log. It refuses a run that did not finish or whose summary disagrees with its scenario lines. `scripts/test-record-results.sh` (8 checks) runs in CI. One real run is recorded: s01, 1 of 1. No harness or assert changed.
 - `docs/state-formats.md`: the on-disk fields of `profile.md`, `scheduler.md`, `recall.md`, `savepoint.md` and `snapshots/`, linked from the README. A CI step fails if a template field is missing from the page. No format changed.
 - CI step `verify shell hygiene`: `sh -n` on every tracked `.sh` file, a check that no shell script is missing the `.sh` name, and `shellcheck` at warning level on all scripts outside `eval/`. The step also checks that shellcheck can fail. No script changed.
 - `docs/teams.md`: what a team should never share, shared machines, client separation, turning interruptions down, pinning a version, and removal. The README links to it. A CI step checks the setting names against `assets/profile.md` and the commands against the README.

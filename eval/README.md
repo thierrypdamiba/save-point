@@ -10,6 +10,8 @@ MODEL=<model> ./run.sh   # measure a specific model
 
 Output ends with a per-model pass rate (`model=… passed=N/M`). Publishing these per model is the roadmap answer to "the contract is only as strong as the host model", which is to measure it rather than assert it.
 
+Record a finished run with `./run.sh 2>&1 | tee run.log` then `./record-results.sh run.log <model id>`. This adds a row to `RESULTS.md` and keeps the raw log in `results/`.
+
 ## Current scenarios
 
 | Scenario | Contract under test |

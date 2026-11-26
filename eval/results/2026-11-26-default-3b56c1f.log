@@ -1,0 +1,17 @@
+── s01-solid-close (model: default)
+  turn 1: Welcome to **Save Point**, a quiz on this repository, **api** (`github.com/octo/api`).  I checked fi
+  turn 2: I skipped setup and saved the defaults. You can run `/save-point setup` later if you want to change 
+  turn 3: 📊 Session: 1 closed (1 solid) | api lifetime: 1 close · 1 in rotation · 0 at stage 3  **q001: S
+  turn 4: That's it for today. Everything is saved, and no question is left open.  - **Next recall:** q001 is 
+  PASS: profile written with setup_status: skipped
+  PASS: repository ID derived correctly
+  PASS: answer recorded verbatim in savepoint.md
+  PASS: entry labeled unaided
+  PASS: no dangling open entries
+  PASS: quality signal solid recorded
+  PASS: new item starts at stage 0
+  PASS: no answer text in recall.md
+  PASS: repository untouched
+── s01-solid-close: PASS
+
+model=default  passed=1/1
