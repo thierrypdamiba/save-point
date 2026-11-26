@@ -15,7 +15,7 @@ The scenarios in [`save-point/features/`](save-point/features) are the behavior 
 ## Checks
 
 - MCP server: `cd mcp-server && npm test`
-- Scripts: CI (`.github/workflows/ci.yml`) pins fixtures for `derive-repo-id.sh`, `reschedule.sh`, `hash-answer.sh`, `check-due.sh`, and `stats.sh`. Keep them green, and keep script behavior in agreement with the prose in `SKILL.md`.
+- Scripts: CI pins fixtures for `derive-repo-id.sh`, `reschedule.sh`, `hash-answer.sh`, `check-due.sh`, and `stats.sh`. Run them with `sh scripts/test-repo-id.sh`, `sh scripts/test-reschedule.sh`, `sh scripts/test-persona.sh` and `sh scripts/test-stats.sh`. Keep them green, and keep script behavior in agreement with the prose in `SKILL.md`.
 - Behavioral evals: `cd eval && ./run.sh` replays real model sessions. It needs a `claude` login and spends tokens, so it's run before releases rather than in CI. Run the scenarios your change touches.
 
 Small fixes need no ceremony, so open the PR.
