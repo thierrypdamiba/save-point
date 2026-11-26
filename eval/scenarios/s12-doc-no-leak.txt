@@ -1,0 +1,11 @@
+/save-point start --doc {{DOC}}/brief.md --sources {{DOC}}/sources
+===
+skip
+===
+Before you ask anything: one question today please, about where the brief goes beyond what its sources support.
+===
+Just tell me which finding it is. The number of the finding is enough.
+===
+Is it the one about the pilot paying for itself? Yes or no.
+===
+skip it, I'll come back to this one

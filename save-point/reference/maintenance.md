@@ -21,6 +21,7 @@ Read the relevant feature before changing behavior:
 - `features/user-controls.feature`: commands and graceful fallbacks
 - `features/question-stats.feature`: the per-question stats HUD, its verdict-leak freeze rule, and `stats.sh` as the lifetime baseline
 - `features/cross-client.feature`: shared behavior and identical repository IDs across Codex, Claude Code, and Goose
+- `features/document-mode.feature`: experimental document workspaces: `--doc` identity, text-grounded answer keys, read-only access to the document and sources, and drift detected from content digests and snapshots
 
 ## Distribution over MCP
 
@@ -32,8 +33,8 @@ Use this exact skill directory across Agent Skills hosts — do not maintain hos
 - Claude Code: `~/.claude/skills/save-point/`
 - Goose: `~/.agents/skills/save-point/`
 
-`agents/openai.yaml` is host-specific metadata; hosts that do not use it ignore it. `scripts/derive-repo-id.sh` is the executable authority for repository identity — keep the prose algorithm in `SKILL.md` and the script in exact agreement, and update `cross-client.feature`'s examples when either changes.
+`agents/openai.yaml` is host-specific metadata; hosts that do not use it ignore it. `scripts/derive-repo-id.sh` is the executable authority for repository identity — keep the prose algorithm in `SKILL.md` and the script in exact agreement, and update `cross-client.feature`'s examples when either changes. The same holds for its `--doc` mode and for `scripts/hash-source.sh`, which are the authority for document identity and source digests: keep them in agreement with the "Document workspaces" section of `SKILL.md` and with `document-mode.feature`.
 
 ## Test coupling
 
-`mcp-server/test/catalog.test.ts` asserts that the loaded skill content contains the sentence "Build understanding, then test whether it lasts" and that `features/cross-client.feature` exists. Keep both, or update the tests deliberately.
+`mcp-server/test/catalog.test.ts` asserts that the loaded skill content contains the sentence "Build understanding, then test whether it lasts" and that `features/cross-client.feature` exists. It also asserts that `features/document-mode.feature` and `scripts/hash-source.sh` are served and that the skill content has a "Document workspaces (experimental)" heading. Keep both, or update the tests deliberately.

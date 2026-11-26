@@ -5,7 +5,7 @@ import { registerSkillCatalog } from "./skill-catalog.js";
 
 export async function createCatalogServer(skillRoot: string): Promise<McpServer> {
   const server = new McpServer(
-    { name: "save-point-skills", version: "0.9.0" },
+    { name: "save-point-skills", version: "0.10.0" },
     {
       capabilities: { extensions: { "io.modelcontextprotocol/skills": { directoryRead: true } } },
       cacheHints: {
@@ -16,7 +16,7 @@ export async function createCatalogServer(skillRoot: string): Promise<McpServer>
         "resources/read": { ttlMs: 60_000, cacheScope: "private" },
       },
       instructions:
-        "This server distributes the Save Point Agent Skill. Hosts with native Agent Skills support should activate save-point directly. Other hosts should call list_skills, then load_skill before running a codebase learning or recall session. Runtime state stays in user-readable Markdown under ~/.save-point; MCP tools do not store user data.",
+        "This server distributes the Save Point Agent Skill. Hosts with native Agent Skills support should activate save-point directly. Other hosts should call list_skills, then load_skill before running a learning or recall session on a codebase or a written document. Runtime state stays in user-readable Markdown under ~/.save-point; MCP tools do not store user data.",
     },
   );
   const skill = await registerSkillCatalog(server, skillRoot);
@@ -51,7 +51,7 @@ export async function createCatalogServer(skillRoot: string): Promise<McpServer>
     "load_skill",
     {
       title: "Load an Agent Skill",
-      description: "Load the complete Save Point instructions when a user wants to learn, quiz, or test themselves on a codebase.",
+      description: "Load the complete Save Point instructions when a user wants to learn, quiz, or test themselves on a codebase or a written document.",
       inputSchema: z.object({ name: z.literal("save-point") }),
       outputSchema: z.object({
         name: z.literal("save-point"),
@@ -74,7 +74,7 @@ export async function createCatalogServer(skillRoot: string): Promise<McpServer>
     "save-point",
     {
       title: "Start Save Point",
-      description: "Teach or test codebase understanding with the Save Point skill.",
+      description: "Teach or test understanding of a codebase or a written document with the Save Point skill.",
       argsSchema: z.object({ request: z.string().optional() }),
     },
     async ({ request }) => ({
