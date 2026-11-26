@@ -102,6 +102,8 @@ Turning it off is one move, at whichever layer you prefer: say **`/save-point in
 
 Plain Markdown you can read: your preferences, the recall schedule, and your verbatim answers. Be deliberate about it, because question prompts name the critical parts of each codebase, importance rankings literally tag data-loss and security paths, and `canonical_remote` records private remote hostnames. Save Point creates the directory `0700`, but dotfile sync tools don't care about your permissions, so exclude `~/.save-point` from chezmoi/Mackup/iCloud unless you mean it. Consultants juggling client repos can also set `cross_repo_recall: off` so one client's questions never surface while working for another.
 
+For the full list of what Save Point reads, writes and sends, see [docs/security-and-privacy.md](docs/security-and-privacy.md). To report a problem, see [SECURITY.md](SECURITY.md).
+
 ### Via MCP instead
 
 For MCP clients without native Agent Skills support, the companion server distributes the same skill through the `io.modelcontextprotocol/skills` extension (MCP `2026-07-28`), with `list_skills` / `load_skill` tools and a `save-point` prompt as the legacy path. It needs Node 20+, and you should run it from the checkout, since the server resolves the skill directory relative to its own build (set `SAVE_POINT_SKILL_DIR` to serve a skill directory from somewhere else):
