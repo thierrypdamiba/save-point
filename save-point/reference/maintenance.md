@@ -12,7 +12,7 @@ Read the relevant feature before changing behavior:
 
 - `features/start-session.feature`: repository inspection, question paths, diff mode, and session presentation
 - `features/answer-integrity.feature`: no-answer, feedback, and human-authorship rules
-- `features/recall.feature`: recall classification, evaluation location, and deterministic scheduling
+- `features/recall.feature`: recall classification, evaluation location, and deterministic scheduling, including custom `recall_intervals`
 - `features/interruption-safety.feature`: workflow boundaries, global delivery limits, and flow mode
 - `features/storage-isolation.feature`: global storage and context separation
 - `features/mcp-boundary.feature`: skill, MCP server, and host responsibilities
@@ -33,7 +33,7 @@ Use this exact skill directory across Agent Skills hosts — do not maintain hos
 - Claude Code: `~/.claude/skills/save-point/`
 - Goose: `~/.agents/skills/save-point/`
 
-`agents/openai.yaml` is host-specific metadata; hosts that do not use it ignore it. `scripts/derive-repo-id.sh` is the executable authority for repository identity — keep the prose algorithm in `SKILL.md` and the script in exact agreement, and update `cross-client.feature`'s examples when either changes. The same holds for its `--doc` mode and for `scripts/hash-source.sh`, which are the authority for document identity and source digests: keep them in agreement with the "Document workspaces" section of `SKILL.md` and with `document-mode.feature`.
+`agents/openai.yaml` is host-specific metadata; hosts that do not use it ignore it. `scripts/derive-repo-id.sh` is the executable authority for repository identity — keep the prose algorithm in `SKILL.md` and the script in exact agreement, and update `cross-client.feature`'s examples when either changes. `scripts/reschedule.sh` is the authority for stage movement, for the importance clamp, and for what makes a `recall_intervals` list legal: keep it in agreement with the "Schedule recall" section of `SKILL.md`, with the `recall_intervals` line in `assets/profile.md`, and with `recall.feature` and `user-controls.feature`. The same holds for `derive-repo-id.sh`'s `--doc` mode and for `scripts/hash-source.sh`, which are the authority for document identity and source digests: keep them in agreement with the "Document workspaces" section of `SKILL.md` and with `document-mode.feature`.
 
 ## Test coupling
 

@@ -7,6 +7,7 @@ difficulty: new-engineer
 preferred_depth: balanced
 feedback_timing: after_each
 repetition_mode: adaptive
+recall_intervals: 1, 7, 30, 90
 intensive_offered: false
 daily_limit: 3
 minimum_gap: 90m
@@ -30,6 +31,7 @@ Legal values per field — present these as the options during setup:
 - `preferred_depth`: `overview` | `balanced` | `deep-dive`
 - `feedback_timing`: `after_each` | `end_of_section`
 - `repetition_mode`: `adaptive` | `intensive_30d` (not asked at setup; offered once at the first session's closing save point, then `intensive_offered` is set true)
+- `recall_intervals`: the days each recall stage waits in `adaptive` mode, shortest first (not asked at setup; `/save-point intervals 1 3 7 14 90` sets it and `/save-point intervals default` restores `1, 7, 30, 90`). Legal: 1 to 8 whole numbers of days, each from 1 to 3650, strictly increasing, separated by commas. A missing or illegal value means the default. Changing it moves no due date already set; it applies from each item's next reschedule. Items of importance 4 or 5 still never wait longer than 30 days
 - `interruption_style`: `natural_boundaries` | `manual_only`
 - `cross_repo_recall`: `on` | `off` (not asked at setup; set on request) — `off` keeps every repository's questions inside that repository, since question text describes its internals (useful when repositories belong to different clients or tenants)
 - `question_stats`: `on` | `off` (not asked at setup; "stats off" sets it) — the one-line HUD above each question: session tally plus this repository's lifetime numbers
