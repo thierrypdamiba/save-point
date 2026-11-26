@@ -52,3 +52,25 @@ S=$(mktemp -d); SAVE_POINT_HOME=$S sh save-point/scripts/check-due.sh; test -z "
 mkdir -p "$S/repositories/x"
 printf -- '---\nrepository_name: api\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
 SAVE_POINT_HOME=$S sh save-point/scripts/check-due.sh | grep -q additionalContext
+# check-due.sh with absurd numbers: no stderr, exit 0, and the caps still hold.
+cd_run() { SAVE_POINT_HOME=$S sh save-point/scripts/check-due.sh 2>"$S/err"; }
+today=$(date +%Y-%m-%d)
+big=99999999999999999999999
+chk() { # label want(quiet|nudge)
+  out=$(cd_run) || { echo "FAIL check-due exit: $1"; exit 1; }
+  test ! -s "$S/err" || { echo "FAIL check-due stderr: $1"; cat "$S/err"; exit 1; }
+  if [ "$2" = quiet ]; then test -z "$out" || { echo "FAIL check-due not quiet: $1"; exit 1; }
+  else printf '%s' "$out" | grep -q additionalContext || { echo "FAIL check-due no nudge: $1"; exit 1; }; fi
+}
+printf -- '---\nprompts_today: %s\nprompt_date: %s\n---\n' "$big" "$today" > "$S/scheduler.md"
+chk "huge prompts_today" quiet
+printf -- '---\nprompts_today: 1\nprompt_date: %s\n---\n' "$today" > "$S/scheduler.md"
+chk "ordinary prompts_today" nudge
+printf -- '---\nprompts_today: 3\nprompt_date: %s\n---\n' "$today" > "$S/scheduler.md"
+chk "prompts_today at limit" quiet
+rm -f "$S/scheduler.md"
+printf -- '---\ndaily_limit: %s\nquestions_per_interruption: %s\nminimum_gap: %sm\n---\n' "$big" "$big" "$big" > "$S/profile.md"
+chk "huge profile numbers use defaults" nudge
+printf -- '---\nminimum_gap: %sh\n---\n' "$big" > "$S/profile.md"
+printf -- '---\nlast_prompt_at: %s\n---\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$S/scheduler.md"
+chk "huge gap uses 2h default, just prompted" quiet

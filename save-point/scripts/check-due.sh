@@ -31,7 +31,8 @@ iso_to_epoch() {
   date -u -j -f %Y-%m-%dT%H:%M:%SZ "$1" +%s 2>/dev/null || date -u -d "$1" +%s 2>/dev/null || echo 0
 }
 
-digits_or() { case "$1" in ''|*[!0-9]*) echo "$2" ;; *) echo "$1" ;; esac; }
+# Non-numbers and numbers over 9 digits (which could overflow shell arithmetic) give the default.
+digits_or() { case "$1" in ''|*[!0-9]*) echo "$2" ;; *) [ "${#1}" -gt 9 ] && echo "$2" || echo "$1" ;; esac; }
 
 # Profile: manual-only means never nudge.
 style=$(frontmatter "$root/profile.md" interruption_style)
@@ -49,7 +50,10 @@ esac
 flow=$(iso_to_epoch "$(frontmatter "$root/scheduler.md" flow_until)")
 [ "$flow" -gt "$now" ] && exit 0
 if [ "$(frontmatter "$root/scheduler.md" prompt_date)" = "$today" ]; then
-  count=$(digits_or "$(frontmatter "$root/scheduler.md" prompts_today)" 0)
+  raw=$(frontmatter "$root/scheduler.md" prompts_today)
+  count=$(digits_or "$raw" 0)
+  # An all-digit count over 9 digits is over any cap: stay quiet, do not fall back to 0.
+  case "$raw" in ''|*[!0-9]*) ;; *) [ "${#raw}" -gt 9 ] && count=$limit ;; esac
   [ "$count" -ge "$limit" ] && exit 0
 fi
 last=$(iso_to_epoch "$(frontmatter "$root/scheduler.md" last_prompt_at)")

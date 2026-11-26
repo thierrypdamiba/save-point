@@ -106,7 +106,7 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: in `save-point/scripts/check-due.sh`, a number with more than 18 digits in `daily_limit`, `prompts_today` or `minimum_gap` overflows shell arithmetic. Found in the run 13 audit: a huge `prompts_today` printed `[: Illegal number` on stderr on every prompt and the daily cap was skipped, so the nudge still fired. A huge `minimum_gap` wrapped and also let the nudge through. Make `digits_or` fall back to its default for values longer than 9 digits. The hook must still print nothing and exit 0 for any state file content.
 - Benefits: anyone who hand-edits `profile.md` or `scheduler.md`, who today could get a stray error line on every prompt and a cap that does nothing. The change only touches values no honest file holds, so ordinary behavior and the study are unaffected.
 - Verify: add cases to `scripts/test-reschedule.sh` (or a new `scripts/test-check-due.sh`) for each oversized field: stderr empty, exit 0, and the cap still holds. Ordinary values give the same output as before.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). `digits_or` now falls back to the default above 9 digits. An all-digit `prompts_today` over 9 digits counts as at the cap, so the hook stays quiet. 5 new cases in `scripts/test-reschedule.sh`. Before the fix the first case failed with `Illegal number` on stderr.
 
 ### 16. Installer dry run
 - Change: `./install.sh --dry-run [host]` prints what it would copy and which settings entry it would add, and writes nothing. Test with a temp HOME that no file appears.
