@@ -5,6 +5,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 ## Unreleased
 
 ### Added
+- CI step `verify shell hygiene`: `sh -n` on every tracked `.sh` file, a check that no shell script is missing the `.sh` name, and `shellcheck` at warning level on all scripts outside `eval/`. The step also checks that shellcheck can fail. No script changed.
 - `docs/teams.md`: what a team should never share, shared machines, client separation, turning interruptions down, pinning a version, and removal. The README links to it. A CI step checks the setting names against `assets/profile.md` and the commands against the README.
 - `docs/quickstart.md`: install, first session, what you will see, turning interruptions off, removal, and troubleshooting. The README links to it. A CI step checks that the installer flags, messages and commands the doc names still exist.
 - `./install.sh --ref <tag|branch>`: pin, upgrade or roll back to a ref. It writes a `VERSION` file into the installed skill and prints the version. Without `--ref`, installs behave as before. A failed ref leaves the current install alone, and `~/.save-point` is never touched. 12 new installer checks (46 total).

@@ -84,6 +84,27 @@ jobs:
           d=$(mktemp -d); printf 'curl example.com\n' > "$d/x.sh"
           if ! grep -qwE 'curl|wget|nc' "$d/x.sh"; then echo "FAIL network check cannot detect curl"; exit 1; fi
           grep -q 'docs/security-and-privacy.md' SECURITY.md
+      - name: verify shell hygiene
+        run: |
+          # Every shell script in the repository must parse, and shellcheck must find no warnings.
+          files=$(git ls-files '*.sh')
+          test -n "$files"
+          # eval/ assert scripts use the string test \> and are only syntax checked here (see ROADMAP.md item 7).
+          lint=$(git ls-files '*.sh' | grep -v '^eval/')
+          for f in $files; do sh -n "$f" || { echo "FAIL syntax: $f"; exit 1; }; done
+          # Every tracked file with a shell shebang must end in .sh, so the list above is complete.
+          for f in $(git ls-files); do
+            case "$f" in *.sh) continue ;; esac
+            if head -c 2 "$f" 2>/dev/null | grep -q '^#!' && head -1 "$f" | grep -qE 'sh( |$)'; then
+              case "$f" in install.sh) ;; *) echo "FAIL shell script without .sh: $f"; exit 1 ;; esac
+            fi
+          done
+          sh -n install.sh
+          command -v shellcheck >/dev/null || { echo "FAIL shellcheck missing on the runner"; exit 1; }
+          shellcheck -s sh -S warning install.sh $lint
+          # The check must be able to fail.
+          d=$(mktemp -d); printf '#!/bin/sh\nrm -rf $UNSET/\n[ $x = 1 ] && echo "a b"\nfor f in $(ls); do echo $f; done\n' > "$d/bad.sh"
+          if shellcheck -s sh -S warning "$d/bad.sh" >/dev/null; then echo "FAIL shellcheck cannot detect a defect"; exit 1; fi
       - name: verify installer, hook merge and uninstall
         run: |
           sh -n install.sh scripts/test-install.sh
