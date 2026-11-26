@@ -140,6 +140,19 @@ jobs:
             grep -qw -e "$c" README.md || { echo "FAIL command not in README: $c"; exit 1; }
           done
           grep -q 'docs/teams.md' README.md
+      - name: verify state format doc matches the templates
+        run: |
+          f=docs/state-formats.md
+          test -f "$f"
+          # Every field in every template must be named in the doc.
+          for t in profile scheduler recall savepoint; do
+            for k in $(grep -oE '^(- )?[a-z_0-9]+:' "save-point/assets/$t.md" | tr -d '\- :' | sort -u); do
+              grep -q -e "\`$k\`" "$f" || { echo "FAIL $f lacks $k from $t.md"; exit 1; }
+            done
+          done
+          # The check must be able to fail.
+          grep -q 'no_such_field_xyz' "$f" && { echo "FAIL check cannot detect a missing field"; exit 1; }
+          grep -q 'docs/state-formats.md' README.md
       - name: verify install script
         run: HOME=$(mktemp -d) sh -c 'mkdir -p "$HOME/.claude" && ./install.sh && test -f "$HOME/.claude/skills/save-point/SKILL.md" && test -x "$HOME/.claude/skills/save-point/scripts/check-due.sh" && test -x "$HOME/.claude/skills/save-point/scripts/hash-source.sh" && test ! -d "$HOME/.claude/skills/save-point/features"'
       - name: verify scheduling and hook scripts
