@@ -2,21 +2,42 @@
 # Derive the Save Point repository ID for the git repository at $1 (default: cwd).
 # Prints two lines: the canonical identity string, then the 20-hex-char ID.
 # Every client must produce identical output for the same repository.
+#
+# With --doc <file-or-folder>, derive the ID of a document workspace instead.
+# No git is needed. The canonical string is "doc:" plus the absolute path,
+# verbatim, with directory symlinks resolved. A symlink that is the file
+# itself is not followed. Keep in exact agreement with SKILL.md.
 set -eu
 
-root=$(cd "${1:-.}" && git rev-parse --show-toplevel)
-root=$(cd "$root" && pwd -P)
-
-url=$(git -C "$root" remote get-url origin 2>/dev/null) || {
-  first=$(git -C "$root" remote | LC_ALL=C sort | head -n 1)
-  if [ -n "$first" ]; then
-    url=$(git -C "$root" remote get-url "$first")
+doc=""
+if [ "${1:-}" = "--doc" ]; then
+  [ $# -eq 2 ] && [ -n "$2" ] || { echo "usage: derive-repo-id.sh --doc <file-or-folder>" >&2; exit 1; }
+  if [ -d "$2" ]; then
+    doc=$(cd "$2" >/dev/null && pwd -P)
+  elif [ -f "$2" ]; then
+    doc=$(cd "$(dirname "$2")" >/dev/null && pwd -P)
+    doc="${doc%/}/$(basename "$2")"
   else
-    url=""
+    echo "error: no such file or folder: $2" >&2; exit 1
   fi
-}
+  url=""
+else
+  root=$(cd "${1:-.}" && git rev-parse --show-toplevel)
+  root=$(cd "$root" && pwd -P)
 
-if [ -z "$url" ]; then
+  url=$(git -C "$root" remote get-url origin 2>/dev/null) || {
+    first=$(git -C "$root" remote | LC_ALL=C sort | head -n 1)
+    if [ -n "$first" ]; then
+      url=$(git -C "$root" remote get-url "$first")
+    else
+      url=""
+    fi
+  }
+fi
+
+if [ -n "$doc" ]; then
+  canonical="doc:$doc"   # document workspace: prefixed so it never equals a repository path
+elif [ -z "$url" ]; then
   canonical="$root"   # no remotes: absolute resolved path, verbatim
 else
   canonical=$(printf '%s' "$url" | awk '{
