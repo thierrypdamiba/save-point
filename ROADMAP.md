@@ -70,7 +70,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: document the on-disk formats of `savepoint.md`, `recall.md`, `profile.md`, `scheduler.md` and add a `format_version` check plan. Do not change the formats.
 - Benefits: anyone writing tooling on top, and the study analysts who compare versions.
 - Verify: the doc matches the templates in `assets/`, checked by a CI grep for each field name.
-- Size: small. Status: blocked on the owner for adding a format marker (see below). The doc part is ready.
+- Size: small. Status: doc part done (dev, see CHANGELOG): `docs/state-formats.md`, with a CI check that names every template field. The format marker itself stays blocked on the owner (Needs the owner 2). No format was changed.
 
 ### 10. MCP server packaging
 - Change: publish-ready package: a `files` list, a `prepare` build, README instructions that do not need a checkout path. Keep it private until the owner decides.

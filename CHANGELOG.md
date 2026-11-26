@@ -5,6 +5,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 ## Unreleased
 
 ### Added
+- `docs/state-formats.md`: the on-disk fields of `profile.md`, `scheduler.md`, `recall.md`, `savepoint.md` and `snapshots/`, linked from the README. A CI step fails if a template field is missing from the page. No format changed.
 - CI step `verify shell hygiene`: `sh -n` on every tracked `.sh` file, a check that no shell script is missing the `.sh` name, and `shellcheck` at warning level on all scripts outside `eval/`. The step also checks that shellcheck can fail. No script changed.
 - `docs/teams.md`: what a team should never share, shared machines, client separation, turning interruptions down, pinning a version, and removal. The README links to it. A CI step checks the setting names against `assets/profile.md` and the commands against the README.
 - `docs/quickstart.md`: install, first session, what you will see, turning interruptions off, removal, and troubleshooting. The README links to it. A CI step checks that the installer flags, messages and commands the doc names still exist.

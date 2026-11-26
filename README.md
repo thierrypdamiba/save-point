@@ -50,7 +50,7 @@ If that second question makes you sweat, that's the point. Sessions end at a **s
 
 ## Install
 
-New here? Follow the [ten-minute quickstart](docs/quickstart.md), which also has troubleshooting. Rolling it out to a team? Read the [team guide](docs/teams.md).
+New here? Follow the [ten-minute quickstart](docs/quickstart.md), which also has troubleshooting. Rolling it out to a team? Read the [team guide](docs/teams.md). Writing tooling on the state files? See the [state formats](docs/state-formats.md).
 
 One line (append `-s -- claude` to install for one host only):
 
