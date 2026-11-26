@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-26 (run 12).
+Last updated: 2026-11-26 (run 13).
 
 ## On dev now
 
@@ -30,4 +30,4 @@ See "Needs the owner" in ROADMAP.md. The most important: whether to tag a releas
 
 ## Next up
 
-Roadmap item 7 is half done. The macOS runner needs your answer (Needs the owner 6). No roadmap item is ready after this. The next run will do a fresh audit. A full 15 scenario eval run is worth making by someone with time and a login (about 90 model calls).
+A fresh audit in run 13 added four small roadmap items: tests for MCP server failure paths, a Node 20 CI leg, a fix so the recall hook does not fail open on absurdly large numbers in state files, and an installer dry run. Roadmap item 7 still waits on your answer about a macOS runner (Needs the owner 6). A full 15 scenario eval run is worth making by someone with time and a login (about 90 model calls).
