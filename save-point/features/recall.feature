@@ -49,6 +49,46 @@ Feature: Resurface repository knowledge for active recall
     Then the item stays at stage 2
     And it continues to return roughly every 30 days
 
+  Scenario: Use the engineer's own interval list
+    Given "recall_intervals" is "1, 3, 7, 14, 90" in the profile
+    And a recall item is at stage 1
+    When a subsequent close is solid and unaided
+    Then the item moves to stage 2
+    And "due_at" is the close time plus 7 days, the interval at position 2 in the list
+    And the last stage is 4, with a 90-day interval
+
+  Scenario: A missing interval list means the default
+    Given the profile has no "recall_intervals" field
+    When Save Point schedules a recall item
+    Then stages 0 through 3 map to intervals of 1, 7, 30, and 90 days
+
+  Scenario: Changing the interval list leaves scheduled items alone
+    Given a recall item is at stage 2 and due in 30 days
+    When the engineer changes "recall_intervals" to "1, 3, 7, 14, 90"
+    Then the item's "due_at" and stage are not rewritten
+    And the new intervals apply from the item's next reschedule
+    And at that reschedule a stage beyond the end of a shorter list is lowered to the last stage
+
+  Scenario Outline: Keep the 30-day cap for high-importance items under any list
+    Given "recall_intervals" is <intervals> in the profile
+    And a recall item has importance 4 or 5
+    When solid unaided closes keep advancing it
+    Then the item never passes stage <cap>
+    And it is never due more than 30 days out
+
+    Examples:
+      | intervals         | cap |
+      | "1, 7, 30, 90"    | 2   |
+      | "1, 3, 7, 14, 90" | 3   |
+      | "45, 90"          | 0   |
+
+  Scenario: Intensive drilling does not use the interval list
+    Given repetition mode is "intensive_30d"
+    And "recall_intervals" is "1, 3, 7, 14, 90" in the profile
+    When Save Point schedules an active concept before its "intensive_until" date
+    Then the concept is due daily
+    And the interval list applies once the item graduates to adaptive spacing
+
   Scenario: Drill intensively for 30 days
     Given repetition mode is "intensive_30d"
     And the engineer completed a concept today

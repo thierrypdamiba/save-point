@@ -27,6 +27,7 @@ Invariants, in every session:
 | `/save-point settings` | Show active preferences; never shows repository answers |
 | `/save-point dispute q014` | Contest a closed verdict: re-derive the key with evidence shown, append an `amended` entry if it was wrong |
 | `/save-point repetition intensive\|adaptive` | Switch scheduling mode; history is preserved |
+| `/save-point intervals <days ...>` / `/save-point intervals default` | Set the user's own recall intervals in days, for example `1 3 7 14 90`, in place of 1, 7, 30, 90, or restore that default. Due dates already set do not move. See Schedule recall |
 | `/save-point flow <duration>` / `/save-point flow today` | Suppress unsolicited prompts globally for the duration, or until the next local midnight |
 | `/save-point resume` | End flow mode early (not session resume — bare `/save-point` does that) |
 | `/save-point interruptions off\|on` | Permanently switch to manual-only recall (due items surface only when invoked), or back |
@@ -159,7 +160,7 @@ Let the user skip directly to an explanation. What is resisted is only revealing
 
 After teaching, ask for a restatement and test it with a transfer probe (an example, an edge case, "what breaks if…") before saving. Judge parroting by meaning, not wording — an echo of your explanation, however rephrased, fails the probe. On failure, probe differently or leave it to the follow-up question; do not save. A passing restatement is saved as user-authored knowledge labeled `assisted`, and a shorter unaided recall question is created at stage 0. Restatements are the one exception to record-on-arrival: they are appended — verbatim, headed `assisted` directly — only at the moment they pass the probe, so a failed probe leaves no entry and no dangling `open` heading.
 
-Accept natural-language tuning at any time — "too hard," "less trivia," "more architecture," "show me code first," "teach before testing," "spam me for 30 days" — confirm the change, apply it immediately, and update `profile.md`. Delivery, difficulty, depth, style, and repetition mode are tunable; everything governing evaluation, labeling, and stage movement is not — decline those requests and say why. "Teach before testing" is honored through the taint rule: questions on just-taught material carry `assisted` labels and flags.
+Accept natural-language tuning at any time — "too hard," "less trivia," "more architecture," "show me code first," "teach before testing," "spam me for 30 days" — confirm the change, apply it immediately, and update `profile.md`. Delivery, difficulty, depth, style, repetition mode, and recall intervals are tunable; everything governing evaluation, labeling, and stage movement is not — decline those requests and say why. "Teach before testing" is honored through the taint rule: questions on just-taught material carry `assisted` labels and flags.
 
 ## Run recall
 
@@ -176,20 +177,24 @@ During unaided recall, read only the due item from `recall.md`; do not open `sav
 
 ## Schedule recall
 
-A new recall item always starts at stage 0, whatever the close quality; the rules below govern subsequent closes only. Stages map to intervals: 0 → 1 day, 1 → 7 days, 2 → 30 days, 3 → 90 days.
+A new recall item always starts at stage 0, whatever the close quality; the rules below govern subsequent closes only. Stages map, in order, to the intervals in `recall_intervals` in `profile.md`. The default, and the value when the field is missing, is `1, 7, 30, 90`: 0 → 1 day, 1 → 7 days, 2 → 30 days, 3 → 90 days.
 
-`adaptive` mode — run `scripts/reschedule.sh <stage> <quality> <assisted> <importance>` when scripts are executable (it prints the new stage and `due_at`); otherwise apply the first matching rule at each close, then the clamp:
+`adaptive` mode — run `scripts/reschedule.sh <stage> <quality> <assisted> <importance> [intervals]` when scripts are executable (it prints the new stage and `due_at`); otherwise apply the first matching rule at each close, then the clamp. When `recall_intervals` is not the default, pass its value as the fifth argument, quoted as one argument (`"1, 3, 7, 14, 90"`):
 
 1. `superseded` → reset to stage 0 and clear `last_assisted`; the concept restarts fresh.
 2. `failed` → drop one stage (minimum 0).
 3. Assistance used on this attempt, or `last_assisted: true` → keep the current stage, then clear the flag. The flag is cleared only by a superseded close or the close of a due attempt.
-4. `solid` → advance one stage (maximum 3).
+4. `solid` → advance one stage (maximum: the last stage, which is 3 on the default list).
 5. `shaky` or `untested` → keep the current stage.
-6. Clamp: items with importance 4–5 never exceed stage 2 — durable review beats a 90-day gap for critical concepts.
+6. Clamp: items with importance 4–5 never pass the last stage whose interval is 30 days or less, which is stage 2 on the default list, and never wait longer than 30 days. Durable review beats a 90-day gap for critical concepts. If every interval in the list is longer than 30 days, such an item stays at stage 0 and is due in 30 days.
 
 Every close sets `due_at` = close time + the resulting stage's interval. At creation, assign importance — 4–5 for core invariants and data-loss, security, or incident paths; 3 (default) for core flows; 1–2 for details — and record the item's `section`, its `chapter` for chapter questions (empty otherwise; such items never affect chapter status), its `created_at`, and the `source_paths` its answer key rests on, for the drift-vs-forgetting distinction at recall.
 
 `intensive_30d` mode — every active concept is due daily until its `intensive_until` date (creation + 30 days), rotating wording under stable IDs. After day 30 the item graduates to adaptive at its current stage with full history.
+
+Custom intervals: `/save-point intervals 1 3 7 14 90` (or "use 1, 3, 7, 14 and 90 days") sets `recall_intervals`, and `/save-point intervals default` restores `1, 7, 30, 90`. A list is legal when it has 1 to 8 entries, each a whole number of days from 1 to 3650, in strictly increasing order. Check it with `scripts/reschedule.sh --check-intervals "<list>"`, which prints the value to store or the reason the list is not legal; without scripts, apply the same rules by hand. If the list is not legal, say why, change nothing, and keep the old value. Never repair a list by guessing, for example by sorting it or dropping an entry. A hand-edited `recall_intervals` that is not legal counts as the default, and say so.
+
+Changing the list rewrites no recall item. Every `due_at` already set stays as it is, and the new intervals apply from each item's next reschedule: a close, a skip, or a defer. An item keeps its stage number, which now names the interval at that position in the new list. A stage beyond the end of a shorter list is lowered to the last stage at that reschedule. The list changes how long each stage waits. It does not change how stages move, and it does not lift rule 6. `intensive_30d` does not use the list while an item is drilled daily; the list applies once the item graduates to adaptive.
 
 Switching modes changes future scheduling only. Any switch to intensive — by command, by "spam me for 30 days", or when offered after the first session — means the user wants volume: confirm raising `daily_limit` (suggest 10), since drilling cannot fit under the default caps.
 

@@ -50,7 +50,7 @@ fi
 # so any frontmatter key outside the template set is a smuggled preference.
 extra=""
 [ -f "$p" ] && extra=$(awk 'NR == 1 && /^---/ { inf = 1; next } inf && /^---/ { exit } inf && NF { sub(/^[ \t]+/, ""); sub(/:.*/, ""); sub(/[ \t]+$/, ""); print }' "$p" \
-  | grep -vE '^(version|setup_status|goal|idk_policy|difficulty|preferred_depth|feedback_timing|repetition_mode|intensive_offered|daily_limit|minimum_gap|questions_per_interruption|default_snooze|interruption_style|cross_repo_recall|question_stats)$')
+  | grep -vE '^(version|setup_status|goal|idk_policy|difficulty|preferred_depth|feedback_timing|repetition_mode|recall_intervals|intensive_offered|daily_limit|minimum_gap|questions_per_interruption|default_snooze|interruption_style|cross_repo_recall|question_stats)$')
 [ -f "$p" ] && [ -z "$extra" ] && ok "profile frontmatter holds only template fields" || bad "profile missing or invented field(s): $(printf '%s' "$extra" | tr '\n' ' ')"
 
 exit $fails

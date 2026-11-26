@@ -133,10 +133,27 @@ cd mcp-server && npm install && npm run build
 | `/save-point recall` | Serve due recall now, across repositories (unless `cross_repo_recall` is off) |
 | `/save-point setup` / `settings` | Configure / inspect preferences |
 | `/save-point repetition intensive\|adaptive` | Daily 30-day drilling vs. spaced (1 → 7 → 30 → 90 days) |
+| `/save-point intervals 1 3 7 14 90` / `intervals default` | Use your own recall intervals, in days, in place of 1 → 7 → 30 → 90; go back to the default |
 | `/save-point flow 4h` / `flow today` / `resume` | Pause interruptions; resume them |
 | `/save-point interruptions off\|on` | Manual-only recall, permanently |
 
 Everything also works as plain conversation: "too hard", "less trivia", "spam me for 30 days", "pause questions until tomorrow". If chapters and boss fights aren't your thing, say "plain labels" and the game framing disappears. Every question carries a one-line HUD showing this session's tally plus the repository's lifetime numbers, and "stats off" removes it.
+
+### Your own recall intervals
+
+By default a question comes back after 1 day, then 7, 30 and 90 days as you keep answering it well. To use your own spacing, give the intervals in days:
+
+```
+you    ▸ /save-point intervals 1 3 7 14 90
+```
+
+A list holds 1 to 8 whole numbers of days, each from 1 to 3650, and each longer than the one before. Save Point rejects any other list, says why, and keeps the list you had. `/save-point intervals default` goes back to 1, 7, 30, 90.
+
+Three things to know:
+
+- Questions already scheduled keep their due dates. The new intervals apply the next time each question is rescheduled, which is the next time you answer, skip, or defer it.
+- Questions marked importance 4 or 5 (core invariants, and data-loss, security, or incident paths) still never wait longer than 30 days, whatever your list says.
+- Intensive mode still drills daily for 30 days. Your list applies after a question leaves intensive mode.
 
 ### Written work (new)
 

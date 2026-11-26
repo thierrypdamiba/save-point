@@ -18,6 +18,35 @@ Feature: Let the engineer control Save Point
     And future intervals respond to recall quality and assistance
     And prior recall history is preserved
 
+  Scenario: Set custom recall intervals
+    When the engineer runs "/save-point intervals 1 3 7 14 90"
+    Then "recall_intervals" is saved as "1, 3, 7, 14, 90"
+    And adaptive scheduling uses those intervals in place of 1, 7, 30, and 90 days
+    And no existing recall item is rewritten: due dates already set stay, and the new intervals apply from the next reschedule
+
+  Scenario Outline: Reject an interval list that is not legal
+    Given "recall_intervals" holds a legal list
+    When the engineer runs "/save-point intervals <list>"
+    Then Save Point says why the list is not legal: <reason>
+    And "recall_intervals" keeps its old value
+    And Save Point does not repair the list by guessing
+
+    Examples:
+      | list              | reason                                      |
+      | 7 3 1             | intervals must be strictly increasing       |
+      | 1 1 7             | intervals must be strictly increasing       |
+      | 0 7               | each interval is a positive whole number    |
+      | 1.5 7             | each interval is a positive whole number    |
+      | soon later        | each interval is a positive whole number    |
+      | 1 2 3 4 5 6 7 8 9 | a list holds at most 8 intervals            |
+      | 1 4000            | an interval is at most 3650 days            |
+
+  Scenario: Restore the default recall intervals
+    Given "recall_intervals" is "1, 3, 7, 14, 90"
+    When the engineer runs "/save-point intervals default"
+    Then "recall_intervals" is saved as "1, 7, 30, 90"
+    And due dates already set stay as they are
+
   Scenario: Check due items on demand
     When the engineer runs "/save-point recall"
     Then due questions are served across all repositories, unless "cross_repo_recall" is "off"
