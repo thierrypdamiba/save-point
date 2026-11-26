@@ -14,7 +14,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - The installer's hook merge is now tested (item 3).
 - CI runs shell checks and the MCP tests on one OS (ubuntu). The scripts target macOS users too. No `shellcheck`, no `sh -n` pass.
 - The eval harness is not run in CI and no pass rates are published in the repo.
-- Team use is undocumented: what to share, what never to share, how to use it on a shared machine.
+- Team use is documented in `docs/teams.md`. Fleet rollout through device management is untested.
 
 ## Items
 
@@ -52,7 +52,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: `docs/teams.md`: what is safe to share (nothing in `~/.save-point`), shared machines, how to disable the hook for everyone, how to pin a version, what to tell a team about the study. No claims about adoption.
 - Benefits: an engineering manager considering a rollout.
 - Verify: every setting named in the guide exists in `assets/profile.md` or the README. A CI grep checks the names.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). `docs/teams.md`, linked from the README. A CI step checks the setting names against `assets/profile.md` and the commands against the README.
 
 ### 7. Shell hygiene in CI
 - Change: run `sh -n` on every script and `shellcheck` if it can be installed in the runner. Fix findings that do not change behavior. Add a macOS job for the script steps, since `date -d` and `shasum` differ.
