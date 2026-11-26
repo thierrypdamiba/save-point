@@ -159,6 +159,18 @@ This is an alpha. It's tested end-to-end on Claude Code with live multi-session 
 
 Issues and war stories welcome.
 
+## Research
+
+Save Point is also a way to study one question. When people delegate work to AI, do they keep their understanding of that work? And does a short comprehension check with spaced recall help them keep it?
+
+The tool already keeps the records such a study needs. It records each answer verbatim, as you gave it. It labels each attempt `unaided` or `assisted`. It schedules recall at 1, 7, 30 and 90 days. When an answer has to wait for grading, it stores a SHA-256 digest of the text, so a later change to that record is detected.
+
+The planned study uses a within-person design. Save Point asks questions about a random half of a person's AI-written changes and stays silent on the other half. Both halves are tested later. The protocol will be published in this repository before any data is collected.
+
+Today Save Point works on code repositories. A planned extension is a mode for written research and analysis, so the same question can be asked of people who delegate research and writing to AI.
+
+To take part, or to review the protocol, open an issue.
+
 ## License
 
 [MIT](LICENSE)
