@@ -77,6 +77,9 @@ test("advertises and serves the complete Save Point skill", async () => {
     assert.ok(directory.resources.some((resource) => resource.name === "document-mode.feature"));
     assert.ok(catalog.skills[0].resources.some((resource) => resource.uri.endsWith("/scripts/hash-source.sh")));
     assert.match(JSON.stringify(loaded.structuredContent), /## Document workspaces \(new\)/);
+    assert.ok(directory.resources.some((resource) => resource.name === "question-persona.feature"));
+    assert.ok(catalog.skills[0].resources.some((resource) => resource.uri.endsWith("/scripts/check-persona.sh")));
+    assert.match(JSON.stringify(loaded.structuredContent), /## Question persona/);
 
     for (const resource of catalog.skills[0].resources) {
       const response = await client.readResource({ uri: resource.uri });
