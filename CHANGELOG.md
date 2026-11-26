@@ -4,6 +4,9 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 ## Unreleased
 
+### Added
+- CI job `mcp-node20`: runs `npm ci`, `npm run check` and `npm test` for the MCP server on Node 20, the minimum in `package.json`. The Node 22 job is unchanged. CI only, no code changed.
+
 ### Changed
 - The long inline script checks in `ci.yml` now live in `scripts/test-repo-id.sh`, `scripts/test-reschedule.sh`, `scripts/test-persona.sh` and `scripts/test-stats.sh`. CI calls them. A contributor can run each with `sh scripts/<name>.sh` from any directory. The checks are the same text as before. No skill script changed.
 

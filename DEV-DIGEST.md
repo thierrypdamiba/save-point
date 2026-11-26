@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-26 (run 14).
+Last updated: 2026-11-26 (run 15).
 
 ## On dev now
 
@@ -21,6 +21,7 @@ Last updated: 2026-11-26 (run 14).
 - Fix: `stats.sh` now counts correctly in files with Windows line endings. Normal files give the same output.
 - CI script checks moved into `scripts/test-*.sh` so you can run them locally. Same checks. No skill script changed.
 - Tests for how the MCP server refuses bad requests (6 new, 9 total). Tests only.
+- CI now also tests the MCP server on Node 20, the stated minimum. CI only.
 - This digest.
 
 The only behavior changes are the new uninstall and `--ref` options. The quickstart, team guide and state formats page are docs only. Install, question selection, grading and record formats are unchanged, so the study is not affected.
@@ -31,4 +32,4 @@ See "Needs the owner" in ROADMAP.md. The most important: whether to tag a releas
 
 ## Next up
 
-A fresh audit in run 13 added four small (the first is now done) roadmap items: a Node 20 CI leg, a fix so the recall hook does not fail open on absurdly large numbers in state files, and an installer dry run. Roadmap item 7 still waits on your answer about a macOS runner (Needs the owner 6). A full 15 scenario eval run is worth making by someone with time and a login (about 90 model calls).
+A fresh audit in run 13 added four small roadmap items (the first two are now done): a Node 20 CI leg, a fix so the recall hook does not fail open on absurdly large numbers in state files, and an installer dry run. Roadmap item 7 still waits on your answer about a macOS runner (Needs the owner 6). A full 15 scenario eval run is worth making by someone with time and a login (about 90 model calls).

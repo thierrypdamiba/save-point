@@ -100,7 +100,7 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `mcp-server/package.json` says `node >=20` and the README and quickstart tell people Node 20 works. CI only runs Node 22. Add a Node 20 leg to the CI matrix for `npm ci`, `npm run check` and `npm test`. If Node 20 fails, change the stated minimum instead.
 - Benefits: an MCP-only user on Node 20, who is told it works and has no evidence.
 - Verify: CI shows both legs green, or the docs and `engines` name the real minimum.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). Separate job `mcp-node20` in `ci.yml`. The result of the Node 20 leg is on the pull request.
 
 ### 15. Recall hook should not fail open on absurd numbers
 - Change: in `save-point/scripts/check-due.sh`, a number with more than 18 digits in `daily_limit`, `prompts_today` or `minimum_gap` overflows shell arithmetic. Found in the run 13 audit: a huge `prompts_today` printed `[: Illegal number` on stderr on every prompt and the daily cap was skipped, so the nudge still fired. A huge `minimum_gap` wrapped and also let the nudge through. Make `digits_or` fall back to its default for values longer than 9 digits. The hook must still print nothing and exit 0 for any state file content.
