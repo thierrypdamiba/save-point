@@ -46,7 +46,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: add `docs/quickstart.md`: install, first session, what you will see, how to turn off interruptions, how to remove. Add a troubleshooting list: skill not found in a running session, hook complaints after uninstall, python3 missing, Node too old for the MCP server.
 - Benefits: a new person on a team who has never used it.
 - Verify: follow the doc from a clean temp HOME and confirm each command works as written. Record the commands tried.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). `docs/quickstart.md`, linked from the README. The install, uninstall, and error messages were tried in a clean temp HOME. A CI step checks the doc against `install.sh` and the README command list.
 
 ### 6. Team and admin guide
 - Change: `docs/teams.md`: what is safe to share (nothing in `~/.save-point`), shared machines, how to disable the hook for everyone, how to pin a version, what to tell a team about the study. No claims about adoption.

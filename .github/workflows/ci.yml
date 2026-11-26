@@ -88,6 +88,22 @@ jobs:
         run: |
           sh -n install.sh scripts/test-install.sh
           sh scripts/test-install.sh
+      - name: verify quickstart doc matches the tool
+        run: |
+          q=docs/quickstart.md
+          test -f "$q"
+          # Every installer flag and message the doc names must exist in install.sh.
+          for s in '--uninstall' '--ref' 'no host directories found' 'unknown host' 'could not update' 'python3 not found'; do
+            grep -q -e "$s" install.sh || { echo "FAIL install.sh lacks: $s"; exit 1; }
+          done
+          for s in '--uninstall' '--ref' 'no host directories found' 'unknown host' 'could not update' 'python3'; do
+            grep -q -e "$s" "$q" || { echo "FAIL quickstart lacks: $s"; exit 1; }
+          done
+          # The subcommand of every backticked /save-point command in the doc must appear in the README.
+          grep -o '`/save-point [a-z]*' "$q" | cut -d' ' -f2 | sort -u | while read -r c; do
+            grep -qw -e "$c" README.md || { echo "FAIL command not in README: $c"; exit 1; }
+          done
+          grep -q 'docs/quickstart.md' README.md
       - name: verify install script
         run: HOME=$(mktemp -d) sh -c 'mkdir -p "$HOME/.claude" && ./install.sh && test -f "$HOME/.claude/skills/save-point/SKILL.md" && test -x "$HOME/.claude/skills/save-point/scripts/check-due.sh" && test -x "$HOME/.claude/skills/save-point/scripts/hash-source.sh" && test ! -d "$HOME/.claude/skills/save-point/features"'
       - name: verify scheduling and hook scripts
