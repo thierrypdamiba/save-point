@@ -33,7 +33,8 @@ jobs:
       - name: verify no network use
         run: |
           # The tool itself must make no network calls. install.sh is excluded: it runs git clone when piped.
-          if grep -nwE 'curl|wget|nc|ncat|telnet|scp|ssh|sftp|ftp|rsync' save-point/scripts/*.sh scripts/*.sh hooks/*; then echo "FAIL network tool in a script"; exit 1; fi
+          # The only allowed match is the ssh:// URL used as test data in scripts/test-repo-id.sh.
+          if grep -nwE 'curl|wget|nc|ncat|telnet|scp|ssh|sftp|ftp|rsync' save-point/scripts/*.sh scripts/*.sh hooks/* | grep -v "^scripts/test-repo-id.sh:[0-9]*:for url in .*'ssh://git@github.com:2222/octo/api'; do$"; then echo "FAIL network tool in a script"; exit 1; fi
           if grep -nE 'node:(net|http|https|http2|dgram|tls|dns|child_process)|\bfetch\(|XMLHttpRequest|WebSocket' mcp-server/src/*.ts; then echo "FAIL network or process use in the MCP server"; exit 1; fi
           # The check must be able to fail.
           d=$(mktemp -d); printf 'curl example.com\n' > "$d/x.sh"
