@@ -9,7 +9,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 ## Facts found in the audit
 
 - Version `0.12.0` is written in four places by hand: `.claude-plugin/plugin.json`, `mcp-server/package.json`, `mcp-server/package-lock.json`, `mcp-server/src/server.ts`. The only git tag is `v0.9.0`. CI now checks that they agree.
-- There is no SECURITY.md, no CHANGELOG.md (added in this run), and no privacy statement outside the README paragraph on `~/.save-point`.
+- SECURITY.md and `docs/security-and-privacy.md` now exist (item 2). CHANGELOG.md exists.
 - `install.sh` has no uninstall, no `--version`, and no dry run. The curl one-liner installs whatever is on `main`, with no pin to a release.
 - The installer's hook merge (python3 JSON edit) is only exercised by a smoke test that checks the skill files. Idempotency, malformed settings, and an existing hook list are not tested.
 - CI runs shell checks and the MCP tests on one OS (ubuntu). The scripts target macOS users too. No `shellcheck`, no `sh -n` pass.
@@ -28,7 +28,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: add SECURITY.md (how to report a problem, what is in scope) and a docs page that lists exactly what Save Point reads, writes, and sends. Files it writes, where, with what permissions. States that the tool itself has no network calls and no telemetry. Say plainly that the host model sees whatever the skill reads.
 - Benefits: a security reviewer at a company deciding whether to allow it.
 - Verify: each statement is backed by a grep or test in the repo. Add a CI check that the scripts contain no `curl`, `wget`, or `nc` calls.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). Uses GitHub private reporting. The CI check greps for network tools in scripts and network or process imports in the MCP server. `install.sh` is excluded because it runs `git clone` when piped, and the page says so.
 
 ### 3. Installer tests: hook merge, idempotency, uninstall
 - Change: add CI tests for `install.sh` against a temp HOME. Cases: fresh install, second install (one hook entry only), existing settings with other hooks kept, malformed settings left untouched, single-host installs, unknown host. Add `./install.sh --uninstall [host]` that removes the skill and its hook entry, and test it.

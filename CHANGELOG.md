@@ -5,6 +5,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 ## Unreleased
 
 ### Added
+- `SECURITY.md` and `docs/security-and-privacy.md`: what Save Point reads, writes and sends, with the file behind each claim. A CI step fails if a script uses a network tool or the MCP server imports a network or process module.
 - `scripts/check-versions.sh` and a CI step that fails when the version differs between `plugin.json`, `package.json`, `package-lock.json` and `server.ts`. `docs/maintenance.md` says where to edit.
 - ROADMAP.md: a ranked list of what stands between Save Point and team adoption.
 - CHANGELOG.md and DEV-DIGEST.md.
