@@ -10,8 +10,8 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 
 - Version `0.12.0` is written in four places by hand: `.claude-plugin/plugin.json`, `mcp-server/package.json`, `mcp-server/package-lock.json`, `mcp-server/src/server.ts`. The only git tag is `v0.9.0`. CI now checks that they agree.
 - SECURITY.md and `docs/security-and-privacy.md` now exist (item 2). CHANGELOG.md exists.
-- `install.sh` has no uninstall, no `--version`, and no dry run. The curl one-liner installs whatever is on `main`, with no pin to a release.
-- The installer's hook merge (python3 JSON edit) is only exercised by a smoke test that checks the skill files. Idempotency, malformed settings, and an existing hook list are not tested.
+- `install.sh` has an uninstall now (item 3). It has no `--version`, and no dry run. The curl one-liner installs whatever is on `main`, with no pin to a release.
+- The installer's hook merge is now tested (item 3).
 - CI runs shell checks and the MCP tests on one OS (ubuntu). The scripts target macOS users too. No `shellcheck`, no `sh -n` pass.
 - The eval harness is not run in CI and no pass rates are published in the repo.
 - Team use is undocumented: what to share, what never to share, how to use it on a shared machine.
@@ -34,7 +34,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: add CI tests for `install.sh` against a temp HOME. Cases: fresh install, second install (one hook entry only), existing settings with other hooks kept, malformed settings left untouched, single-host installs, unknown host. Add `./install.sh --uninstall [host]` that removes the skill and its hook entry, and test it.
 - Benefits: anyone upgrading or removing it, and IT staff who need a clean removal.
 - Verify: the new CI steps pass. Settings JSON is byte-identical after install then uninstall on a file that had no Save Point entry.
-- Size: medium. Status: ready.
+- Size: medium. Status: done (dev, see CHANGELOG). 34 checks in `scripts/test-install.sh`.
 
 ### 4. Upgrade path and pinned installs
 - Change: let the installer take `--ref <tag>` so a team can pin a release. Print the installed version. Document upgrade and rollback in the README. Keeps `~/.save-point` state untouched, with a test that proves it.

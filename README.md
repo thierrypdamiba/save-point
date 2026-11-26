@@ -80,7 +80,7 @@ cd save-point
 
 Then say `/save-point` (or just "quiz me on this repo") inside any repository, in a session started *after* the install. An already-running session won't see a newly installed skill.
 
-To uninstall: `rm -rf ~/.claude/skills/save-point` (per host), or `/plugin uninstall save-point` if you installed as a plugin. If you registered the recall hook below, remove it from `~/.claude/settings.json` too, or every prompt will complain about the missing script. Your answers and recall schedule live in `~/.save-point/`, so delete that too if you want them gone.
+To uninstall: `./install.sh --uninstall` (or `--uninstall claude`) removes the skill and the recall hook entry and leaves `~/.save-point/` alone. By hand: `rm -rf ~/.claude/skills/save-point` (per host), or `/plugin uninstall save-point` if you installed as a plugin. If you registered the recall hook below, remove it from `~/.claude/settings.json` too, or every prompt will complain about the missing script. Your answers and recall schedule live in `~/.save-point/`, so delete that too if you want them gone.
 
 ### Unsolicited recall is on by default (Claude Code)
 
