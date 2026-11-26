@@ -74,6 +74,9 @@ test("advertises and serves the complete Save Point skill", async () => {
       z.object({ resources: z.array(z.object({ name: z.string(), mimeType: z.string() })) }),
     );
     assert.ok(directory.resources.some((resource) => resource.name === "cross-client.feature"));
+    assert.ok(directory.resources.some((resource) => resource.name === "document-mode.feature"));
+    assert.ok(catalog.skills[0].resources.some((resource) => resource.uri.endsWith("/scripts/hash-source.sh")));
+    assert.match(JSON.stringify(loaded.structuredContent), /## Document workspaces \(experimental\)/);
 
     for (const resource of catalog.skills[0].resources) {
       const response = await client.readResource({ uri: resource.uri });
