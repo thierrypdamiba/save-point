@@ -9,6 +9,7 @@ Last updated: 2026-11-26.
 - Working rules for contributors (AGENTS.md) and CI that also runs on `dev`.
 - ROADMAP.md: ten ranked items toward team-ready software, plus six decisions that are yours.
 - CHANGELOG.md with an Unreleased section.
+- A CI check that the four version numbers agree, and `docs/maintenance.md`.
 - This digest.
 
 No code or behavior has changed on dev. Nothing here affects installs or the study.
@@ -19,4 +20,4 @@ See "Needs the owner" in ROADMAP.md. The most important: whether to tag a releas
 
 ## Next up
 
-Roadmap item 1: a CI check that the three version numbers agree.
+Roadmap item 2: a security and privacy statement.

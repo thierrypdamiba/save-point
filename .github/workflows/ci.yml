@@ -15,6 +15,13 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: mcp-server/package-lock.json
+      - name: verify versions agree
+        run: |
+          sh scripts/check-versions.sh
+          d=$(mktemp -d)
+          cp -R .claude-plugin mcp-server "$d"/ 2>/dev/null || true
+          sed -i 's/"version": "[^"]*"/"version": "9.9.9"/' "$d/.claude-plugin/plugin.json"
+          if sh scripts/check-versions.sh "$d" 2>/dev/null; then echo "FAIL mismatch not caught"; exit 1; fi
       - run: npm ci
         working-directory: mcp-server
       - run: npm run check

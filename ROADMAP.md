@@ -8,7 +8,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 
 ## Facts found in the audit
 
-- Version `0.12.0` is written in three places by hand: `.claude-plugin/plugin.json`, `mcp-server/package.json`, `mcp-server/src/server.ts`. The only git tag is `v0.9.0`. Nothing checks that the three agree.
+- Version `0.12.0` is written in four places by hand: `.claude-plugin/plugin.json`, `mcp-server/package.json`, `mcp-server/package-lock.json`, `mcp-server/src/server.ts`. The only git tag is `v0.9.0`. CI now checks that they agree.
 - There is no SECURITY.md, no CHANGELOG.md (added in this run), and no privacy statement outside the README paragraph on `~/.save-point`.
 - `install.sh` has no uninstall, no `--version`, and no dry run. The curl one-liner installs whatever is on `main`, with no pin to a release.
 - The installer's hook merge (python3 JSON edit) is only exercised by a smoke test that checks the skill files. Idempotency, malformed settings, and an existing hook list are not tested.
@@ -22,7 +22,7 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Change: add a CI step that fails if `plugin.json`, `mcp-server/package.json`, and `server.ts` carry different versions. Document the one place a maintainer edits, in `maintenance.md`.
 - Benefits: the owner at release time, and anyone who installs from the plugin marketplace and expects the version they were told.
 - Verify: CI fails on a branch where one file is bumped alone, and passes when all three match.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). Checks four files, since `package-lock.json` also carries the version.
 
 ### 2. Security and privacy statement
 - Change: add SECURITY.md (how to report a problem, what is in scope) and a docs page that lists exactly what Save Point reads, writes, and sends. Files it writes, where, with what permissions. States that the tool itself has no network calls and no telemetry. Say plainly that the host model sees whatever the skill reads.
