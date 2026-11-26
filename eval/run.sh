@@ -30,6 +30,10 @@ run_scenario() {
   git -C "$REPO" init -q
   git -C "$REPO" add -A && git -C "$REPO" commit -qm init
   git -C "$REPO" remote add origin https://github.com/octo/api.git
+  # A document workspace for --doc scenarios: an invented brief plus source
+  # notes, in a plain folder that is not a git repository.
+  DOC="$work/doc"
+  cp -R "$here/fixture-doc" "$DOC"
 
   preamble_for() {
     echo "You are an AI coding agent with the Agent Skill at $skill activated. Read that file now and follow it EXACTLY — it is your complete behavior contract. Its templates are in $(dirname "$skill")/assets/. Test-harness substitutions: wherever the skill says ~/.save-point, use $STATE instead; the current working repository is $1. Perform ALL file reads and writes for real, and derive the repository ID for real. I am the user; respond to each message exactly as the skill dictates. My first message is:"
@@ -41,7 +45,7 @@ run_scenario() {
 
   # A second sandbox repository, for cross-repo scenarios; created by a
   # harness action when needed. Turn text may reference the sandbox paths
-  # as {{STATE}}, {{REPO}}, and {{REPO2}}.
+  # as {{STATE}}, {{REPO}}, {{REPO2}}, and {{DOC}}.
   REPO2="$work/repo2"
   outdir="$work/turns-out"; mkdir -p "$outdir"
 
@@ -54,7 +58,7 @@ run_scenario() {
     # that time has passed. The optional path becomes the new session's
     # working repository ({{REPO2}} etc. are substituted).
     if head -1 "$tf" | grep -q '^@@@'; then
-      line=$(head -1 "$tf" | sed -e "s|{{STATE}}|$STATE|g" -e "s|{{REPO}}|$REPO|g" -e "s|{{REPO2}}|$REPO2|g")
+      line=$(head -1 "$tf" | sed -e "s|{{STATE}}|$STATE|g" -e "s|{{REPO}}|$REPO|g" -e "s|{{REPO2}}|$REPO2|g" -e "s|{{DOC}}|$DOC|g")
       case $line in
         '@@@ new-session'*)
           sid=""
@@ -72,14 +76,14 @@ run_scenario() {
         case $line in
           '!!!'*)
             cmd=${line#'!!!'}
-            (cd "$work" && STATE="$STATE" REPO="$REPO" REPO2="$REPO2" WORK="$work" EVAL="$here" sh -c "$cmd") || {
+            (cd "$work" && STATE="$STATE" REPO="$REPO" REPO2="$REPO2" DOC="$DOC" WORK="$work" EVAL="$here" sh -c "$cmd") || {
               echo "  harness action failed: $cmd" >&2; rm -rf "$work"; return 1; } ;;
         esac
       done < "$tf"
       continue
     fi
     turn_no=$((turn_no + 1))
-    prompt=$(sed -e "s|{{STATE}}|$STATE|g" -e "s|{{REPO}}|$REPO|g" -e "s|{{REPO2}}|$REPO2|g" "$tf")
+    prompt=$(sed -e "s|{{STATE}}|$STATE|g" -e "s|{{REPO}}|$REPO|g" -e "s|{{REPO2}}|$REPO2|g" -e "s|{{DOC}}|$DOC|g" "$tf")
     errlog="$work/turn-$turn_no.stderr"
     if [ -z "$sid" ]; then
       prompt="$(preamble_for "$cur_repo")
@@ -104,7 +108,7 @@ $prompt"
   done
 
   ok=0
-  STATE="$STATE" REPO="$REPO" REPO2="$REPO2" TURNS="$outdir" sh "$assert_file" || ok=1
+  STATE="$STATE" REPO="$REPO" REPO2="$REPO2" DOC="$DOC" TURNS="$outdir" sh "$assert_file" || ok=1
   # EVAL_KEEP_WORK=1 preserves a failing scenario's sandbox for diagnosis.
   if [ "$ok" -eq 1 ] && [ -n "${EVAL_KEEP_WORK:-}" ]; then
     echo "  workspace kept for diagnosis: $work"

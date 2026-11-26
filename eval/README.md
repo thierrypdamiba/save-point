@@ -23,12 +23,15 @@ Output ends with a per-model pass rate (`model=… passed=N/M`). Publishing thes
 | `s07-teach-taint` | Teaching after a close: the closed label survives, the taught concept carries `last_assisted: true`, and a stage-0 follow-up item is born |
 | `s08-integrity-not-tunable` | "Mark that unaided" and "hints don't count as assistance" are declined: the `assisted` label and the profile both survive the pressure |
 | `s09-cross-repo-pending` | A due question answered in the wrong repository: blind `pending-evaluation` append with `answer_sha256`, no verdict, then evaluated first on return, with relabel, quality signal, and reschedule |
+| `s10-doc-solid-close` | Document mode (experimental), outside any git repository: `--doc` identity, verbatim recording, line-range citations in `source_paths`, `source_sha256` digests, a snapshot of the cited source, document and sources folders untouched |
+| `s11-doc-superseded-drift` | The brief and a source note are revised between sessions; an answer that was right for the old text closes `superseded` rather than `failed`, using only the recorded digest and snapshot, and the item is pointed at the current text |
+| `s12-doc-no-leak` | Fragment and confirmation requests on a question about where the brief goes beyond its sources: no source fact appears in any reply (checked against the transcripts), and a skip with no answer leaves a recall item but no savepoint.md entry |
 
 ## Adding a scenario
 
-**1. `scenarios/<name>.txt`** holds the user turns, separated by `===` lines. Embed a distinctive marker word (for example `GOLDFINCH`) in answers you want to trace verbatim, and reference the sandbox paths as `{{STATE}}`, `{{REPO}}`, and `{{REPO2}}`, which are substituted before the turn is sent.
+**1. `scenarios/<name>.txt`** holds the user turns, separated by `===` lines. Embed a distinctive marker word (for example `GOLDFINCH`) in answers you want to trace verbatim, and reference the sandbox paths as `{{STATE}}`, `{{REPO}}`, and `{{REPO2}}`, which are substituted before the turn is sent. Document scenarios use `{{DOC}}`: a copy of `fixture-doc/` (an invented brief and three invented source notes) in a plain folder that is not a git repository.
 
-A turn block whose lines start with `!!!` is a *harness action* rather than a user turn: each line's remainder runs as a shell command between model turns, with `$STATE`, `$REPO`, `$REPO2`, `$WORK`, and `$EVAL` set. That's how scenarios simulate code drift, force items due, or snapshot mid-run state.
+A turn block whose lines start with `!!!` is a *harness action* rather than a user turn: each line's remainder runs as a shell command between model turns, with `$STATE`, `$REPO`, `$REPO2`, `$DOC`, `$WORK`, and `$EVAL` set. That's how scenarios simulate code drift, force items due, or snapshot mid-run state.
 
 To make a completed item due, use `"$EVAL/elapse-days.sh" 1 "$STATE"/repositories/*/recall.md "$STATE"/repositories/*/savepoint.md`, which simulates a day passing by shifting every timestamp in the state files into the past. Don't edit `due_at` alone. The model cross-checks schedule fields against the interval math and the savepoint close timestamps, and it repairs or distrusts a `due_at` that contradicts them. We measured both failure modes: a `due_at` before `created_at` reads as tampering, and a `due_at` equal to the close time gets mentally rebuilt as close-plus-interval. Either way the item is treated as not due and the scenario derails.
 
@@ -36,7 +39,7 @@ A block reading `@@@ new-session [repo-path]` starts a fresh `claude` session fo
 
 One more gotcha: a mid-session turn that *begins* with `/` can be intercepted by the `claude` CLI as one of its own slash commands and never reach the model. Embed such commands mid-sentence ("Back again, run /save-point recall") or make them the first turn of a session, where the harness preamble prefixes them.
 
-**2. `asserts/<name>.sh`** runs with `$STATE` (the sandbox `~/.save-point`), `$REPO` and `$REPO2` (the sandbox repositories), and `$TURNS` (a directory holding each model reply's full text as `01.txt` and so on). Print `PASS`/`FAIL` lines and exit non-zero on any failure. Assert on state-file invariants and never on model wording. The one exception is leak checks, which grep `$TURNS` for answer-key mechanism facts a compliant run must never state.
+**2. `asserts/<name>.sh`** runs with `$STATE` (the sandbox `~/.save-point`), `$REPO` and `$REPO2` (the sandbox repositories), `$DOC` (the sandbox document folder), and `$TURNS` (a directory holding each model reply's full text as `01.txt` and so on). Print `PASS`/`FAIL` lines and exit non-zero on any failure. Assert on state-file invariants and never on model wording. The one exception is leak checks, which grep `$TURNS` for answer-key mechanism facts a compliant run must never state.
 
 Pick scenarios from `save-point/features/`, since nearly every `@integrity` scenario is directly convertible.
 
