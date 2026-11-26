@@ -21,7 +21,7 @@ Invariants, in every session:
 | `/save-point` | Start or resume: evaluate pending answers, offer due recall (this repository's items, plus a labeled count from others), then new questions. Only the new-questions phase needs a repository — due recall works anywhere |
 | `/save-point start [--level new-engineer\|maintainer\|operator]` | Start a playthrough of the current repository at an explicit difficulty |
 | `/save-point start --diff [ref]` | Quiz on what changed since `ref` (default: the last merge, else `HEAD~1`) instead of the whole repository |
-| `/save-point start --doc <file-or-folder> [--sources <folder>]` | Experimental. Start a playthrough of a written document and, when sources are given, of whether they support it. Works outside a git repository. `--doc` also works on bare `/save-point` and on `recall`. See Document workspaces |
+| `/save-point start --doc <file-or-folder> [--sources <folder>]` | New. Start a playthrough of a written document and, when sources are given, of whether they support it. Works outside a git repository. `--doc` also works on bare `/save-point` and on `recall`. See Document workspaces |
 | `/save-point recall` | Serve due recall items now, across repositories unless `cross_repo_recall` is `off` (user-invoked, uncapped) |
 | `/save-point setup` | Run or rerun the setup session, pre-filled with current values |
 | `/save-point settings` | Show active preferences; never shows repository answers |
@@ -85,7 +85,7 @@ Identity follows the remote, so it changes when a local-only repository gains it
 4. Ask one concise, open question at a time at the configured difficulty and depth. Assign each question an ID — `q` plus a per-repository ordinal (`q014`) — that never changes, even when wording is later rotated. The vocabulary is tunable: on "plain labels", swap the game framing for neutral terms (sections, data flow, invariants, failure scenarios, review summary) everywhere user-facing.
 5. Rebuild the path each session from current source; skip concepts already covered by items in `recall.md`.
 
-## Document workspaces (experimental)
+## Document workspaces (new)
 
 `/save-point start --doc <file-or-folder> [--sources <folder>]` runs a playthrough on written work: an AI-drafted brief, report, memo, or literature summary, optionally with the source documents it was built from. A document workspace takes the place of a repository everywhere in this contract. It has the same state files, labels, answer hashing, disputes, schedule, isolation, and interruption limits. Wherever a rule says code, read it as the text of the document and its sources. Only the differences are listed here.
 
@@ -132,7 +132,7 @@ Read the lifetime baseline once per session via `scripts/stats.sh <state-repo-di
 
 ## Evaluate answers
 
-Record every attempt the moment it is given: append its verbatim text to `savepoint.md` as its own entry, `## q014 — open @ <timestamp>`, before evaluating. A question is **open** until the user finalizes an answer; finalizing closes it. The close — or a skip or defer, which ends work without a close — relabels the entry's provisional `open` status to its final one; these documented relabels (`open`, `pending-evaluation`) are the only permitted rewrites. Skip and defer keep or create the item at its current stage with `last_quality: untested`, no verdict, and set `due_at` = now + that stage's interval; a question still open at session end is `deferred`. A skip or defer before any answer text exists writes no `savepoint.md` entry — there is nothing verbatim to record; the recall item alone brings the question back.
+Record every attempt the moment it is given: append its verbatim text to `savepoint.md` as its own entry, `## q014 — open @ <timestamp>`, before evaluating. A question is **open** until the user finalizes an answer; finalizing closes it. The close — or a skip or defer, which ends work without a close — relabels the entry's provisional `open` status to its final one; these documented relabels (`open`, `pending-evaluation`) are the only permitted rewrites. Skip and defer keep or create the item at its current stage with `last_quality: untested`, no verdict, and set `due_at` = now + that stage's interval; a question still open at session end is `deferred`. A skip or defer before any answer text exists writes no `savepoint.md` entry — there is nothing verbatim to record; the recall item alone brings the question back. A request put to the agent is not an answer attempt: asking for a confirmation ("is it X? yes or no"), a fragment, or a hint writes no `savepoint.md` entry and is never relabeled `skipped` or `deferred`, in code and document workspaces alike. A guess becomes an attempt only when the user states it as their answer or finalizes it.
 
 While a question is open:
 

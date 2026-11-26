@@ -1,8 +1,6 @@
 /save-point
 ===
-skip
-===
-One question today please — the happy path of a job through the queue.
+Skip the setup. Then test me, do not teach me and do not explain anything: ask me exactly one question today, about the happy path of a job through the queue, and no other question before or after it. I will answer from memory.
 ===
 A producer calls push(), which wraps the job with an attempts counter starting at zero and appends it to the jobs array. drain() pulls from the front with next() — a shift(), so FIFO — and awaits the handler on each job before touching the next, strictly serial. On success the job is already gone: the shift removed it, there's no ack step. The try/catch routes to fail() only when a handler throws, which never happens on the happy path. PELICAN final answer.
 ===
@@ -13,7 +11,9 @@ that's all for today
 !!! git -C "$REPO2" init -q && git -C "$REPO2" add -A && git -C "$REPO2" -c user.name=harness -c user.email=harness@example.com commit -qm init && git -C "$REPO2" remote add origin https://github.com/octo/web.git
 !!! "$EVAL/elapse-days.sh" 1 "$STATE"/repositories/*/recall.md "$STATE"/repositories/*/savepoint.md
 ===
-I've switched projects — my current working repository is now {{REPO2}} (same state dir). /save-point recall
+@@@ new-session {{REPO2}}
+===
+It is the next day and I am in a different project, {{REPO2}}. Run /save-point recall for me.
 ===
 I'll answer now, from memory, no peeking: push() wraps each job with attempts at zero and appends it to the jobs array; drain() pulls from the front with next(), which is a shift, so it's FIFO, and awaits the handler one job at a time — serial. On success the shift already removed the job, there's no ack step. The try/catch only routes to fail() when a handler throws, never on the happy path. CORMORANT final answer.
 ===

@@ -21,7 +21,7 @@ Read the relevant feature before changing behavior:
 - `features/user-controls.feature`: commands and graceful fallbacks
 - `features/question-stats.feature`: the per-question stats HUD, its verdict-leak freeze rule, and `stats.sh` as the lifetime baseline
 - `features/cross-client.feature`: shared behavior and identical repository IDs across Codex, Claude Code, and Goose
-- `features/document-mode.feature`: experimental document workspaces: `--doc` identity, text-grounded answer keys, read-only access to the document and sources, and drift detected from content digests and snapshots
+- `features/document-mode.feature`: document workspaces, a new mode: `--doc` identity, text-grounded answer keys, read-only access to the document and sources, and drift detected from content digests and snapshots
 
 ## Distribution over MCP
 
@@ -37,4 +37,4 @@ Use this exact skill directory across Agent Skills hosts — do not maintain hos
 
 ## Test coupling
 
-`mcp-server/test/catalog.test.ts` asserts that the loaded skill content contains the sentence "Build understanding, then test whether it lasts" and that `features/cross-client.feature` exists. It also asserts that `features/document-mode.feature` and `scripts/hash-source.sh` are served and that the skill content has a "Document workspaces (experimental)" heading. Keep both, or update the tests deliberately.
+`mcp-server/test/catalog.test.ts` asserts that the loaded skill content contains the sentence "Build understanding, then test whether it lasts" and that `features/cross-client.feature` exists. It also asserts that `features/document-mode.feature` and `scripts/hash-source.sh` are served and that the skill content has a "Document workspaces (new)" heading. Keep both, or update the tests deliberately.

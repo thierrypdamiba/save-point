@@ -1,8 +1,6 @@
 /save-point
 ===
-skip
-===
-Before you ask anything — start with the happy path of a job through the queue, please.
+Skip the setup. Then test me, do not teach me and do not explain anything: ask me exactly one question, about the happy path of a job through the queue, and wait for my answer. I will answer from memory.
 ===
 A producer calls push() on the JobQueue, which wraps the job with an attempts counter starting at zero and appends it to the jobs array. The worker's drain() pulls from the front with next(), which is a shift, so it's FIFO, and awaits the handler serially — one job at a time. On success the job is already gone: the shift removed it, there's no ack step. The try/catch only matters when a handler throws, routing to fail(), which never runs on the happy path. GOLDFINCH final answer.
 ===

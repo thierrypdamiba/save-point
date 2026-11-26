@@ -123,6 +123,13 @@ Feature: Preserve active recall and human authorship
     Then a recall item is created or kept so the question returns
     But no "savepoint.md" entry is written, since there is nothing verbatim to record
 
+  Scenario: A confirmation or hint request is not an answer attempt
+    Given a question was asked and no answer text was given
+    When the engineer asks "is it X? yes or no", asks for a fragment, or asks for a hint
+    Then no "savepoint.md" entry is written for that request
+    And a skip or defer that follows still writes no "savepoint.md" entry
+    But a guess the engineer states as their answer or finalizes is recorded as an attempt
+
   Scenario: Assemble the save file
     Given the engineer has answered, skipped, and deferred questions
     When Save Point updates "savepoint.md"

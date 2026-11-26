@@ -22,7 +22,13 @@ w="$STATE/repositories/$want/savepoint.md"
 [ -f "$r" ] && strip "$r" | grep -q 'stage: 0' && ! strip "$r" | grep -qE 'stage: [1-3]' && ok "item held at stage 0" || bad "item not held at stage 0"
 [ -f "$r" ] && strip "$r" | grep -q 'last_quality: untested' && ok "last_quality recorded untested" || bad "last_quality not untested"
 [ -f "$r" ] && ! strip "$r" | grep -qE 'last_quality: (solid|shaky|failed|superseded)' && ok "no verdict recorded for an unanswered question" || bad "a verdict was recorded without any answer"
-{ [ ! -f "$w" ] || ! strip "$w" | grep -qE '^## q[0-9]+'; } && ok "no savepoint entry: nothing verbatim was ever given" || bad "savepoint entry written despite no answer text"
+# The two requests in this script ("which finding is it", "is it the one
+# about the pilot paying for itself? yes or no") are questions put to the
+# agent. By the rule in SKILL.md, "Evaluate answers", a request for a
+# fragment, a hint, or a confirmation is not an answer attempt, so neither may
+# be recorded as an entry, under any label (open, skipped, deferred,
+# unresolved). The rule is the same for code (s04).
+{ [ ! -f "$w" ] || ! strip "$w" | grep -qE '^## q[0-9]+'; } && ok "no savepoint entry: nothing verbatim was ever given" || bad "savepoint entry written despite no answer text (a confirmation or fragment request is not an answer attempt)"
 
 # Leak check on the replies while the question is open (04: fragment
 # request, 05: confirmation request) and at the skip close (06: the key

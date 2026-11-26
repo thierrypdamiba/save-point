@@ -131,6 +131,7 @@ cd mcp-server && npm install && npm run build
 | `/save-point start [--level new-engineer\|maintainer\|operator]` | Full playthrough, optionally at an explicit difficulty |
 | `/save-point start --doc <file-or-folder> [--sources <folder>]` | New: quiz on a written document and on whether its sources support it. No git repository needed |
 | `/save-point recall` | Serve due recall now, across repositories (unless `cross_repo_recall` is off) |
+| `/save-point recall --doc <file-or-folder>` | New: serve a document's due questions and grade them against its current text |
 | `/save-point setup` / `settings` | Configure / inspect preferences |
 | `/save-point repetition intensive\|adaptive` | Daily 30-day drilling vs. spaced (1 → 7 → 30 → 90 days) |
 | `/save-point intervals 1 3 7 14 90` / `intervals default` | Use your own recall intervals, in days, in place of 1 → 7 → 30 → 90; go back to the default |
@@ -190,7 +191,7 @@ The behavior contract lives in [`save-point/features/`](save-point/features) as 
 
 This is an alpha. It's tested end-to-end on Claude Code with live multi-session runs, including `--diff`, and the MCP server has an automated test suite (`cd mcp-server && npm test`). Known limitations:
 
-- Contract enforcement is only as strong as the host model following it, so it gets measured rather than asserted. [`eval/`](eval) replays scripted sessions against the live skill and asserts on the state files it produces, currently 9 scenarios and 96 assertions passing on the default model, covering answer-leak refusal, dispute handling, code drift, and the full cross-repo pending flow. Publishing per-model pass rates is the next milestone.
+- Contract enforcement is only as strong as the host model following it, so it gets measured rather than asserted. [`eval/`](eval) replays scripted sessions against the live skill and asserts on the state files it produces. It has 13 scenarios now. They cover answer-leak refusal, dispute handling, drift in code and in documents, custom recall intervals, and the full cross-repo pending flow. No pass rates are published yet. Publishing them per model is the next milestone.
 - Identity follows the remote, so adding a first remote or renaming one re-keys a repository. The contract now includes a migration offer that scans for the previous identity and moves the history, but it's young.
 - Unsolicited recall is automatic on Claude Code, since the installer and plugin register the prompt hook. Other hosts need boundary events, and without them recall is served on invocation only.
 - Codex and Goose install paths are wired but not yet battle-tested.
@@ -199,13 +200,17 @@ Issues and war stories welcome.
 
 ## Research
 
-Save Point is also a way to study one question. When people delegate work to AI, do they keep their understanding of that work? And does a short comprehension check with spaced recall help them keep it?
+Save Point is also a way to study one question. When people hand work to AI, can they still tell what is true in that work later? And does anything help?
 
-The tool already keeps the records such a study needs. It records each answer verbatim, as you gave it. It labels each attempt `unaided` or `assisted`. It schedules recall at 1, 7, 30 and 90 days. When an answer has to wait for grading, it stores a SHA-256 digest of the text, so a later change to that record is detected.
+Participants are researchers and analysts who use AI for their work. Each finished task is assigned by chance. The pilot has two groups of tasks: no extra step, or Save Point's questions. The full study adds a third group, which spends the same few minutes rereading the work and its sources. Follow-ups come at 1, 7, 30 and 90 days.
 
-The planned study uses a within-person design. Save Point asks questions about a random half of a person's AI-written changes and stays silent on the other half. Both halves are tested later. The protocol will be published in this repository before any data is collected.
+The main outcome is whether the person can correctly judge if a claim in the work is supported by its source. Independent scorers judge this without knowing a task's group. Recall of the document is not the main outcome.
 
-Save Point works on code repositories. It also has a new mode for written research and analysis (see [Written work](#written-work-new)), so the same question can be asked of people who delegate research and writing to AI.
+A named risk: the tool could make people more confident in false claims. The study is designed to detect that.
+
+This is a plan. No participants have been recruited and there are no results. The protocol will be published in this repository before any data is collected.
+
+The tool keeps verbatim answers, `unaided` or `assisted` labels that rest partly on self-report, a recall schedule with intervals you can set, and a SHA-256 digest of each answer that awaits grading.
 
 To take part, or to review the protocol, open an issue.
 
