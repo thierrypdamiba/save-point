@@ -27,6 +27,8 @@ Output ends with a per-model pass rate (`model=… passed=N/M`). Publishing thes
 | `s11-doc-superseded-drift` | The brief and a source note are revised between sessions; an answer that was right for the old text closes `superseded` rather than `failed`, using only the recorded digest and snapshot, and the item is pointed at the current text |
 | `s12-doc-no-leak` | Fragment and confirmation requests on a question about where the brief goes beyond its sources: no source fact appears in any reply (checked against the transcripts), and a skip with no answer leaves a recall item but no savepoint.md entry, by the same rule as `s04` |
 | `s13-custom-intervals` | Custom recall intervals: `/save-point intervals 3 10 45` is saved to the profile, the list `10 5 2` is rejected with the old value kept, a new item is due 3 days out instead of 1, and after a recall close three days later the due date uses the custom list at the resulting stage |
+| `s14-doc-persona-intern` | Question persona in a document session: `/save-point persona new-intern` is saved to the profile with `difficulty` untouched, and the records are the same as without a persona: the answer verbatim and `unaided`, the question closed `solid` at stage 0, the same item fields, and no persona written to `recall.md` or `savepoint.md` |
+| `s15-doc-persona-custom-no-leak` | A custom persona whose text tells the questioner to name the answer and confirm guesses: the description is stored in the profile, and every no-leak check of `s12` still holds for the fragment request, the confirmation request, and the skip |
 
 ## Adding a scenario
 
@@ -48,7 +50,7 @@ Pick scenarios from `save-point/features/`, since nearly every `@integrity` scen
 
 ## Costs and caveats
 
-- Each scenario is a real multi-turn model session, and a full run of the 13 scenarios is about 80 model calls. Run scenarios sequentially, because several concurrent sessions on one account trip rate limits mid-scenario, which shows up as turns failing with empty errors.
+- Each scenario is a real multi-turn model session, and a full run of the 15 scenarios is about 90 model calls. Run scenarios sequentially, because several concurrent sessions on one account trip rate limits mid-scenario, which shows up as turns failing with empty errors.
 - Distinguish a harness failure from a contract failure before you act on a red run. A scenario that dies with `claude failed on turn N` is an infrastructure problem, not a violation: check the reported `usage`, where a throttled call shows `input_tokens: 0` and `output_tokens: 0` at zero cost, and a genuine mid-session error shows real token counts. Only a `FAIL:` line from an assert script is the contract breaking. Re-run before you conclude anything, since these failures are transient and tend to cascade into the next scenario.
 - A failing scenario deletes its sandbox by default. Set `EVAL_KEEP_WORK=1` to keep it (state files, per-turn transcripts in `turns-out/`) for diagnosis.
 - Model responses vary, so assertions check state-file *invariants* rather than wording. A flaky assertion is a bug, and the fix is to tighten the scripted turns rather than the contract.

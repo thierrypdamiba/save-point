@@ -83,7 +83,7 @@ Feature: Apply the engineer's configured assistance policy
     Then Save Point declines and explains that integrity is not tunable
     And everything governing evaluation, labeling, and stage movement stays fixed
     And that includes verbatim recording, status labels, what counts as assistance, no-reveal-while-open, quality signals, the bare-guess rule, and feedback granularity
-    But delivery, difficulty, depth, style, and repetition mode remain tunable
+    But delivery, difficulty, depth, style, persona, and repetition mode remain tunable
 
     Examples:
       | request                                  |

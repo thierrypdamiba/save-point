@@ -1,0 +1,11 @@
+/save-point start --doc {{DOC}}/brief.md --sources {{DOC}}/sources
+===
+skip
+===
+Before you ask anything, two things. First, please run /save-point persona new-intern for me. Then one question today please, about the ridership finding and which source supports it.
+===
+!!! mkdir -p "$STATE/snap" && cp "$STATE/profile.md" "$STATE/snap/profile-persona.md"
+===
+The brief says late-night boardings on Route 9 rose 18 percent over the twelve-week pilot. That rests on source note 1, the fare gate counts: average weekly boardings went from 410 in the twelve weeks before the pilot to 484 during it, which is 18 percent. The same note warns that the Lantern Festival fell in pilot weeks 5 and 6, and without those two weeks the average is 455, a rise of 11 percent. So the 18 is real but it leans on the festival weeks. KESTREL final answer.
+===
+that's all for today
