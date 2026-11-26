@@ -94,7 +94,7 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: add tests for the failure paths of the MCP server. Today the 3 tests only cover the working paths. Cases: `resources/directory/read` with a `..` URI, a foreign scheme, and a file URI (all must be refused); `skills/get` with an unknown URI; `load_skill` with a name other than `save-point`; a skill directory with no `SKILL.md` makes startup fail with a clear error; frontmatter without a string name or description is refused; dotfiles in the skill directory are not served.
 - Benefits: a security reviewer who wants proof that the server only serves the skill directory, and a maintainer changing the catalog code.
 - Verify: `npm test` runs the new cases and passes. Each refusal case fails when the guard in `skill-catalog.ts` is removed. The audit run tried the first five by hand: all behaved correctly, none are tested.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). 6 new tests in `mcp-server/test/errors.test.ts`. Removing the dotfile skip, the `skills/get` guard or the SKILL.md check each makes a test fail. Removing the directory prefix check alone does not: the later empty-directory check also refuses those URIs, so the prefix check is a second guard. The URIs are still tested.
 
 ### 14. Run the MCP tests on the oldest supported Node
 - Change: `mcp-server/package.json` says `node >=20` and the README and quickstart tell people Node 20 works. CI only runs Node 22. Add a Node 20 leg to the CI matrix for `npm ci`, `npm run check` and `npm test`. If Node 20 fails, change the stated minimum instead.
