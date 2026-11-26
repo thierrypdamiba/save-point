@@ -2,7 +2,7 @@
 # stats.sh <state-repo-dir> — lifetime stats baseline for the question HUD.
 # Counts closes by status from savepoint.md and the current knowledge
 # state from recall.md (items, stages, latest qualities), template comment
-# blocks excluded. Emits `key: value` lines; the session line is maintained
+# blocks excluded. CRLF line endings and trailing spaces are tolerated. Emits `key: value` lines; the session line is maintained
 # conversationally on top of this baseline. Counting is deliberately here,
 # not model-side: the HUD's lifetime numbers must not drift between sessions.
 set -eu
@@ -15,6 +15,7 @@ r="$dir/recall.md"
 # than adding one. All three are reported separately.
 if [ -f "$w" ]; then
   awk '
+    { sub(/[ \t\r]+$/, "") }
     /<!--/ { c = 1 } /-->/ { c = 0; next }
     !c && /^## q[0-9]+ — / {
       s = $0; sub(/^## q[0-9]+ — /, "", s); sub(/ @ .*/, "", s)
@@ -36,6 +37,7 @@ fi
 # Current knowledge state across recall items.
 if [ -f "$r" ]; then
   awk '
+    { sub(/[ \t\r]+$/, "") }
     /<!--/ { c = 1 } /-->/ { c = 0; next }
     !c && /^## q[0-9]+/ { items++ }
     !c && /^[[:space:]]*([-*][[:space:]])?stage: [0-7]$/ { s = $NF; stage[s]++ }

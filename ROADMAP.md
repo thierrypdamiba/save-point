@@ -78,6 +78,18 @@ Audit date: 2026-11-26. Audited: README, SKILL.md, scripts, features, eval, inst
 - Verify: `npm pack` in CI lists the expected files and the packed server starts and answers `list_skills`.
 - Size: medium. Status: blocked on the owner (publishing decision).
 
+### 11. Stats script reads CRLF state files
+- Change: make `stats.sh` ignore a trailing carriage return and trailing spaces, as `check-due.sh` already does. Found in the run 11 audit.
+- Benefits: anyone on Windows or with git autocrlf, whose HUD lifetime numbers were wrong.
+- Verify: a CRLF fixture gives the same counts as the LF one. 
+- Size: small. Status: done (dev, see CHANGELOG). CI step `verify stats script reads CRLF files`. Run before the fix: stage2 showed 0 and a key ended in a carriage return.
+
+### 12. Run the inline CI script checks locally
+- Change: move the long inline `run:` blocks in `ci.yml` for the skill scripts into files under `scripts/` that CI calls, so a contributor can run them with `sh`. No check may be weakened in the move.
+- Benefits: contributors, who today must copy shell out of YAML to test a script change.
+- Verify: CI passes with the same checks. Each block runs locally to the same result.
+- Size: medium. Status: ready.
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.
