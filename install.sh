@@ -1,6 +1,7 @@
 #!/bin/sh
 # Install the Save Point skill for one or more Agent Skills hosts.
-# Usage: ./install.sh [claude|codex|goose|all]   (default: all detected hosts)
+# Usage: ./install.sh [--ref <tag|branch>] [claude|codex|goose|all]   (default: all detected hosts)
+#        --ref pins the install to a tag or branch: it always clones that ref, even from a checkout.
 #        ./install.sh --uninstall [claude|codex|goose|all]   (removes the skill and the recall hook entry;
 #                                                              never touches ~/.save-point)
 #   or:  curl -fsSL https://raw.githubusercontent.com/thierrypdamiba/save-point/main/install.sh | sh
@@ -9,7 +10,17 @@ set -eu
 : "${HOME:?HOME must be set}"
 
 mode=install
-if [ "${1:-}" = "--uninstall" ]; then mode=uninstall; shift; fi
+ref=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --uninstall) mode=uninstall; shift ;;
+    --ref)
+      [ $# -ge 2 ] && [ -n "$2" ] || { echo "error: --ref needs a tag or branch name" >&2; exit 1; }
+      ref=$2; shift 2 ;;
+    *) break ;;
+  esac
+done
+[ -z "$ref" ] || [ "$mode" = install ] || { echo "error: --ref does not apply to --uninstall" >&2; exit 1; }
 target=${1:-all}
 case "$target" in
   claude|codex|goose|all) ;;
@@ -18,14 +29,24 @@ esac
 
 here=$(cd "$(dirname "$0")" && pwd)
 src="$here/save-point"
-if [ "$mode" = install ] && [ ! -f "$src/SKILL.md" ]; then
+if [ "$mode" = install ] && { [ -n "$ref" ] || [ ! -f "$src/SKILL.md" ]; }; then
   command -v git >/dev/null 2>&1 || { echo "error: no local checkout and git not found" >&2; exit 1; }
   tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
-  echo "no local checkout — cloning thierrypdamiba/save-point..."
-  git clone -q --depth 1 https://github.com/thierrypdamiba/save-point.git "$tmp/save-point-repo"
+  repo_url=${SAVE_POINT_REPO_URL:-https://github.com/thierrypdamiba/save-point.git}   # override is for tests
+  echo "cloning thierrypdamiba/save-point${ref:+ at $ref}..."
+  if [ -n "$ref" ]; then
+    git clone -q --depth 1 --branch "$ref" "$repo_url" "$tmp/save-point-repo" \
+      || { echo "error: could not clone ref '$ref'" >&2; exit 1; }
+  else
+    git clone -q --depth 1 "$repo_url" "$tmp/save-point-repo"
+  fi
   src="$tmp/save-point-repo/save-point"
   [ -f "$src/SKILL.md" ] || { echo "error: clone succeeded but SKILL.md missing" >&2; exit 1; }
 fi
+
+# Version of the source being installed, read from the plugin manifest.
+version=$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' "$(dirname "$src")/.claude-plugin/plugin.json" 2>/dev/null | head -1)
+version=${version:-unknown}
 
 installed=0
 
@@ -40,7 +61,8 @@ install_to() {
   rm -rf "$dest"
   cp -R "$src" "$dest"
   rm -rf "$dest/features" "$dest/reference" "$dest/.claude-plugin"   # maintainer docs and packaging, not runtime context
-  echo "installed for $host: $dest"
+  printf '%s\n' "$version" > "$dest/VERSION"
+  echo "installed for $host: $dest (version $version)"
   installed=$((installed + 1))
 }
 
