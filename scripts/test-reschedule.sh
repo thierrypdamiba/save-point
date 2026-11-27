@@ -120,3 +120,10 @@ mkdir -p "$S/repositories/$id"
 printf -- '---\nrepository_name: mine\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/$id/recall.md"
 out=$(cd "$G" && SAVE_POINT_HOME=$S sh "$here/save-point/scripts/check-due.sh")
 printf '%s' "$out" | grep -q 'mine' && ! printf '%s' "$out" | grep -q '1 repository/ies (a' && printf '%s' "$out" | grep -q '1 repository' || { echo "FAIL cross_repo_recall off did not limit to this repository: $out"; exit 1; }
+# A last_prompt_at in the future (clock set wrong once) must not mute the hook. A recent one still does.
+printf -- '---\nrepository_name: a\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
+rm -f "$S/profile.md"
+printf -- '---\nlast_prompt_at: 2999-01-01T00:00:00Z\n---\n' > "$S/scheduler.md"
+chk "last_prompt_at in the future" nudge
+printf -- '---\nlast_prompt_at: %s\n---\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$S/scheduler.md"
+chk "last_prompt_at just now" quiet

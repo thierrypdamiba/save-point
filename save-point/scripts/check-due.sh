@@ -64,6 +64,8 @@ if [ "$(frontmatter "$root/scheduler.md" prompt_date)" = "$today" ]; then
   [ "$count" -ge "$limit" ] && exit 0
 fi
 last=$(iso_to_epoch "$(frontmatter "$root/scheduler.md" last_prompt_at)")
+# A last prompt in the future (a clock that was wrong once) must not mute the hook until that date.
+[ "$last" -le "$now" ] || last=0
 [ $((now - last)) -lt "$gap_s" ] && exit 0
 
 # With cross_repo_recall off, only the current repository's queue may nudge here.

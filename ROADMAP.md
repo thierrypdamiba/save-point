@@ -185,6 +185,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: the new 0 case fails on the old script (nudge printed) and passes on the new one. `scripts/test-reschedule.sh` now has 9 more cases of these rules; only the 0 case failed on the old script.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 29. A last prompt in the future must not mute the recall hook
+- Change: `check-due.sh` treats a `last_prompt_at` later than now as unset. Before, a value from a wrong clock (for example year 2999) kept the hook silent until that date. The daily cap still applies. Test added in `scripts/test-reschedule.sh`.
+- Benefits: a person whose machine clock was wrong once, or a team whose shared state came from a skewed machine. They would otherwise lose nudges with no sign why.
+- Verify: the new future case fails on the old script (no nudge) and passes on the new one. A just-now value still stays quiet.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.
