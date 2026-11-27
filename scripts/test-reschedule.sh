@@ -161,3 +161,19 @@ for v in on On ON '"on"' ''; do
   printf -- '---\ncross_repo_recall: %s\n---\n' "$v" > "$S/profile.md"
   chk "cross_repo_recall allows: [$v]" nudge
 done
+# The hook output must be valid JSON whatever a repository_name holds: quotes, backslashes,
+# angle brackets, UTF-8 and control bytes. A broken line here would reach every prompt.
+if command -v python3 >/dev/null 2>&1; then
+  rm -f "$S/profile.md" "$S/scheduler.md"
+  json_n=0
+  for nm in 'x"y' 'back\slash' 'a\"b' '</script>' 'caf'"$(printf '\303\251')" 'ctl'"$(printf '\001\037')"'end' '{"k":1}'; do
+    printf -- '---\nrepository_name: %s\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' "$nm" > "$S/repositories/x/recall.md"
+    out=$(cd_run) || { echo "FAIL hook exit for name: $nm"; exit 1; }
+    printf '%s' "$out" | python3 -c 'import sys,json; d=json.load(sys.stdin); assert d["hookSpecificOutput"]["additionalContext"].startswith("Save Point: recall is due")' \
+      || { echo "FAIL hook output is not valid JSON for name: $nm"; echo "$out"; exit 1; }
+    json_n=$((json_n + 1))
+  done
+  echo "hook JSON: $json_n names parsed"
+else
+  echo "hook JSON check not run: python3 not found"
+fi
