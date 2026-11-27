@@ -134,6 +134,17 @@ for v in 'interruption_style: "manual_only"' "interruption_style: 'manual_only'"
   printf -- '---\n%s\n---\n' "$v" > "$S/profile.md"
   chk "profile value: $v" quiet
 done
+# A near-miss style value reads as an opt-out; the two real values keep their meaning.
+for v in 'manual-only' 'Manual_Only' 'off' 'bogus'; do
+  printf -- '---\ninterruption_style: %s\n---\n' "$v" > "$S/profile.md"
+  chk "unknown interruption_style: $v" quiet
+done
+printf -- '---\ninterruption_style: natural_boundaries\n---\n' > "$S/profile.md"
+chk "interruption_style natural_boundaries" nudge
+printf -- '---\ninterruption_style: "natural_boundaries" # default\n---\n' > "$S/profile.md"
+chk "quoted natural_boundaries" nudge
+printf -- '---\ninterruption_style:\n---\n' > "$S/profile.md"
+chk "empty interruption_style" nudge
 printf -- '---\ndaily_limit: "3" # default\nminimum_gap: "0m"\n---\n' > "$S/profile.md"
 chk "quoted and commented values that allow a nudge" nudge
 printf -- '---\nrepository_name: a\nnext_due_at: "2020-01-01T00:00:00Z"\n---\n' > "$S/repositories/x/recall.md"

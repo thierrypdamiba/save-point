@@ -6,6 +6,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 
 ### Changed
+- Fix: the recall hook reads an unknown `interruption_style`, such as `manual-only`, as an opt-out. Before, only the exact text `manual_only` stopped nudges. Empty and `natural_boundaries` behave the same.
 - Fix: the recall hook now reads quoted and commented profile values. `interruption_style: "manual_only"` or `daily_limit: 0 # none` were ignored before, so the hook still nudged. Bare values behave the same.
 - Fix: `questions_per_interruption: 0` now means no unsolicited prompts, like `daily_limit: 0`. Before, the recall hook nudged and told the agent to offer at most 0 questions. Other values behave the same.
 - Fix: the recall hook no longer exits 2 (which blocks the prompt) when `HOME` and `SAVE_POINT_HOME` are both unset, and no longer prints invalid JSON when a repository name holds a control character. Normal setups behave the same.

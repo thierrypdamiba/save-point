@@ -47,7 +47,9 @@ digits_or() { case "$1" in ''|*[!0-9]*) echo "$2" ;; *) [ "${#1}" -gt 9 ] && ech
 
 # Profile: manual-only means never nudge.
 style=$(setting "$root/profile.md" interruption_style)
-[ "$style" = "manual_only" ] && exit 0
+# A value that is not natural_boundaries (for example `manual-only`, a near miss) is read as
+# an opt-out: the person meant to turn nudges down, and a typo must not turn them up.
+case "$style" in ''|natural_boundaries) ;; *) exit 0 ;; esac
 limit=$(digits_or "$(setting "$root/profile.md" daily_limit)" 3)
 # A daily limit of 0 means no unsolicited prompts, on any day.
 [ "$limit" -gt 0 ] || exit 0
