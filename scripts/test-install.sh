@@ -126,5 +126,33 @@ inst claude >/dev/null 2>&1
 want=$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' "$root/.claude-plugin/plugin.json" | head -1)
 check "checkout install writes VERSION from plugin.json" test "$(cat "$HOME/.claude/skills/save-point/VERSION")" = "$want"
 
+# 8. dry run writes nothing and names what a real install writes
+newhome; mkdir "$HOME/.claude" "$HOME/.codex"
+printf '{\n  "model": "x"\n}\n' > "$HOME/.claude/settings.json"
+cp "$HOME/.claude/settings.json" "$HOME/before"
+T=$(mktemp -d); (cd "$HOME" && find . | sort) > "$T/before"
+check "dry run exits 0" sh -c "sh '$root/install.sh' --dry-run all > '$T/out' 2>&1"
+(cd "$HOME" && find . | sort) > "$T/after"
+check "dry run changes no file or directory under HOME" cmp -s "$T/before" "$T/after"
+check "dry run adds no skill dir" test ! -e "$HOME/.claude/skills"
+check "dry run adds no codex skill dir" test ! -e "$HOME/.codex/skills"
+check "dry run leaves settings identical" cmp -s "$HOME/before" "$HOME/.claude/settings.json"
+check "dry run names SKILL.md path" grep -q "would write $HOME/.claude/skills/save-point/SKILL.md" "$T/out"
+check "dry run names VERSION path" grep -q "would write $HOME/.claude/skills/save-point/VERSION" "$T/out"
+check "dry run names the hook" grep -q 'would add a UserPromptSubmit hook' "$T/out"
+check "dry run names codex target" grep -q "$HOME/.codex/skills/save-point" "$T/out"
+nocheck "dry run does not list features dir" grep -q 'save-point/features/' "$T/out"
+# every file a real install writes is named by the dry run
+inst claude >/dev/null 2>&1
+miss=0
+for f in $(cd "$HOME/.claude/skills/save-point" && find . -type f | sed 's|^\./||'); do
+  grep -q "would write $HOME/.claude/skills/save-point/$f\$" "$T/out" || { miss=1; echo "not named: $f"; }
+done
+check "dry run names every file a real install writes" test "$miss" = 0
+rm -rf "$T"
+newhome; mkdir "$HOME/.claude"
+nocheck "dry run with uninstall is refused" inst --uninstall --dry-run claude
+check "dry run with no host dirs and explicit host writes nothing" sh -c "sh '$root/install.sh' --dry-run goose >/dev/null 2>&1; test ! -e '$HOME/.agents'"
+
 echo "install tests: $run run, $pass passed, $fail failed"
 [ "$fail" = 0 ]

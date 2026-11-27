@@ -2,6 +2,7 @@
 # Install the Save Point skill for one or more Agent Skills hosts.
 # Usage: ./install.sh [--ref <tag|branch>] [claude|codex|goose|all]   (default: all detected hosts)
 #        --ref pins the install to a tag or branch: it always clones that ref, even from a checkout.
+#        --dry-run prints what would be written and writes nothing under HOME.
 #        ./install.sh --uninstall [claude|codex|goose|all]   (removes the skill and the recall hook entry;
 #                                                              never touches ~/.save-point)
 #   or:  curl -fsSL https://raw.githubusercontent.com/thierrypdamiba/save-point/main/install.sh | sh
@@ -11,9 +12,11 @@ set -eu
 
 mode=install
 ref=""
+dry=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --uninstall) mode=uninstall; shift ;;
+    --dry-run) dry=1; shift ;;
     --ref)
       [ $# -ge 2 ] && [ -n "$2" ] || { echo "error: --ref needs a tag or branch name" >&2; exit 1; }
       ref=$2; shift 2 ;;
@@ -21,6 +24,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 [ -z "$ref" ] || [ "$mode" = install ] || { echo "error: --ref does not apply to --uninstall" >&2; exit 1; }
+[ "$dry" = 0 ] || [ "$mode" = install ] || { echo "error: --dry-run does not apply to --uninstall" >&2; exit 1; }
 target=${1:-all}
 case "$target" in
   claude|codex|goose|all) ;;
@@ -56,6 +60,15 @@ install_to() {
   # Only warn when the host itself looks absent; a missing skills/ subdir
   # under an existing host dir is normal and created silently.
   [ -d "$base" ] || [ -d "$(dirname "$base")" ] || echo "note: $(dirname "$base") does not exist — installing anyway; this takes effect once $host is installed"
+  if [ "$dry" = 1 ]; then
+    [ -d "$dest" ] && echo "dry run: would replace existing install at $dest"
+    echo "dry run: would install for $host: $dest (version $version)"
+    (cd "$src" && find . -type f ! -path './features/*' ! -path './reference/*' ! -path './.claude-plugin/*' | sed 's|^\./||' | sort) \
+      | while IFS= read -r f; do echo "  would write $dest/$f"; done
+    echo "  would write $dest/VERSION"
+    installed=$((installed + 1))
+    return 0
+  fi
   [ -d "$dest" ] && echo "replacing existing install at $dest"
   mkdir -p "$base"
   rm -rf "$dest"
@@ -75,6 +88,14 @@ detected() { [ "$target" != "all" ] || [ -d "$2" ]; }
 # idempotent across reinstalls, and the file is written only on success.
 register_claude_hook() {
   settings="$HOME/.claude/settings.json"
+  if [ "$dry" = 1 ]; then
+    if [ -f "$settings" ] && grep -q 'save-point/scripts/check-due.sh' "$settings"; then
+      echo "dry run: recall hook already in $settings, would leave it as is"
+    else
+      echo "dry run: would add a UserPromptSubmit hook to $settings running \$HOME/.claude/skills/save-point/scripts/check-due.sh"
+    fi
+    return 0
+  fi
   if ! command -v python3 >/dev/null 2>&1; then
     echo "note: python3 not found — register the recall hook manually (snippet in the README)"
     return 0
@@ -184,4 +205,8 @@ if [ "$installed" -eq 0 ]; then
   exit 1
 fi
 
+if [ "$dry" = 1 ]; then
+  echo "dry run done, nothing was written. Your records in ~/.save-point are never touched."
+  exit 0
+fi
 echo "done — say /save-point inside any repository"

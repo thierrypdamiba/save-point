@@ -112,7 +112,7 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `./install.sh --dry-run [host]` prints what it would copy and which settings entry it would add, and writes nothing. Test with a temp HOME that no file appears.
 - Benefits: an IT reviewer who wants to see the effect before approving the install on a managed machine.
 - Verify: a test compares the file tree and `settings.json` bytes before and after a dry run. Output names every path that a real install writes.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). A test lists HOME before and after a dry run and compares settings bytes. Another checks that every file of a real install is named in the dry run output.
 
 ## Needs the owner
 
