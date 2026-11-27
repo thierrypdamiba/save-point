@@ -127,3 +127,15 @@ printf -- '---\nlast_prompt_at: 2999-01-01T00:00:00Z\n---\n' > "$S/scheduler.md"
 chk "last_prompt_at in the future" nudge
 printf -- '---\nlast_prompt_at: %s\n---\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$S/scheduler.md"
 chk "last_prompt_at just now" quiet
+# Hand-edited profile values: YAML quotes and a trailing comment must read the same as the bare value.
+rm -f "$S/scheduler.md"
+for v in 'interruption_style: "manual_only"' "interruption_style: 'manual_only'" 'interruption_style: manual_only # off' \
+         'daily_limit: "0"' 'daily_limit: 0 # none' 'questions_per_interruption: "0"' 'cross_repo_recall: "off"'; do
+  printf -- '---\n%s\n---\n' "$v" > "$S/profile.md"
+  chk "profile value: $v" quiet
+done
+printf -- '---\ndaily_limit: "3" # default\nminimum_gap: "0m"\n---\n' > "$S/profile.md"
+chk "quoted and commented values that allow a nudge" nudge
+printf -- '---\nrepository_name: a\nnext_due_at: "2020-01-01T00:00:00Z"\n---\n' > "$S/repositories/x/recall.md"
+rm -f "$S/profile.md"
+chk "quoted next_due_at" nudge
