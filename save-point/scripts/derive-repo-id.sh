@@ -22,7 +22,9 @@ if [ "${1:-}" = "--doc" ]; then
   fi
   url=""
 else
-  root=$(cd "${1:-.}" && git rev-parse --show-toplevel)
+  root=$(cd "${1:-.}" 2>/dev/null && git rev-parse --show-toplevel 2>/dev/null) || {
+    echo "derive-repo-id.sh: not a git repository: ${1:-.} (for a folder of documents, use --doc <file-or-folder>)" >&2; exit 1
+  }
   root=$(cd "$root" && pwd -P)
 
   url=$(git -C "$root" remote get-url origin 2>/dev/null) || {

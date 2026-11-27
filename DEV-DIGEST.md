@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-27 (run 17).
+Last updated: 2026-11-27 (run 18).
 
 ## On dev now
 
@@ -37,6 +37,7 @@ The only behavior changes are the new uninstall, `--ref` and `--dry-run` options
 ## Decisions waiting for you
 
 See "Needs the owner" in ROADMAP.md. The most important: whether to tag a release (latest tag is v0.9.0, the version is 0.12.0), and whether to add a format marker to the state files.
+- Fix: the repository id script now says to use `--doc` when run outside a git repository, instead of a raw git error. Ids are unchanged.
 
 ## Next up
 
