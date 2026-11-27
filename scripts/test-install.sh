@@ -165,5 +165,18 @@ check "hooks.json quotes the plugin path" grep -q '\\"\${CLAUDE_PLUGIN_ROOT}/sav
 check "uninstall removes the quoted entry" sh -c "sh '$root/install.sh' --uninstall claude >/dev/null 2>&1; test \"\$(grep -c check-due '$HOME/.claude/settings.json')\" = 0"
 rm -rf "$SP"
 
+# 15. a symlinked settings file stays a symlink, keeps its mode and its UTF-8 text
+newhome; mkdir "$HOME/.claude" "$HOME/dot"
+printf '{"note": "caf\303\251"}\n' > "$HOME/dot/settings.json"; chmod 644 "$HOME/dot/settings.json"
+ln -s ../dot/settings.json "$HOME/.claude/settings.json"
+check "install with a symlinked settings file exits 0" inst claude
+check "settings file is still a symlink after install" test -L "$HOME/.claude/settings.json"
+check "hook landed in the real file" test "$(hookcount "$HOME/dot/settings.json")" = 1
+check "real file keeps mode 644" test "$(ls -l "$HOME/dot/settings.json" | cut -c1-10)" = "-rw-r--r--"
+check "UTF-8 text is not escaped" grep -q 'café' "$HOME/dot/settings.json"
+inst --uninstall claude >/dev/null 2>&1
+check "settings file is still a symlink after uninstall" test -L "$HOME/.claude/settings.json"
+check "uninstall removed the hook from the real file" test "$(hookcount "$HOME/dot/settings.json")" = 0
+
 echo "install tests: $run run, $pass passed, $fail failed"
 [ "$fail" = 0 ]
