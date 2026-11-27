@@ -10,6 +10,8 @@ sha256() { if command -v shasum >/dev/null 2>&1; then shasum -a 256; else sha256
 canon() { sed -e 's/\r$//' -e 's/^> \{0,1\}//' -e 's/^>$//'; }
 
 if [ $# -ge 1 ] && [ "$1" != "-" ]; then
+  [ -f "$1" ] || { echo "hash-answer.sh: not a file: $1" >&2; exit 1; }
+  [ -r "$1" ] || { echo "hash-answer.sh: cannot read: $1" >&2; exit 1; }
   text=$(canon < "$1")
 else
   text=$(canon)
