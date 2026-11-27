@@ -14,6 +14,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 - The long inline script checks in `ci.yml` now live in `scripts/test-repo-id.sh`, `scripts/test-reschedule.sh`, `scripts/test-persona.sh` and `scripts/test-stats.sh`. CI calls them. A contributor can run each with `sh scripts/<name>.sh` from any directory. The checks are the same text as before. No skill script changed.
 
 ### Fixed
+- `install.sh` now refuses any argument after the host, such as `./install.sh claude --dry-run`. Before, the extra argument was ignored, so that line wrote a real install, and `./install.sh --uninstall claude --bogus` still uninstalled. It now prints `unexpected argument` and exits 1 before writing anything. Options before the host work as before. 14 new installer checks (103 total).
 - `check-persona.sh` now counts a custom persona's length in characters in every locale. Before, in the C locale (no `LANG` set, common for hooks and agents) it counted bytes, so a non-English description of about 100 characters was refused as too long. Limit stays 200 characters. English text and stored values are unchanged. 4 new checks in `scripts/test-persona.sh`.
 - The recall hook now ignores a `last_prompt_at` that is in the future. Before, a value written while the clock was wrong kept the hook silent until that date. Normal values behave the same, and the daily cap and minimum gap still apply.
 - The recall hook now stays quiet when `daily_limit` is `0`. Before, it still nudged on the first prompt of each day. Default and non-zero limits behave the same.

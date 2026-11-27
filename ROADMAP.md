@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 27 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 35 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -218,6 +218,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `check-persona.sh` counted length with `wc -m`, which counts bytes in the C locale. A 150 character description in French or Japanese was refused as "300 characters" when `LANG` is unset. Now it drops UTF-8 continuation bytes and counts the rest, so the 200 character limit holds in any locale. Found in the run 27 audit.
 - Benefits: a non-English speaker setting a custom persona through an agent or hook, where no locale is set.
 - Verify: `scripts/test-persona.sh` accepts 200 and refuses 201 accented characters under `LC_ALL=C` and `C.UTF-8`. The C case fails on the old script (4 checks added).
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 35. Installer must refuse arguments after the host
+- Change: `install.sh` read only the first non-option argument, so `./install.sh claude --dry-run` ignored the flag and wrote a real install, and `./install.sh --uninstall claude --bogus` uninstalled. Any argument after the host is now refused with `unexpected argument`, before anything is written. Options before the host work as before. Found in the run 28 audit.
+- Benefits: an IT reviewer who adds `--dry-run` at the end of the line to look before approving, and who got a real install on a managed machine.
+- Verify: `scripts/test-install.sh` has 14 new checks (103 total). 14 fail on the old installer, including a trailing `--dry-run` that wrote files.
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
