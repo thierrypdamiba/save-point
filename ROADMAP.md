@@ -226,6 +226,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: `scripts/test-install.sh` has 14 new checks (103 total). 14 fail on the old installer, including a trailing `--dry-run` that wrote files.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 36. Stats script must read a field with a trailing note
+- Change: `stats.sh` counted `- stage: 2 # note` as no stage and `- last_quality: solid # note` as a quality named `note`. The recall hook already reads such hand edits (item 30). Now `stats.sh` drops a trailing ` # note` from recall.md fields. Headings are untouched. Files without notes give the same output as before.
+- Benefits: a person who annotates `recall.md` by hand and reads the HUD totals.
+- Verify: `scripts/test-stats.sh` has a case. On the old script it failed with `missing 'stage2: 1'`.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

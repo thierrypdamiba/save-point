@@ -6,6 +6,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 
 ### Changed
+- Fix: `stats.sh` reads a `recall.md` field that ends in a hand-written note, such as `- stage: 2 # note`. Before, that stage was not counted and the quality was counted under the word `note`. Files without notes give the same numbers.
 - Fix: `stats.sh` counts a heading that ends in an HTML comment, such as `## q2 — solid @ date <!-- note -->`. Before, any line holding `-->` was skipped, so the close was missing from the HUD totals. Headings inside a comment block are still skipped. Only that case changes.
 - Fix: the recall hook reads an unknown `cross_repo_recall`, such as `false`, `no` or a typo, as `off`. Before, only the exact text `off` kept other repositories out, so a typo let the hook name a different repository in the current session. Empty and `on` (any case) behave the same. Only the hook changed. The `profile.md` template notes the rule.
 - Fix: the recall hook reads an unknown `interruption_style`, such as `manual-only`, as an opt-out. Before, only the exact text `manual_only` stopped nudges. Empty and `natural_boundaries` behave the same.

@@ -38,3 +38,13 @@ done
 if out=$(sh save-point/scripts/stats.sh "$d/no-such-dir" 2>"$d/err"); then echo "FAIL missing dir exited 0"; exit 1; fi
 [ -z "$out" ] || { echo "FAIL missing dir printed stdout"; exit 1; }
 grep -q 'not a directory' "$d/err" || { echo "FAIL missing dir message"; cat "$d/err"; exit 1; }
+
+# A field a person annotated by hand still counts. Before the fix, stage 2 was
+# missed and the quality was counted under the word "note".
+d=$(mktemp -d)
+printf -- '## q1\n- stage: 2 # note\n- last_quality: solid # note\n- last_assisted: true  # x\n' > "$d/recall.md"
+out=$(sh save-point/scripts/stats.sh "$d")
+for l in 'items: 1' 'stage2: 1' 'quality_solid: 1' 'tainted: 1'; do
+  echo "$out" | grep -qx "$l" || { echo "FAIL trailing comment: missing '$l'"; echo "$out"; exit 1; }
+done
+if echo "$out" | grep -q 'quality_note'; then echo "FAIL comment text counted as a quality"; exit 1; fi
