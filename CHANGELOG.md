@@ -13,6 +13,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 - `save-point/scripts/stats.sh` now reads files with CRLF line endings and trailing spaces. Before, a CRLF `recall.md` showed every stage as 0 and no tainted items, and a CRLF `savepoint.md` printed keys like `closes_failed^M`. The output for LF files is unchanged. No record format changed. A CI step checks a CRLF case.
 
 ### Added
+- `./install.sh --dry-run [host]`: prints every file a real install would write and the hook entry it would add, and writes nothing under HOME. It is refused with `--uninstall`. A piped dry run still clones to a temp dir. Normal installs are unchanged. 13 new installer checks (59 total), including a before and after listing of HOME.
 - CI job `mcp-node20`: runs `npm ci`, `npm run check` and `npm test` for the MCP server on Node 20, the minimum in `package.json`. The Node 22 job is unchanged. CI only, no code changed.
 - `mcp-server/test/errors.test.ts`: 6 tests for MCP server failure paths. Bad directory URIs (`..`, file, http, foreign scheme, non-directory), unknown `skills/get` URI, wrong `load_skill` name, missing `SKILL.md`, bad frontmatter, and dotfiles not served. Tests only. No server code changed.
 - ROADMAP.md items 13 to 16 from a fresh audit. Docs only.

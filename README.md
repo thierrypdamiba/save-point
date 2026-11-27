@@ -92,6 +92,8 @@ cat ~/.claude/skills/save-point/VERSION
 
 Tags exist only when the owner publishes them. If the ref does not exist, the installer stops and leaves the current install in place.
 
+To see what an install would do first, run `./install.sh --dry-run` (add a host to narrow it). It lists every file and the settings entry, and writes nothing under your home folder.
+
 To uninstall: `./install.sh --uninstall` (or `--uninstall claude`) removes the skill and the recall hook entry and leaves `~/.save-point/` alone. By hand: `rm -rf ~/.claude/skills/save-point` (per host), or `/plugin uninstall save-point` if you installed as a plugin. If you registered the recall hook below, remove it from `~/.claude/settings.json` too, or every prompt will complain about the missing script. Your answers and recall schedule live in `~/.save-point/`, so delete that too if you want them gone.
 
 ### Unsolicited recall is on by default (Claude Code)

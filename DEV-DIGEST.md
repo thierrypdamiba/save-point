@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-26 (run 16).
+Last updated: 2026-11-27.
 
 ## On dev now
 
@@ -23,9 +23,10 @@ Last updated: 2026-11-26 (run 16).
 - Tests for how the MCP server refuses bad requests (6 new, 9 total). Tests only.
 - CI now also tests the MCP server on Node 20, the stated minimum. CI only.
 - Fix: the recall hook no longer prints an error or skips the daily cap when a state file holds an absurdly large number. Normal files behave the same.
+- `./install.sh --dry-run [host]` shows what an install would write and writes nothing. Normal installs are unchanged. 59 installer tests in CI.
 - This digest.
 
-The only behavior changes are the new uninstall and `--ref` options. The quickstart, team guide and state formats page are docs only. Install, question selection, grading and record formats are unchanged, so the study is not affected.
+The only behavior changes are the new uninstall, `--ref` and `--dry-run` options. The quickstart, team guide and state formats page are docs only. Install, question selection, grading and record formats are unchanged, so the study is not affected.
 
 ## Decisions waiting for you
 
