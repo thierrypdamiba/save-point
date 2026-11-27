@@ -44,6 +44,8 @@ limit=$(digits_or "$(frontmatter "$root/profile.md" daily_limit)" 3)
 # A daily limit of 0 means no unsolicited prompts, on any day.
 [ "$limit" -gt 0 ] || exit 0
 qpi=$(digits_or "$(frontmatter "$root/profile.md" questions_per_interruption)" 1)
+# Zero questions per interruption means no unsolicited prompts, like a daily limit of 0.
+[ "$qpi" -gt 0 ] || exit 0
 gap=$(frontmatter "$root/profile.md" minimum_gap)
 case "$gap" in
   *m) gap_s=$(( $(digits_or "${gap%m}" 90) * 60 )) ;;

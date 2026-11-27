@@ -179,6 +179,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: a test that damages a snapshot, runs the script, and expects the copy to match its name again.
 - Size: small. Status: blocked on the owner (Needs the owner 7).
 
+### 28. questions_per_interruption 0 must mean no unsolicited prompts
+- Change: `check-due.sh` exits quietly when `questions_per_interruption` is 0. It used to nudge with "offer at most 0 question(s)", which contradicts itself. Also added tests for branches that had none: `manual_only`, flow mode (on and expired), the minimum gap, and `cross_repo_recall: off`.
+- Benefits: a team admin or person who sets the value to 0 to stop interruptions, and anyone relying on those quiet rules, which no test covered.
+- Verify: the new 0 case fails on the old script (nudge printed) and passes on the new one. `scripts/test-reschedule.sh` now has 9 more cases of these rules; only the 0 case failed on the old script.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

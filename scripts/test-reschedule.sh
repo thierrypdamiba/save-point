@@ -91,3 +91,32 @@ out=$(cd_run) || { echo "FAIL check-due exit with daily_limit 0"; exit 1; }
 test -z "$out" || { echo "FAIL daily_limit 0 still nudged: $out"; exit 1; }
 printf -- '---\ndaily_limit: 1\n---\n' > "$S/profile.md"
 out=$(cd_run); test -n "$out" || { echo "FAIL daily_limit 1 did not nudge"; exit 1; }
+# questions_per_interruption: 0 means no unsolicited prompts, not a nudge asking for 0 questions.
+printf -- '---\nquestions_per_interruption: 0\n---\n' > "$S/profile.md"
+out=$(cd_run) || { echo "FAIL check-due exit with questions_per_interruption 0"; exit 1; }
+test -z "$out" || { echo "FAIL questions_per_interruption 0 still nudged: $out"; exit 1; }
+printf -- '---\nquestions_per_interruption: 2\n---\n' > "$S/profile.md"
+out=$(cd_run); printf '%s' "$out" | grep -q 'at most 2 question' || { echo "FAIL questions_per_interruption 2 not used"; exit 1; }
+# The other quiet rules: manual_only, flow mode, and a recent prompt inside the minimum gap.
+printf -- '---\ninterruption_style: manual_only\n---\n' > "$S/profile.md"; rm -f "$S/scheduler.md"
+chk "manual_only" quiet
+rm -f "$S/profile.md"
+printf -- '---\nflow_until: 2099-01-01T00:00:00Z\n---\n' > "$S/scheduler.md"
+chk "flow mode on" quiet
+printf -- '---\nflow_until: 2000-01-01T00:00:00Z\n---\n' > "$S/scheduler.md"
+chk "flow mode expired" nudge
+printf -- '---\nlast_prompt_at: %s\n---\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$S/scheduler.md"
+chk "default 90m gap, just prompted" quiet
+printf -- '---\nminimum_gap: 0m\n---\n' > "$S/profile.md"
+chk "gap 0m, just prompted" nudge
+# cross_repo_recall off: only the repository you are in may nudge. Directory x is not this one.
+rm -f "$S/scheduler.md"
+printf -- '---\ncross_repo_recall: off\n---\n' > "$S/profile.md"
+chk "cross_repo_recall off, other repository due" quiet
+G=$(mktemp -d); here=$(pwd)
+( cd "$G" && git init -q && git -c user.email=t@t -c user.name=t commit -q --allow-empty -m i )
+id=$(cd "$G" && sh "$here/save-point/scripts/derive-repo-id.sh" . | tail -1)
+mkdir -p "$S/repositories/$id"
+printf -- '---\nrepository_name: mine\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/$id/recall.md"
+out=$(cd "$G" && SAVE_POINT_HOME=$S sh "$here/save-point/scripts/check-due.sh")
+printf '%s' "$out" | grep -q 'mine' && ! printf '%s' "$out" | grep -q '1 repository/ies (a' && printf '%s' "$out" | grep -q '1 repository' || { echo "FAIL cross_repo_recall off did not limit to this repository: $out"; exit 1; }
