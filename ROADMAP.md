@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 20 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 22 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -137,6 +137,18 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Benefits: anyone who keeps `~/.claude/settings.json` in a dotfiles repo, whose link was silently broken and whose tracked file missed the hook.
 - Verify: `scripts/test-install.sh` has 7 new checks. 3 of them fail on the old installer.
 - Size: small. Status: done (dev, see CHANGELOG).
+
+### 21. Installer answers --help and -h
+- Change: `./install.sh --help` and `-h` print the usage line and the list of flags and hosts, and exit 0. Today both print `unknown host: --help` and exit 1, and the usage text exists only as a comment in the script. Found in the run 16 audit. Document the flags in `docs/quickstart.md`. Do not change how any other argument is parsed.
+- Benefits: a new person or an IT reviewer who runs `install.sh --help` before running an installer on a managed machine, which is the normal first step.
+- Verify: `scripts/test-install.sh` gets checks for `--help` and `-h` (exit 0, output names `--ref`, `--dry-run`, `--uninstall` and every host, nothing written to HOME). Both fail on the current installer.
+- Size: small. Status: ready.
+
+### 22. Repository id script gives a plain error outside git
+- Change: `derive-repo-id.sh` run outside a git repository prints git's `fatal: not a git repository` and exits 128. Print one clear line that names the script and says to use `--doc` for a folder that is not a repository, and exit 1. The id output for valid repositories must not change.
+- Benefits: a person using Save Point on a plain folder of documents, who sees a git error with no hint about `--doc`.
+- Verify: `scripts/test-repo-id.sh` gets a case run in an empty temp directory: exit 1, one stderr line that mentions `--doc`. Existing id cases give identical output.
+- Size: small. Status: ready.
 
 ## Needs the owner
 
