@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 24 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 27 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -167,6 +167,18 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: the new case fails on the old script (exit 1, nudge printed) and passes on the new one.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 26. Test the source hash and snapshot script
+- Change: add `scripts/test-hash-source.sh` and run it in CI. `hash-source.sh` had no test. The run 22 audit tried it by hand: digests, snapshots, modes and errors all behaved correctly. No script changed.
+- Benefits: the owner running the study, and anyone who stores `source_sha256` or relies on a snapshot holding the exact bytes an answer was right for in a document workspace.
+- Verify: the test passes on the current script (10 check groups). It fails when `chmod 700` is removed from the script, and when the file check before `mkdir` is removed. Removing the "snapshot exists" check does not fail it, because rewriting identical bytes is harmless.
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 27. Snapshot reuse trusts a file by name (open question, no change yet)
+- Change: if a file named by a digest already exists in the snapshot directory, `hash-source.sh` keeps it without checking its bytes. A hand-edited or damaged snapshot stays and is later read as the text an answer was right for. Decide whether to re-hash an existing copy and replace it on mismatch. This touches how study evidence is stored, so it waits for the owner.
+- Benefits: the study analyst, who relies on snapshots being what their name says.
+- Verify: a test that damages a snapshot, runs the script, and expects the copy to match its name again.
+- Size: small. Status: blocked on the owner (Needs the owner 7).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.
@@ -175,3 +187,4 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 4. Whether the installer's curl line should point at a tag instead of `main`.
 5. A security contact address for SECURITY.md. This run will not invent one. Item 2 will use GitHub private vulnerability reporting unless you say otherwise.
 6. Whether a macOS CI runner is acceptable cost-wise.
+7. Whether `hash-source.sh` should verify an existing snapshot against its name and replace it if damaged (item 27). It is a safe change in my view, but snapshots are study evidence, so you decide.

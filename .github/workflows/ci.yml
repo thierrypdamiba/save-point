@@ -137,3 +137,5 @@ jobs:
         run: sh scripts/test-stats.sh
       - name: verify answer hash script
         run: sh scripts/test-hash-answer.sh
+      - name: verify source hash and snapshot script
+        run: sh scripts/test-hash-source.sh
