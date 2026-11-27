@@ -37,6 +37,7 @@ The only behavior changes are the new uninstall, `--ref` and `--dry-run` options
 - Fix: `stats.sh` now reports an error for a path that is not a directory. Before, a typo gave a block of zeros that looked like real stats. Real directories behave the same.
 - Test only: `scripts/test-hash-answer.sh` pins the answer digest for fixed inputs, so a change to how answers are hashed fails CI. No script changed.
 - Test only: `scripts/test-hash-source.sh` covers the source hash and snapshot script, which had no test. No script changed. One open question for you in ROADMAP.md item 27.
+- Fix: the recall hook no longer goes silent when `last_prompt_at` holds a date in the future (a wrong clock). Normal behavior is unchanged.
 
 ## Decisions waiting for you
 
