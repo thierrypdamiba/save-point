@@ -106,7 +106,7 @@ Turning it off is one move, at whichever layer you prefer: say **`/save-point in
 {
   "hooks": {
     "UserPromptSubmit": [
-      { "hooks": [ { "type": "command", "command": "$HOME/.claude/skills/save-point/scripts/check-due.sh" } ] }
+      { "hooks": [ { "type": "command", "command": "\"$HOME/.claude/skills/save-point/scripts/check-due.sh\"" } ] }
     ]
   }
 }

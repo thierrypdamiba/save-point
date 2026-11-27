@@ -154,5 +154,16 @@ newhome; mkdir "$HOME/.claude"
 nocheck "dry run with uninstall is refused" inst --uninstall --dry-run claude
 check "dry run with no host dirs and explicit host writes nothing" sh -c "sh '$root/install.sh' --dry-run goose >/dev/null 2>&1; test ! -e '$HOME/.agents'"
 
+# 14. a HOME with a space: the registered hook command must still run
+SP=$(mktemp -d); H="$SP/h o me"; mkdir -p "$H/.claude"; export HOME=$H
+check "install into a HOME with a space exits 0" inst claude
+hookcmd=$(python3 -c 'import json,sys
+print(json.load(open(sys.argv[1]))["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"])' "$HOME/.claude/settings.json")
+check "hook command runs with a space in HOME and exits 0" sh -c "$hookcmd"
+check "hook command is quoted" test "$hookcmd" = '"$HOME/.claude/skills/save-point/scripts/check-due.sh"'
+check "hooks.json quotes the plugin path" grep -q '\\"\${CLAUDE_PLUGIN_ROOT}/save-point/scripts/check-due.sh\\"' "$root/hooks/hooks.json"
+check "uninstall removes the quoted entry" sh -c "sh '$root/install.sh' --uninstall claude >/dev/null 2>&1; test \"\$(grep -c check-due '$HOME/.claude/settings.json')\" = 0"
+rm -rf "$SP"
+
 echo "install tests: $run run, $pass passed, $fail failed"
 [ "$fail" = 0 ]

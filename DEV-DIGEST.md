@@ -25,6 +25,7 @@ Last updated: 2026-11-27.
 - Fix: the recall hook no longer prints an error or skips the daily cap when a state file holds an absurdly large number. Normal files behave the same.
 - `./install.sh --dry-run [host]` shows what an install would write and writes nothing. Normal installs are unchanged. 59 installer tests in CI.
 - Fix: the recall hook now stays quiet instead of blocking your prompt when `HOME` is unset, and keeps its JSON valid for odd repository names. Normal setups behave the same.
+- Fix: the recall hook now works when your home folder has a space in its path. Before, it errored on every prompt. Existing installs keep the old entry until you uninstall and install again. 64 installer tests in CI.
 - This digest.
 
 The only behavior changes are the new uninstall, `--ref` and `--dry-run` options. The quickstart, team guide and state formats page are docs only. Install, question selection, grading and record formats are unchanged, so the study is not affected.
