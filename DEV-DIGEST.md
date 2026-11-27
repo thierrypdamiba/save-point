@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-27 (run 18).
+Last updated: 2026-11-27 (run 19).
 
 ## On dev now
 
@@ -33,6 +33,7 @@ Last updated: 2026-11-27 (run 18).
 
 The only behavior changes are the new uninstall, `--ref` and `--dry-run` options. The quickstart, team guide and state formats page are docs only. Install, question selection, grading and record formats are unchanged, so the study is not affected.
 - Audit only: two new small items in ROADMAP.md (`install.sh --help` fails today; the repo id script shows a raw git error outside git). No code changed.
+- Fix: `stats.sh` now reports an error for a path that is not a directory. Before, a typo gave a block of zeros that looked like real stats. Real directories behave the same.
 
 ## Decisions waiting for you
 

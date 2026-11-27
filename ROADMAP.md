@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 22 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 23 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -149,6 +149,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Benefits: a person using Save Point on a plain folder of documents, who sees a git error with no hint about `--doc`.
 - Verify: `scripts/test-repo-id.sh` gets a case run in an empty temp directory: exit 1, one stderr line that mentions `--doc`. Existing id cases give identical output.
 - Size: small. Status: done (dev, see CHANGELOG). 1 new case group in `scripts/test-repo-id.sh`. On the old script it failed with exit 128.
+
+### 23. Stats script must not report zeros for a missing directory
+- Change: `stats.sh` exits 1 with a plain error when its argument is not a directory.
+- Benefits: anyone reading the question HUD, whose lifetime numbers must not contradict the state files.
+- Verify: `scripts/test-stats.sh` runs it on a missing path and expects exit 1, an empty stdout and a message. It failed on the old script.
+- Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
 
