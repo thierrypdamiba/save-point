@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-27 (run 26).
+Last updated: 2026-11-27 (run 27).
 
 ## On dev now
 
@@ -32,6 +32,7 @@ Last updated: 2026-11-27 (run 26).
 - Fix: the MCP server now starts when its skill file has Windows line endings. Before, it stopped at startup. Tests only plus a one line regex change.
 - Fix: the installer no longer breaks a symlinked `~/.claude/settings.json` (dotfile managers). It edits the linked file and keeps its permissions. 71 installer tests in CI.
 - `./install.sh --help` and `-h` now show the flags and hosts instead of an error. 89 installer tests in CI.
+- Fix: a custom persona in a non-English language is no longer refused as too long when no locale is set. English text behaves the same.
 - This digest.
 
 The only behavior changes are the new uninstall, `--ref` and `--dry-run` options. The quickstart, team guide and state formats page are docs only. Install, question selection, grading and record formats are unchanged, so the study is not affected.

@@ -13,6 +13,12 @@ test "$(sh $p custom a skeptical CFO who dislikes jargon)" = '"custom: a skeptic
 test "$(sh $p 'custom   spaced    out ')" = '"custom: spaced out"' || { echo "FAIL custom persona spacing"; exit 1; }
 long=$(printf 'x%.0s' $(seq 200))
 test "$(sh $p "custom $long")" = "\"custom: $long\"" || { echo "FAIL 200 characters refused"; exit 1; }
+# The length limit counts characters in every locale. In the C locale a byte count would refuse this.
+e200=$(printf 'é%.0s' $(seq 200)); e201="${e200}é"
+for loc in C C.UTF-8; do
+  test "$(LC_ALL=$loc sh $p "custom $e200")" = "\"custom: $e200\"" || { echo "FAIL 200 non-ASCII characters refused in locale $loc"; exit 1; }
+  if LC_ALL=$loc sh $p "custom $e201" >/dev/null 2>&1; then echo "FAIL 201 non-ASCII characters accepted in locale $loc"; exit 1; fi
+done
 nl=$(printf 'two\nlines')
 for bad in '' 'boss' 'customer' 'custom' 'custom   ' 'custom a "quoted" role' 'custom back\slash' "custom $nl" "custom x$long"; do
   if out=$(sh $p "$bad" 2>/dev/null); then echo "FAIL illegal persona accepted: '$bad'"; exit 1; fi
