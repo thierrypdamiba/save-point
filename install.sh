@@ -42,6 +42,9 @@ done
 [ -z "$ref" ] || [ "$mode" = install ] || { echo "error: --ref does not apply to --uninstall" >&2; exit 1; }
 [ "$dry" = 0 ] || [ "$mode" = install ] || { echo "error: --dry-run does not apply to --uninstall" >&2; exit 1; }
 target=${1:-all}
+# Options go before the host. An option after it would otherwise be ignored, and
+# `install.sh claude --dry-run` would write a real install.
+[ $# -le 1 ] || { echo "error: unexpected argument: $2 (options go before the host; see --help)" >&2; exit 1; }
 case "$target" in
   claude|codex|goose|all) ;;
   *) echo "unknown host: $target (use claude, codex, goose, or all)" >&2; exit 1 ;;

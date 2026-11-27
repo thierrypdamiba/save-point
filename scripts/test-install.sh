@@ -189,5 +189,20 @@ for flag in --help -h; do
   check "$flag writes nothing to HOME" test -z "$(ls -A "$HOME")"
 done
 
+# 17. extra arguments after the host are refused, not ignored (a trailing --dry-run must not install)
+for args in "claude --dry-run" "claude --uninstall" "claude codex" "all --ref v0.9.0"; do
+  newhome; mkdir "$HOME/.claude"
+  # shellcheck disable=SC2086
+  nocheck "'$args' exits nonzero" inst $args
+  # shellcheck disable=SC2086
+  out=$(inst $args 2>&1)
+  check "'$args' names the extra argument" sh -c "printf '%s' \"\$1\" | grep -q 'unexpected argument'" _ "$out"
+  check "'$args' writes nothing to HOME" test ! -e "$HOME/.claude/skills" -a ! -e "$HOME/.claude/settings.json"
+done
+newhome; mkdir "$HOME/.claude"; inst claude >/dev/null 2>&1
+# shellcheck disable=SC2086
+nocheck "uninstall with a trailing flag exits nonzero" inst --uninstall claude --bogus
+check "uninstall with a trailing flag keeps the skill" test -f "$HOME/.claude/skills/save-point/SKILL.md"
+
 echo "install tests: $run run, $pass passed, $fail failed"
 [ "$fail" = 0 ]
