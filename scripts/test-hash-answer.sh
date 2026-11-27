@@ -36,4 +36,14 @@ pass=$((pass + 2))
 if out=$(sh "$H" "$d/none" 2>/dev/null); then echo "FAIL missing file exited 0"; exit 1; fi
 [ -z "$out" ] || { echo "FAIL missing file printed stdout"; exit 1; }
 pass=$((pass + 1))
+# A missing file and a directory give one plain line and exit 1, as the other scripts do.
+for bad in "$d/none" "$d"; do
+  out=$(sh "$H" "$bad" 2>"$d/err") && { echo "FAIL $bad exited 0"; exit 1; }
+  rc=$?
+  [ "$rc" -eq 1 ] || { echo "FAIL $bad exit $rc, want 1"; exit 1; }
+  [ -z "$out" ] || { echo "FAIL $bad printed stdout"; exit 1; }
+  [ "$(wc -l < "$d/err" | tr -d ' ')" -eq 1 ] || { echo "FAIL $bad stderr not one line"; exit 1; }
+  grep -q "^hash-answer.sh: not a file: $bad\$" "$d/err" || { echo "FAIL $bad message"; exit 1; }
+  pass=$((pass + 3))
+done
 echo "hash-answer: $pass checks passed"

@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 39 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 40 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -248,6 +248,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `scripts/test-reschedule.sh` feeds the hook seven repository names (quotes, backslashes, `</script>`, UTF-8, control bytes, JSON text) and parses each output with `python3`. An existing check covered only one odd name by string match. Found in the run 32 audit, which looked for untested output paths. No skill script changed.
 - Benefits: anyone with the hook installed, since the hook runs on every prompt and bad JSON there is seen on every prompt.
 - Verify: `sh scripts/test-reschedule.sh` prints `hook JSON: 7 names parsed`. Removing the name escaping in `check-due.sh` fails the suite (the older string check fires first).
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 40. Answer digest script gives a plain error for a bad path
+- Change: `hash-answer.sh` given a missing file or a directory printed a shell message (`hash-answer.sh: 13: cannot open ...` or `sed: read error`) and exited 2 or 4. Now it prints `hash-answer.sh: not a file: <path>` and exits 1, as `derive-repo-id.sh` and `hash-source.sh` do. The digest of a real file or stdin is unchanged. Found in the run 33 audit by feeding each script a bad path.
+- Benefits: an agent or person who mistypes the answer file path. The skill runs this script when it records an answer, so a clear one line error is what the agent reads.
+- Verify: `sh scripts/test-hash-answer.sh` prints `18 checks passed`. On the old script the new check fails with `exit 2, want 1`.
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
