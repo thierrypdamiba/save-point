@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 35 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 38 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -232,6 +232,18 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: `scripts/test-stats.sh` has a case. On the old script it failed with `missing 'stage2: 1'`.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 37. Broken relative links in Markdown fail CI
+- Change: `scripts/check-links.sh` fails when a relative link in a tracked Markdown file points at a path that does not exist. CI runs `scripts/test-check-links.sh`, which also checks the real repository. Anchors and web links are not checked. Found in the run 31 audit, which checked the docs by hand: none were broken today.
+- Benefits: a new person following the README and docs, and a maintainer who renames or moves a file.
+- Verify: `scripts/test-check-links.sh` passes (6 checks), and a broken link in the README makes `check-links.sh` exit 1 with `BROKEN README.md -> ...`.
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 38. Recall hook and a non-numeric daily_limit (open question, no change yet)
+- Change: `daily_limit: off`, `none` or `no` is read as the default 3, so the hook still nudges, and so does `-1`. Items 31 and 32 read a near miss as an opt-out for `interruption_style` and `cross_repo_recall`. Numbers are different, because `-1` or `none` could also mean no cap. Decide what a non-numeric limit means, document it in `profile.md`, then test it. Found in the run 31 audit.
+- Benefits: a person or team admin who types a word to turn interruptions off.
+- Verify: `scripts/test-reschedule.sh` cases for `off`, `none`, `no` and `-1` that match the decision.
+- Size: small. Status: blocked on the owner (Needs the owner 8).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.
@@ -241,3 +253,4 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 5. A security contact address for SECURITY.md. This run will not invent one. Item 2 will use GitHub private vulnerability reporting unless you say otherwise.
 6. Whether a macOS CI runner is acceptable cost-wise.
 7. Whether `hash-source.sh` should verify an existing snapshot against its name and replace it if damaged (item 27). It is a safe change in my view, but snapshots are study evidence, so you decide.
+8. What a non-numeric `daily_limit` such as `off`, `none` or `-1` should mean (item 38): no unsolicited prompts, or the default of 3. Today it is the default. It only affects hand-edited files.

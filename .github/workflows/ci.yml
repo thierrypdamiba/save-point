@@ -139,3 +139,5 @@ jobs:
         run: sh scripts/test-hash-answer.sh
       - name: verify source hash and snapshot script
         run: sh scripts/test-hash-source.sh
+      - name: verify Markdown links
+        run: sh scripts/test-check-links.sh
