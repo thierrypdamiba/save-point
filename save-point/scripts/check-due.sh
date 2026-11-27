@@ -41,6 +41,8 @@ digits_or() { case "$1" in ''|*[!0-9]*) echo "$2" ;; *) [ "${#1}" -gt 9 ] && ech
 style=$(frontmatter "$root/profile.md" interruption_style)
 [ "$style" = "manual_only" ] && exit 0
 limit=$(digits_or "$(frontmatter "$root/profile.md" daily_limit)" 3)
+# A daily limit of 0 means no unsolicited prompts, on any day.
+[ "$limit" -gt 0 ] || exit 0
 qpi=$(digits_or "$(frontmatter "$root/profile.md" questions_per_interruption)" 1)
 gap=$(frontmatter "$root/profile.md" minimum_gap)
 case "$gap" in

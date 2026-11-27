@@ -10,6 +10,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 - The long inline script checks in `ci.yml` now live in `scripts/test-repo-id.sh`, `scripts/test-reschedule.sh`, `scripts/test-persona.sh` and `scripts/test-stats.sh`. CI calls them. A contributor can run each with `sh scripts/<name>.sh` from any directory. The checks are the same text as before. No skill script changed.
 
 ### Fixed
+- The recall hook now stays quiet when `daily_limit` is `0`. Before, it still nudged on the first prompt of each day. Default and non-zero limits behave the same.
 - `stats.sh` given a directory that does not exist now prints `error: not a directory: <path>` and exits 1. Before, it printed a full block of zeros, which the question HUD could show as lifetime numbers. An existing directory with no history still gives zeros. 1 new check group in `scripts/test-stats.sh`.
 - `derive-repo-id.sh` run outside a git repository now prints one line that names `--doc` and exits 1. Before, it printed git's `fatal: not a git repository` and exited 128. Output for repositories and `--doc` is unchanged. No id changed.
 - `install.sh` now keeps a symlinked `~/.claude/settings.json` a symlink. Before, adding or removing the recall hook replaced the link with a plain file with mode 0600 and left the linked file without the hook. It now edits the linked file, keeps its permissions, and no longer rewrites non-ASCII text as `\uXXXX` escapes. Ordinary files behave as before. 7 new installer checks (71 total).

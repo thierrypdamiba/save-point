@@ -161,6 +161,11 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Benefits: the owner running the study, and anyone who stores `answer_sha256`. A silent change to the canonical form would make old digests fail to match new ones.
 - Verify: the test passes on the current script (12 checks) and fails when the `>` marker rule is removed from the script.
 - Size: small. Status: done (dev, see CHANGELOG).
+### 25. daily_limit 0 must mean no unsolicited prompts
+- Change: `check-due.sh` exits quietly when `daily_limit` is 0. Test added in `scripts/test-reschedule.sh`.
+- Benefits: a person or team admin who sets `daily_limit: 0` to turn interruptions off (`docs/teams.md` lists the setting). Before, one nudge still came each day.
+- Verify: the new case fails on the old script (exit 1, nudge printed) and passes on the new one.
+- Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
 
