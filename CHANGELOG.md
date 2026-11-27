@@ -6,6 +6,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 
 ### Changed
+- Tests: `scripts/test-reschedule.sh` now parses the recall hook output as JSON for seven hostile repository names. Test only. No skill script changed.
 - CI now checks that relative links in Markdown files point at files that exist (`scripts/check-links.sh`, tested by `scripts/test-check-links.sh`). CI and tests only. No skill script changed.
 - Fix: `stats.sh` reads a `recall.md` field that ends in a hand-written note, such as `- stage: 2 # note`. Before, that stage was not counted and the quality was counted under the word `note`. Files without notes give the same numbers.
 - Fix: `stats.sh` counts a heading that ends in an HTML comment, such as `## q2 — solid @ date <!-- note -->`. Before, any line holding `-->` was skipped, so the close was missing from the HUD totals. Headings inside a comment block are still skipped. Only that case changes.

@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 38 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 39 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -243,6 +243,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Benefits: a person or team admin who types a word to turn interruptions off.
 - Verify: `scripts/test-reschedule.sh` cases for `off`, `none`, `no` and `-1` that match the decision.
 - Size: small. Status: blocked on the owner (Needs the owner 8).
+
+### 39. Pin the recall hook output as valid JSON
+- Change: `scripts/test-reschedule.sh` feeds the hook seven repository names (quotes, backslashes, `</script>`, UTF-8, control bytes, JSON text) and parses each output with `python3`. An existing check covered only one odd name by string match. Found in the run 32 audit, which looked for untested output paths. No skill script changed.
+- Benefits: anyone with the hook installed, since the hook runs on every prompt and bad JSON there is seen on every prompt.
+- Verify: `sh scripts/test-reschedule.sh` prints `hook JSON: 7 names parsed`. Removing the name escaping in `check-due.sh` fails the suite (the older string check fires first).
+- Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
 
