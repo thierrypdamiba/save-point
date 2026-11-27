@@ -2,10 +2,11 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-27 (run 30).
+Last updated: 2026-11-27 (run 31).
 
 ## On dev now
 
+- CI only: a check that fails when a link in a Markdown file points at a missing file. All links are fine today. Plus one new question for you in ROADMAP.md item 38: what `daily_limit: off` should mean.
 - Fix: the stats numbers now read a recall field you annotated by hand, such as `stage: 2 # note`. Before, that stage was missed.
 - Fix: the stats numbers now count a heading you annotated by hand with an HTML comment at the end. Before, that close was left out.
 - Fix: `./install.sh claude --dry-run` used to ignore the flag and install for real. The installer now refuses any argument after the host. Flags before the host work as before.
