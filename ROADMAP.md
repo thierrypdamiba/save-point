@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 23 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 24 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -154,6 +154,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `stats.sh` exits 1 with a plain error when its argument is not a directory.
 - Benefits: anyone reading the question HUD, whose lifetime numbers must not contradict the state files.
 - Verify: `scripts/test-stats.sh` runs it on a missing path and expects exit 1, an empty stdout and a message. It failed on the old script.
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 24. Pin the answer digest format with a test
+- Change: add `scripts/test-hash-answer.sh` with fixed digests for `hash-answer.sh`, and run it in CI. No script changed.
+- Benefits: the owner running the study, and anyone who stores `answer_sha256`. A silent change to the canonical form would make old digests fail to match new ones.
+- Verify: the test passes on the current script (12 checks) and fails when the `>` marker rule is removed from the script.
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
