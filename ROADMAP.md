@@ -203,6 +203,17 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: `scripts/test-reschedule.sh` has 7 new checks. The first fails on the old script. Values `natural_boundaries` (bare and quoted) and empty still nudge.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 32. Recall hook must read an unknown cross_repo_recall as off
+- Change: `check-due.sh` only kept other repositories out for the exact text `off`. `false`, `no`, `OFF` or a typo let the hook name another repository in the nudge. Now only an empty value or `on` (any case) allows it. Found in the run 26 audit. Same rule as item 31.
+- Benefits: a consultant who isolates client repositories, and whose hand edit had a typo. The nudge names the other repository, which can leak a client's project name.
+- Verify: `scripts/test-reschedule.sh` has 11 new checks. The first fails on the old script. `on`, `On`, `ON`, `"on"` and empty still nudge.
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 33. Stats script drops a heading that ends in an HTML comment (open, low value)
+- Change: `stats.sh` skips any line holding `-->`, so `## q1 — solid @ date <!-- note -->` is not counted. Found in the run 26 audit. No known writer produces such a heading, so only fix it if one does. Verify with a fixture that counts the heading.
+- Benefits: someone who annotates headings by hand.
+- Size: small. Status: ready (low priority).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

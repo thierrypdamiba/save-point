@@ -150,3 +150,14 @@ chk "quoted and commented values that allow a nudge" nudge
 printf -- '---\nrepository_name: a\nnext_due_at: "2020-01-01T00:00:00Z"\n---\n' > "$S/repositories/x/recall.md"
 rm -f "$S/profile.md"
 chk "quoted next_due_at" nudge
+# A cross_repo_recall value that is not on or off reads as off. The other repository (x) must stay quiet.
+rm -f "$S/profile.md"
+printf -- '---\nrepository_name: a\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
+for v in false no Off OFF of bogus; do
+  printf -- '---\ncross_repo_recall: %s\n---\n' "$v" > "$S/profile.md"
+  chk "unknown cross_repo_recall: $v" quiet
+done
+for v in on On ON '"on"' ''; do
+  printf -- '---\ncross_repo_recall: %s\n---\n' "$v" > "$S/profile.md"
+  chk "cross_repo_recall allows: [$v]" nudge
+done

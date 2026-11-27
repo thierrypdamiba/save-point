@@ -79,8 +79,12 @@ last=$(iso_to_epoch "$(setting "$root/scheduler.md" last_prompt_at)")
 [ $((now - last)) -lt "$gap_s" ] && exit 0
 
 # With cross_repo_recall off, only the current repository's queue may nudge here.
+# Only an empty value or `on` (any case) lets other repositories nudge. Any other value, such as
+# `false` or `no`, is read as `off`: the person meant to isolate repositories, and a typo must not
+# put one client's repository name into another client's session.
 only_repo=""
-if [ "$(setting "$root/profile.md" cross_repo_recall)" = "off" ]; then
+cross=$(setting "$root/profile.md" cross_repo_recall | tr '[:upper:]' '[:lower:]')
+if [ -n "$cross" ] && [ "$cross" != "on" ]; then
   only_repo=$(sh "$here/derive-repo-id.sh" . 2>/dev/null | tail -1) || true
   [ -n "$only_repo" ] || exit 0
 fi
