@@ -106,9 +106,10 @@ register_claude_hook() {
     || echo "note: could not update $settings safely — register the recall hook manually (snippet in the README)"
 import json, os, sys, tempfile
 path, cmd = sys.argv[1], sys.argv[2]
+path = os.path.realpath(path)            # a symlinked settings file (dotfile managers) stays a symlink
 data = {}
 if os.path.exists(path):
-    text = open(path).read()
+    text = open(path, encoding="utf-8").read()
     if text.strip():
         data = json.loads(text)          # malformed JSON -> abort, file untouched
 hooks = data.setdefault("hooks", {})
@@ -120,9 +121,11 @@ for e in entries:
             sys.exit(0)
 entries.append({"hooks": [{"type": "command", "command": cmd}]})
 fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path) or ".", prefix=".save-point-")
-with os.fdopen(fd, "w") as f:
-    json.dump(data, f, indent=2)
+with os.fdopen(fd, "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)
     f.write("\n")
+if os.path.exists(path):
+    os.chmod(tmp, os.stat(path).st_mode & 0o777)   # keep the file's own permissions
 os.replace(tmp, path)
 print("recall hook registered in " + path + "  (say 'interruptions off' to silence, or delete that entry)")
 PY
@@ -137,8 +140,8 @@ unregister_claude_hook() {
   python3 - "$settings" <<'PY' 2>/dev/null \
     || echo "note: could not update $settings safely — remove the recall hook by hand"
 import json, os, sys, tempfile
-path = sys.argv[1]
-text = open(path).read()
+path = os.path.realpath(sys.argv[1])     # a symlinked settings file stays a symlink
+text = open(path, encoding="utf-8").read()
 if not text.strip():
     sys.exit(0)
 data = json.loads(text)                  # malformed JSON -> abort, file untouched
@@ -164,9 +167,11 @@ else:
     if not data["hooks"]:
         del data["hooks"]
 fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path) or ".", prefix=".save-point-")
-with os.fdopen(fd, "w") as f:
-    json.dump(data, f, indent=2)
+with os.fdopen(fd, "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)
     f.write("\n")
+if os.path.exists(path):
+    os.chmod(tmp, os.stat(path).st_mode & 0o777)   # keep the file's own permissions
 os.replace(tmp, path)
 print("recall hook removed from " + path)
 PY

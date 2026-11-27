@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 and 18 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 20 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -130,6 +130,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `parseFrontmatter` in `mcp-server/src/skill-catalog.ts` matched only LF line endings and no byte order mark, so a skill folder checked out with CRLF made the server exit at startup. Found in the run 14 audit. It now accepts both.
 - Benefits: an MCP-only user on Windows, or anyone with git autocrlf, who got "SKILL.md is missing YAML frontmatter" and no server.
 - Verify: `mcp-server/test/errors.test.ts` has a test for CRLF and for a byte order mark. It failed before the fix with that error.
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 20. Installer must keep a symlinked settings file a symlink
+- Change: `install.sh` wrote `settings.json` by replacing the path, so a symlink (as dotfile managers such as stow or chezmoi create) became a plain file with mode 0600, and the real file never got the hook. Found in the run 15 audit. It now writes to the file the link points to, keeps its mode, and keeps non-ASCII text as written. Install and uninstall both.
+- Benefits: anyone who keeps `~/.claude/settings.json` in a dotfiles repo, whose link was silently broken and whose tracked file missed the hook.
+- Verify: `scripts/test-install.sh` has 7 new checks. 3 of them fail on the old installer.
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
