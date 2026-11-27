@@ -142,7 +142,7 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `./install.sh --help` and `-h` print the usage line and the list of flags and hosts, and exit 0. Today both print `unknown host: --help` and exit 1, and the usage text exists only as a comment in the script. Found in the run 16 audit. Document the flags in `docs/quickstart.md`. Do not change how any other argument is parsed.
 - Benefits: a new person or an IT reviewer who runs `install.sh --help` before running an installer on a managed machine, which is the normal first step.
 - Verify: `scripts/test-install.sh` gets checks for `--help` and `-h` (exit 0, output names `--ref`, `--dry-run`, `--uninstall` and every host, nothing written to HOME). Both fail on the current installer.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). 18 new checks in `scripts/test-install.sh` (89 total). The old installer printed `unknown host: --help` and exited 1.
 
 ### 22. Repository id script gives a plain error outside git
 - Change: `derive-repo-id.sh` run outside a git repository prints git's `fatal: not a git repository` and exits 128. Print one clear line that names the script and says to use `--doc` for a folder that is not a repository, and exit 1. The id output for valid repositories must not change.

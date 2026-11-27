@@ -17,6 +17,22 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --uninstall) mode=uninstall; shift ;;
     --dry-run) dry=1; shift ;;
+    -h|--help)
+      cat <<'U'
+Usage: ./install.sh [--ref <tag|branch>] [--dry-run] [claude|codex|goose|all]
+       ./install.sh --uninstall [claude|codex|goose|all]
+
+Installs the Save Point skill. With no host it installs for every host it finds.
+
+  --ref <tag|branch>  pin the install to a tag or branch (always clones it)
+  --dry-run           print what would be written and write nothing
+  --uninstall         remove the skill and the recall hook entry (Claude Code)
+                      Your records in ~/.save-point are never touched.
+  -h, --help          show this text
+
+Hosts: claude, codex, goose, all
+U
+      exit 0 ;;
     --ref)
       [ $# -ge 2 ] && [ -n "$2" ] || { echo "error: --ref needs a tag or branch name" >&2; exit 1; }
       ref=$2; shift 2 ;;

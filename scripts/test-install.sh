@@ -178,5 +178,16 @@ inst --uninstall claude >/dev/null 2>&1
 check "settings file is still a symlink after uninstall" test -L "$HOME/.claude/settings.json"
 check "uninstall removed the hook from the real file" test "$(hookcount "$HOME/dot/settings.json")" = 0
 
+# 16. --help and -h print usage, exit 0 and write nothing
+for flag in --help -h; do
+  newhome
+  check "$flag exits 0" inst "$flag"
+  out=$(inst "$flag" 2>&1)
+  for w in --ref --dry-run --uninstall claude codex goose all; do
+    check "$flag output names $w" sh -c "printf '%s' \"\$1\" | grep -q -e \"\$2\"" _ "$out" "$w"
+  done
+  check "$flag writes nothing to HOME" test -z "$(ls -A "$HOME")"
+done
+
 echo "install tests: $run run, $pass passed, $fail failed"
 [ "$fail" = 0 ]
