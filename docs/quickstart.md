@@ -20,6 +20,8 @@ recall hook registered in ~/.claude/settings.json  (say 'interruptions off' to s
 done — say /save-point inside any repository
 ```
 
+Run `./install.sh --help` to see every flag and host. `--dry-run` shows what an install would write and writes nothing.
+
 The recall hook is Claude Code only. It is a small script that reads scheduling data and tells the session when a question is due. It makes no network calls.
 
 Other install routes (curl one-liner, plugin, MCP) are in the [README](../README.md#install).
