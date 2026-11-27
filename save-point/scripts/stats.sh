@@ -18,7 +18,6 @@ r="$dir/recall.md"
 if [ -f "$w" ]; then
   awk '
     { sub(/[ \t\r]+$/, "") }
-    /<!--/ { c = 1 } /-->/ { c = 0; next }
     !c && /^## q[0-9]+ — / {
       s = $0; sub(/^## q[0-9]+ — /, "", s); sub(/ @ .*/, "", s)
       if (s == "open") open++
@@ -26,6 +25,8 @@ if [ -f "$w" ]; then
       else if (s ~ /^pending-evaluation/) pending++
       else { closes++; n[s]++ }
     }
+    { t = $0; gsub(/<!--[^>]*-->/, "", t)
+      if (t ~ /<!--/) c = 1; else if (t ~ /-->/) c = 0 }
     END {
       printf "closes: %d\n", closes
       for (s in n) printf "closes_%s: %d\n", s, n[s]
@@ -40,11 +41,12 @@ fi
 if [ -f "$r" ]; then
   awk '
     { sub(/[ \t\r]+$/, "") }
-    /<!--/ { c = 1 } /-->/ { c = 0; next }
     !c && /^## q[0-9]+/ { items++ }
     !c && /^[[:space:]]*([-*][[:space:]])?stage: [0-7]$/ { s = $NF; stage[s]++ }
     !c && /^[[:space:]]*([-*][[:space:]])?last_quality: / { quality[$NF]++ }
     !c && /^[[:space:]]*([-*][[:space:]])?last_assisted: true$/ { tainted++ }
+    { t = $0; gsub(/<!--[^>]*-->/, "", t)
+      if (t ~ /<!--/) c = 1; else if (t ~ /-->/) c = 0 }
     END {
       printf "items: %d\n", items
       for (s = 0; s <= 3; s++) printf "stage%d: %d\n", s, stage[s]

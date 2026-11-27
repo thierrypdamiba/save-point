@@ -209,10 +209,10 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: `scripts/test-reschedule.sh` has 11 new checks. The first fails on the old script. `on`, `On`, `ON`, `"on"` and empty still nudge.
 - Size: small. Status: done (dev, see CHANGELOG).
 
-### 33. Stats script drops a heading that ends in an HTML comment (open, low value)
+### 33. Stats script drops a heading that ends in an HTML comment
 - Change: `stats.sh` skips any line holding `-->`, so `## q1 — solid @ date <!-- note -->` is not counted. Found in the run 26 audit. No known writer produces such a heading, so only fix it if one does. Verify with a fixture that counts the heading.
 - Benefits: someone who annotates headings by hand.
-- Size: small. Status: ready (low priority).
+- Size: small. Status: done (dev, see CHANGELOG). Comment state is now updated after a line is counted, and complete `<!-- -->` pairs are removed first. Check added to `scripts/test-stats.sh`; the old script gave closes 1 on that fixture, not 3.
 
 ### 34. Custom persona length must count characters in the C locale
 - Change: `check-persona.sh` counted length with `wc -m`, which counts bytes in the C locale. A 150 character description in French or Japanese was refused as "300 characters" when `LANG` is unset. Now it drops UTF-8 continuation bytes and counts the rest, so the 200 character limit holds in any locale. Found in the run 27 audit.

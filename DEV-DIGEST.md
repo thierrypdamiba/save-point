@@ -2,10 +2,11 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-27 (run 28).
+Last updated: 2026-11-27 (run 29).
 
 ## On dev now
 
+- Fix: the stats numbers now count a heading you annotated by hand with an HTML comment at the end. Before, that close was left out.
 - Fix: `./install.sh claude --dry-run` used to ignore the flag and install for real. The installer now refuses any argument after the host. Flags before the host work as before.
 - Fix: a typo in `cross_repo_recall` (for example `false`) now keeps repositories separate in the recall hook instead of letting another repository's name show up. `on` and `off` behave as before.
 - Fix: a typo in `interruption_style` (for example `manual-only`) now keeps the recall hook quiet instead of leaving nudges on.

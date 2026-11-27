@@ -25,6 +25,15 @@ for l in 'closes: 2' 'closes_failed: 1' 'closes_solid: 1' 'stage2: 1' 'quality_s
   echo "$out" | grep -qx "$l" || { echo "FAIL CRLF: missing '$l'"; echo "$out" | cat -A; exit 1; }
 done
 
+# A heading that ends in an HTML comment still counts. A heading inside a
+# comment block does not. One-line comments do not hide what follows.
+d=$(mktemp -d)
+printf -- '## q1 \342\200\224 solid @ d\n## q2 \342\200\224 solid @ d <!-- note -->\n<!-- one line -->\n## q3 \342\200\224 solid @ d\n<!--\n## q4 \342\200\224 solid @ d\n-->\n## q5 \342\200\224 open @ d\n' > "$d/savepoint.md"
+out=$(sh save-point/scripts/stats.sh "$d")
+for l in 'closes: 3' 'closes_solid: 3' 'open: 1'; do
+  echo "$out" | grep -qx "$l" || { echo "FAIL comment heading: missing '$l'"; echo "$out"; exit 1; }
+done
+
 # A missing directory is an error, not a quiet block of zeros.
 if out=$(sh save-point/scripts/stats.sh "$d/no-such-dir" 2>"$d/err"); then echo "FAIL missing dir exited 0"; exit 1; fi
 [ -z "$out" ] || { echo "FAIL missing dir printed stdout"; exit 1; }
