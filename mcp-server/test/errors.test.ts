@@ -134,3 +134,20 @@ test("dotfiles and dot directories are not served", async () => {
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test("a SKILL.md with Windows line endings or a byte order mark still loads", async () => {
+  for (const body of [GOOD.replace(/\n/g, "\r\n"), "﻿" + GOOD]) {
+    const dir = await tempSkill({ "SKILL.md": body });
+    try {
+      const { client, close } = await connect(dir);
+      try {
+        const list = await client.request({ method: "skills/list", params: {} }, z.object({ skills: z.array(z.object({ frontmatter: z.object({ name: z.string() }).passthrough() })) }));
+        assert.equal(list.skills[0].frontmatter.name, "save-point");
+      } finally {
+        await close();
+      }
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  }
+});

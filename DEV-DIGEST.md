@@ -26,6 +26,7 @@ Last updated: 2026-11-27.
 - `./install.sh --dry-run [host]` shows what an install would write and writes nothing. Normal installs are unchanged. 59 installer tests in CI.
 - Fix: the recall hook now stays quiet instead of blocking your prompt when `HOME` is unset, and keeps its JSON valid for odd repository names. Normal setups behave the same.
 - Fix: the recall hook now works when your home folder has a space in its path. Before, it errored on every prompt. Existing installs keep the old entry until you uninstall and install again. 64 installer tests in CI.
+- Fix: the MCP server now starts when its skill file has Windows line endings. Before, it stopped at startup. Tests only plus a one line regex change.
 - This digest.
 
 The only behavior changes are the new uninstall, `--ref` and `--dry-run` options. The quickstart, team guide and state formats page are docs only. Install, question selection, grading and record formats are unchanged, so the study is not affected.

@@ -126,6 +126,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: `scripts/test-install.sh` has 5 new checks that install into a HOME with a space and run the registered command. Two fail on the old installer.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 19. MCP server must start on a CRLF SKILL.md
+- Change: `parseFrontmatter` in `mcp-server/src/skill-catalog.ts` matched only LF line endings and no byte order mark, so a skill folder checked out with CRLF made the server exit at startup. Found in the run 14 audit. It now accepts both.
+- Benefits: an MCP-only user on Windows, or anyone with git autocrlf, who got "SKILL.md is missing YAML frontmatter" and no server.
+- Verify: `mcp-server/test/errors.test.ts` has a test for CRLF and for a byte order mark. It failed before the fix with that error.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

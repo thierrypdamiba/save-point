@@ -150,7 +150,8 @@ async function listFiles(directory: string): Promise<string[]> {
 }
 
 function parseFrontmatter(content: string): Record<string, unknown> & { name: string; description: string } {
-  const match = content.match(/^---\n([\s\S]*?)\n---(?:\n|$)/);
+  // Tolerate a byte order mark and Windows line endings (git autocrlf on a checkout).
+  const match = content.replace(/^\uFEFF/, "").match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   if (!match) throw new Error("SKILL.md is missing YAML frontmatter");
   const frontmatter = parseYaml(match[1]);
   if (!frontmatter || typeof frontmatter !== "object") throw new Error("SKILL.md frontmatter must be an object");
