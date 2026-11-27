@@ -214,6 +214,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Benefits: someone who annotates headings by hand.
 - Size: small. Status: ready (low priority).
 
+### 34. Custom persona length must count characters in the C locale
+- Change: `check-persona.sh` counted length with `wc -m`, which counts bytes in the C locale. A 150 character description in French or Japanese was refused as "300 characters" when `LANG` is unset. Now it drops UTF-8 continuation bytes and counts the rest, so the 200 character limit holds in any locale. Found in the run 27 audit.
+- Benefits: a non-English speaker setting a custom persona through an agent or hook, where no locale is set.
+- Verify: `scripts/test-persona.sh` accepts 200 and refuses 201 accented characters under `LC_ALL=C` and `C.UTF-8`. The C case fails on the old script (4 checks added).
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

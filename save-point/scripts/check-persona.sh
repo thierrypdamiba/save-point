@@ -37,7 +37,8 @@ case "$first" in
     case "$text" in
       *'"'*|*'\'*) echo "invalid persona: a custom description holds no double quote and no backslash" >&2; exit 1 ;;
     esac
-    count=$(printf '%s' "$text" | wc -m | tr -d ' ')
+    # Count characters, not bytes, in any locale: drop UTF-8 continuation bytes, then count bytes.
+    count=$(printf '%s' "$text" | LC_ALL=C tr -d '\200-\277' | wc -c | tr -d ' ')
     [ "$count" -le "$max_chars" ] || { echo "invalid persona: $count characters; a custom description is at most $max_chars" >&2; exit 1; }
     printf '"custom: %s"\n' "$text"
     exit 0 ;;
