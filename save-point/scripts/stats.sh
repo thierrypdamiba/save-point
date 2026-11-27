@@ -7,6 +7,8 @@
 # not model-side: the HUD's lifetime numbers must not drift between sessions.
 set -eu
 dir=${1:?usage: stats.sh <state-repo-dir>}
+# A wrong path must not look like a repository with no history.
+[ -d "$dir" ] || { echo "error: not a directory: $dir" >&2; exit 1; }
 w="$dir/savepoint.md"
 r="$dir/recall.md"
 

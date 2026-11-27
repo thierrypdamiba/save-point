@@ -24,3 +24,8 @@ out=$(sh save-point/scripts/stats.sh "$d")
 for l in 'closes: 2' 'closes_failed: 1' 'closes_solid: 1' 'stage2: 1' 'quality_solid: 1' 'tainted: 1'; do
   echo "$out" | grep -qx "$l" || { echo "FAIL CRLF: missing '$l'"; echo "$out" | cat -A; exit 1; }
 done
+
+# A missing directory is an error, not a quiet block of zeros.
+if out=$(sh save-point/scripts/stats.sh "$d/no-such-dir" 2>"$d/err"); then echo "FAIL missing dir exited 0"; exit 1; fi
+[ -z "$out" ] || { echo "FAIL missing dir printed stdout"; exit 1; }
+grep -q 'not a directory' "$d/err" || { echo "FAIL missing dir message"; cat "$d/err"; exit 1; }
