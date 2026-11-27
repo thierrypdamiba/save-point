@@ -48,7 +48,7 @@ sh "$H" --snapshot snap a >/dev/null
 [ "$(ls -A snap | wc -l | tr -d ' ')" = "3" ] || fail "edited copy not stored"
 ok
 # No temp file is left behind.
-[ -z "$(ls -A snap | grep '^\.' || true)" ] || fail "temp file left in snapshot dir"
+for f in snap/.[!.]*; do [ ! -e "$f" ] || fail "temp file left in snapshot dir: $f"; done
 ok
 
 # Errors: exit 1, no digest on stdout, no snapshot directory for a bad file list.
