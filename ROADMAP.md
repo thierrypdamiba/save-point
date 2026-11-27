@@ -197,6 +197,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: `scripts/test-reschedule.sh` has 9 new checks. The first fails on the old script. Bare values behave as before.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 31. Recall hook must read an unknown interruption_style as an opt-out
+- Change: `interruption_style: manual-only` (hyphen), `off` or any other value that is not `natural_boundaries` was treated as the default, so the hook kept nudging. Now only an empty value or `natural_boundaries` allows nudges. The two documented values behave as before. Found in the run 25 audit.
+- Benefits: a person or team admin who hand-edits `profile.md`, makes a small typo while turning prompts off, and would otherwise keep getting them.
+- Verify: `scripts/test-reschedule.sh` has 7 new checks. The first fails on the old script. Values `natural_boundaries` (bare and quoted) and empty still nudge.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

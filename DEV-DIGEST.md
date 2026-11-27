@@ -2,10 +2,11 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-27 (run 24).
+Last updated: 2026-11-27 (run 25).
 
 ## On dev now
 
+- Fix: a typo in `interruption_style` (for example `manual-only`) now keeps the recall hook quiet instead of leaving nudges on.
 - Fix: `questions_per_interruption: 0` now turns unsolicited prompts off, as `daily_limit: 0` does. More tests for the recall hook's quiet rules.
 - Working rules for contributors (AGENTS.md) and CI that also runs on `dev`.
 - ROADMAP.md: ten ranked items toward team-ready software, plus six decisions that are yours.
