@@ -19,6 +19,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 - `save-point/scripts/stats.sh` now reads files with CRLF line endings and trailing spaces. Before, a CRLF `recall.md` showed every stage as 0 and no tainted items, and a CRLF `savepoint.md` printed keys like `closes_failed^M`. The output for LF files is unchanged. No record format changed. A CI step checks a CRLF case.
 
 ### Added
+- `scripts/test-hash-answer.sh`: 12 checks that pin the digest `hash-answer.sh` gives for fixed inputs (CRLF, quote markers, trailing newlines, file and stdin, missing file). CI runs it. No script changed.
 - `./install.sh --help` and `-h` print usage and exit 0. Before, both failed with `unknown host`. Nothing is written. Other arguments parse as before. Quickstart mentions it.
 - `./install.sh --dry-run [host]`: prints every file a real install would write and the hook entry it would add, and writes nothing under HOME. It is refused with `--uninstall`. A piped dry run still clones to a temp dir. Normal installs are unchanged. 13 new installer checks (59 total), including a before and after listing of HOME.
 - CI job `mcp-node20`: runs `npm ci`, `npm run check` and `npm test` for the MCP server on Node 20, the minimum in `package.json`. The Node 22 job is unchanged. CI only, no code changed.
