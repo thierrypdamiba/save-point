@@ -83,3 +83,11 @@ printf -- '---\nrepository_name: a\tb"c\\d\nnext_due_at: 2020-01-01T00:00:00Z\n-
 out=$(cd_run) || { echo "FAIL check-due exit with odd name"; exit 1; }
 printf '%s' "$out" | grep -q 'ab\\"c\\\\d' || { echo "FAIL odd name not escaped: $out"; exit 1; }
 test "$(printf '%s' "$out" | tr -d '\000-\037' | wc -c)" = "$(printf '%s' "$out" | wc -c)" || { echo "FAIL control character in hook output"; exit 1; }
+# daily_limit: 0 means no unsolicited prompts, even on a day with no prompt yet.
+rm -f "$S/scheduler.md"
+printf -- '---\nrepository_name: a\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
+printf -- '---\ndaily_limit: 0\n---\n' > "$S/profile.md"
+out=$(cd_run) || { echo "FAIL check-due exit with daily_limit 0"; exit 1; }
+test -z "$out" || { echo "FAIL daily_limit 0 still nudged: $out"; exit 1; }
+printf -- '---\ndaily_limit: 1\n---\n' > "$S/profile.md"
+out=$(cd_run); test -n "$out" || { echo "FAIL daily_limit 1 did not nudge"; exit 1; }
