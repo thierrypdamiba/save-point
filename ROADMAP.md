@@ -191,6 +191,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: the new future case fails on the old script (no nudge) and passes on the new one. A just-now value still stays quiet.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 30. Recall hook must read quoted and commented profile values
+- Change: `check-due.sh` read `interruption_style: "manual_only"` or `daily_limit: 0 # none` as unknown values, so the opt-out was ignored and the hook still nudged. It now drops one pair of surrounding quotes and a trailing ` # comment` from profile, scheduler and recall values. Found in the run 24 audit. Names such as `repository_name` are read as before.
+- Benefits: a person or team admin who hand-edits `profile.md` the way YAML allows, and who would otherwise keep getting prompts they turned off.
+- Verify: `scripts/test-reschedule.sh` has 9 new checks. The first fails on the old script. Bare values behave as before.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

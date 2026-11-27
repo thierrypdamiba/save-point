@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-27 (run 23).
+Last updated: 2026-11-27 (run 24).
 
 ## On dev now
 
@@ -48,3 +48,4 @@ See "Needs the owner" in ROADMAP.md. The most important: whether to tag a releas
 ## Next up
 
 A fresh audit in run 13 added four small roadmap items (the first three are now done): a Node 20 CI leg, the recall hook fix, and an installer dry run (still to do). Roadmap item 7 still waits on your answer about a macOS runner (Needs the owner 6). A full 15 scenario eval run is worth making by someone with time and a login (about 90 model calls).
+- Fix: the recall hook now honors hand-edited profile values written with YAML quotes or a trailing comment, such as `interruption_style: "manual_only"`. Before, that opt-out was ignored. Bare values behave the same.
