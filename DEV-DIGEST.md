@@ -2,7 +2,7 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-27 (run 21).
+Last updated: 2026-11-27 (run 22).
 
 ## On dev now
 
@@ -35,6 +35,7 @@ The only behavior changes are the new uninstall, `--ref` and `--dry-run` options
 - Audit only: two new small items in ROADMAP.md (`install.sh --help` fails today; the repo id script shows a raw git error outside git). No code changed.
 - Fix: `stats.sh` now reports an error for a path that is not a directory. Before, a typo gave a block of zeros that looked like real stats. Real directories behave the same.
 - Test only: `scripts/test-hash-answer.sh` pins the answer digest for fixed inputs, so a change to how answers are hashed fails CI. No script changed.
+- Test only: `scripts/test-hash-source.sh` covers the source hash and snapshot script, which had no test. No script changed. One open question for you in ROADMAP.md item 27.
 
 ## Decisions waiting for you
 
