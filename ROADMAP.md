@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Item 17 added by a later audit. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 and 18 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -118,6 +118,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `check-due.sh` exited 2 when neither `SAVE_POINT_HOME` nor `HOME` was set, and printed invalid JSON when a repository name held a control character such as a tab. Exit 2 blocks the person's prompt in Claude Code. Now it exits 0 quietly in the first case and strips control characters from names in the second.
 - Benefits: anyone who runs the hook under a service account, container or minimal environment, and anyone with an odd repository name.
 - Verify: `scripts/test-reschedule.sh` has 3 new checks. The first fails on the old script (exit nonzero with no HOME).
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 18. Recall hook command must survive a space in HOME
+- Change: the installer wrote the hook command `$HOME/.claude/skills/save-point/scripts/check-due.sh` unquoted, and `hooks/hooks.json` did the same with `${CLAUDE_PLUGIN_ROOT}`. With a space in the path the shell split it and the hook failed with "not found" (exit 127) on every prompt. Both are now quoted. An existing unquoted entry is left alone, since the installer sees it as already registered.
+- Benefits: anyone whose home folder or plugin folder has a space in it, who got an error on every prompt.
+- Verify: `scripts/test-install.sh` has 5 new checks that install into a HOME with a space and run the registered command. Two fail on the old installer.
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner

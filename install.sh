@@ -92,7 +92,7 @@ register_claude_hook() {
     if [ -f "$settings" ] && grep -q 'save-point/scripts/check-due.sh' "$settings"; then
       echo "dry run: recall hook already in $settings, would leave it as is"
     else
-      echo "dry run: would add a UserPromptSubmit hook to $settings running \$HOME/.claude/skills/save-point/scripts/check-due.sh"
+      echo "dry run: would add a UserPromptSubmit hook to $settings running \"\$HOME/.claude/skills/save-point/scripts/check-due.sh\""
     fi
     return 0
   fi
@@ -101,8 +101,8 @@ register_claude_hook() {
     return 0
   fi
   # A literal $HOME keeps the settings file portable; the shell expands it
-  # when the hook runs.
-  python3 - "$settings" '$HOME/.claude/skills/save-point/scripts/check-due.sh' <<'PY' 2>/dev/null \
+  # when the hook runs. The path is quoted so a HOME with a space still works.
+  python3 - "$settings" '"$HOME/.claude/skills/save-point/scripts/check-due.sh"' <<'PY' 2>/dev/null \
     || echo "note: could not update $settings safely — register the recall hook manually (snippet in the README)"
 import json, os, sys, tempfile
 path, cmd = sys.argv[1], sys.argv[2]
