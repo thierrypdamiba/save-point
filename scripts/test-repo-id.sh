@@ -46,3 +46,14 @@ test "$(sh save-point/scripts/hash-source.sh "$d/ws/sources/note.md" | cut -d' '
 test "$(printf 'note\n' | shasum -a 256 | cut -d' ' -f1)" = "$(shasum -a 256 < "$d/state/snapshots/$want" | cut -d' ' -f1)" || { echo "FAIL snapshot changed with the file"; exit 1; }
 test "$(ls "$d/ws" | tr '\n' ' ')" = "brief.md sources " || { echo "FAIL wrote into the document folder"; exit 1; }
 if sh save-point/scripts/hash-source.sh "$d/ws" 2>/dev/null; then echo "FAIL folder accepted as a file"; exit 1; fi
+
+# Outside a git repository: one clear line that names --doc, exit 1, nothing on stdout.
+e=$(mktemp -d)
+if out=$(cd "$e" && sh "$script" 2>"$e.err"); then echo "FAIL non-repo accepted"; exit 1; fi
+rc=0; (cd "$e" && sh "$script" >/dev/null 2>&1) || rc=$?
+test "$rc" = 1 || { echo "FAIL non-repo exit $rc"; exit 1; }
+test -z "$out" || { echo "FAIL non-repo stdout"; exit 1; }
+test "$(wc -l < "$e.err" | tr -d ' ')" = 1 || { echo "FAIL non-repo stderr not one line"; exit 1; }
+grep -q -- '--doc' "$e.err" || { echo "FAIL non-repo message lacks --doc"; exit 1; }
+grep -q 'fatal' "$e.err" && { echo "FAIL raw git error shown"; exit 1; }
+test -z "$(ls -A "$e")" || { echo "FAIL non-repo wrote files"; exit 1; }

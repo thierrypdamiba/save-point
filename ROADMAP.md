@@ -148,7 +148,7 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `derive-repo-id.sh` run outside a git repository prints git's `fatal: not a git repository` and exits 128. Print one clear line that names the script and says to use `--doc` for a folder that is not a repository, and exit 1. The id output for valid repositories must not change.
 - Benefits: a person using Save Point on a plain folder of documents, who sees a git error with no hint about `--doc`.
 - Verify: `scripts/test-repo-id.sh` gets a case run in an empty temp directory: exit 1, one stderr line that mentions `--doc`. Existing id cases give identical output.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). 1 new case group in `scripts/test-repo-id.sh`. On the old script it failed with exit 128.
 
 ## Needs the owner
 
