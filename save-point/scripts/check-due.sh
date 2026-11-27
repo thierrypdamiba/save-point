@@ -6,7 +6,10 @@
 # State root: $SAVE_POINT_HOME if set, else ~/.save-point.
 set -eu
 
-root=${SAVE_POINT_HOME:-"$HOME/.save-point"}
+# A hook must fail open: exit status 2 would block the person's prompt. With no
+# SAVE_POINT_HOME and no HOME there is nothing to read, so stay quiet.
+root=${SAVE_POINT_HOME:-"${HOME:-}/.save-point"}
+[ -n "${SAVE_POINT_HOME:-}${HOME:-}" ] || exit 0
 [ -d "$root" ] || exit 0
 
 here=$(cd "$(dirname "$0")" && pwd)
@@ -75,7 +78,7 @@ for f in "$root"/repositories/*/recall.md; do
   fi
   next=$(iso_to_epoch "$(frontmatter "$f" next_due_at)")
   [ "$next" -gt 0 ] && [ "$next" -le "$now" ] || continue
-  name=$(frontmatter "$f" repository_name | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+  name=$(frontmatter "$f" repository_name | tr -d '\000-\037\177' | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
   due_names="$due_names${due_names:+, }${name:-unknown}"
   due_count=$((due_count + 1))
 done

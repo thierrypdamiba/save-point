@@ -74,3 +74,12 @@ chk "huge profile numbers use defaults" nudge
 printf -- '---\nminimum_gap: %sh\n---\n' "$big" > "$S/profile.md"
 printf -- '---\nlast_prompt_at: %s\n---\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$S/scheduler.md"
 chk "huge gap uses 2h default, just prompted" quiet
+# The hook fails open. With no HOME and no SAVE_POINT_HOME it exits 0, quietly.
+out=$(env -u HOME -u SAVE_POINT_HOME sh save-point/scripts/check-due.sh 2>"$S/err") || { echo "FAIL check-due with no HOME exited nonzero"; exit 1; }
+test -z "$out" && test ! -s "$S/err" || { echo "FAIL check-due with no HOME was not quiet"; exit 1; }
+# A repository name with a tab and a quote must still give one clean JSON line.
+rm -f "$S/profile.md" "$S/scheduler.md"
+printf -- '---\nrepository_name: a\tb"c\\d\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
+out=$(cd_run) || { echo "FAIL check-due exit with odd name"; exit 1; }
+printf '%s' "$out" | grep -q 'ab\\"c\\\\d' || { echo "FAIL odd name not escaped: $out"; exit 1; }
+test "$(printf '%s' "$out" | tr -d '\000-\037' | wc -c)" = "$(printf '%s' "$out" | wc -c)" || { echo "FAIL control character in hook output"; exit 1; }

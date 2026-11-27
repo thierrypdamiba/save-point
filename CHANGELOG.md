@@ -6,6 +6,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 
 ### Changed
+- Fix: the recall hook no longer exits 2 (which blocks the prompt) when `HOME` and `SAVE_POINT_HOME` are both unset, and no longer prints invalid JSON when a repository name holds a control character. Normal setups behave the same.
 - The long inline script checks in `ci.yml` now live in `scripts/test-repo-id.sh`, `scripts/test-reschedule.sh`, `scripts/test-persona.sh` and `scripts/test-stats.sh`. CI calls them. A contributor can run each with `sh scripts/<name>.sh` from any directory. The checks are the same text as before. No skill script changed.
 
 ### Fixed

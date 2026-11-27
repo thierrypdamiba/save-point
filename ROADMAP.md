@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Item 17 added by a later audit. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -113,6 +113,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Benefits: an IT reviewer who wants to see the effect before approving the install on a managed machine.
 - Verify: a test compares the file tree and `settings.json` bytes before and after a dry run. Output names every path that a real install writes.
 - Size: small. Status: done (dev, see CHANGELOG). A test lists HOME before and after a dry run and compares settings bytes. Another checks that every file of a real install is named in the dry run output.
+
+### 17. Recall hook must fail open
+- Change: `check-due.sh` exited 2 when neither `SAVE_POINT_HOME` nor `HOME` was set, and printed invalid JSON when a repository name held a control character such as a tab. Exit 2 blocks the person's prompt in Claude Code. Now it exits 0 quietly in the first case and strips control characters from names in the second.
+- Benefits: anyone who runs the hook under a service account, container or minimal environment, and anyone with an odd repository name.
+- Verify: `scripts/test-reschedule.sh` has 3 new checks. The first fails on the old script (exit nonzero with no HOME).
+- Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
 
