@@ -2,10 +2,11 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-28 (fresh audit).
+Last updated: 2026-11-28 (requirements doc).
 
 ## On dev now
 
+- Docs: the quickstart now says what Save Point needs (which shell tools, python3 only for the hook install, Node 20 for the MCP server) and which systems are tested. Linux is tested. macOS is untested. Windows is not supported. A CI check keeps the list true. No script changed.
 - Fix: the stats script, run with no argument, now prints one usage line and exits 1 like the other scripts. Before, it printed a shell error and exited 2. Correct calls are unchanged.
 - Docs only: another audit found two small gaps and added them to the roadmap, items 52 and 53. The stats script gives a confusing error and exit code 2 when run with no argument. No document says which operating systems Save Point supports. Nothing you run changed.
 - Fix: upgrading Save Point no longer deletes your working install first. If the copy fails, for example on a full disk, the old install stays and the installer says so and exits with an error. Before, you could end up with no skill and a success message.
