@@ -110,10 +110,12 @@ for f in "$root"/repositories/*/recall.md; do
   next=$(iso_to_epoch "$(setting "$f" next_due_at)")
   [ "$next" -gt 0 ] && [ "$next" -le "$now" ] || continue
   name=$(setting "$f" repository_name | tr -d '\000-\037\177' | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
-  due_names="$due_names${due_names:+, }${name:-unknown}"
+  # Name at most 5 repositories. Every prompt carries this line, so a long list costs tokens each time.
+  [ "$due_count" -ge 5 ] || due_names="$due_names${due_names:+, }${name:-unknown}"
   due_count=$((due_count + 1))
 done
 [ "$due_count" -gt 0 ] || exit 0
+[ "$due_count" -le 5 ] || due_names="$due_names, and $((due_count - 5)) more"
 
 printf '{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"Save Point: recall is due for %s (%s). At the next natural boundary, offer at most %s question(s) per the save-point skill; it applies suppression rules and updates scheduler.md."}}\n' \
   "$due_count repository/ies" "$due_names" "$qpi"

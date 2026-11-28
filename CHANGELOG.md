@@ -5,6 +5,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 ## Unreleased
 
 ### Changed
+- Fix: the recall hook names at most 5 due repositories, then `, and N more`. Before it named all of them, so 60 due repositories added a 1.9 KB line to the agent context on every prompt. Five or fewer are unchanged. New checks in `scripts/test-reschedule.sh`.
 - Eval: first full run of all 15 scenarios recorded in `eval/RESULTS.md`: 15 of 15 passed, one run on the default model, Save Point 0.12.0. Raw log in `eval/results/`. This is one run, not a rate.
 - Fix: `eval/record-results.sh` was not executable, so `./record-results.sh` as written in the eval README failed with permission denied. It is now executable.
 - Fix: the recall hook now shows a hand-edited `repository_name` without its quotes or trailing note. Before, `"acme"  # client` appeared as written in the nudge. Normal names are unchanged. New check in `scripts/test-reschedule.sh`.

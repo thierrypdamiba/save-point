@@ -304,6 +304,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: a new case in `scripts/test-reschedule.sh` checks the nudge ends with `acme)` and has no quote or note. It fails on the old script and passes now. The JSON validity cases are unchanged.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 49. Recall nudge must stay short when many repositories are due
+- Change: `check-due.sh` named every due repository in the nudge. With 60 due repositories the line was about 1.9 KB, and it is added to the agent's context on every prompt until questions are delivered. The nudge now names the first 5 and adds `, and N more`. The count in front is unchanged. Found in the run 44 audit by creating 60 due repositories and running the hook.
+- Who benefits: a consultant or team member with many repositories, who would pay that cost on every prompt.
+- Verify: a new case in `scripts/test-reschedule.sh` checks 60 due repositories give `, and 55 more)` and a line under 600 bytes, and 5 due repositories name all 5. The new case fails on the old script. It does not change recall.md, scheduling or delivery.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

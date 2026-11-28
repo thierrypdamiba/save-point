@@ -231,3 +231,24 @@ case "$out" in
   *'acme).'*) echo "hook name: quoted and commented repository_name reads as acme" ;;
   *) echo "FAIL repository_name kept its quotes or note: $out"; exit 1 ;;
 esac
+# With many repositories due, the nudge names 5 and counts the rest, so the line stays short.
+rm -f "$S/profile.md" "$S/scheduler.md"
+rm -rf "$S/repositories"; mkdir -p "$S/repositories"
+n=1
+while [ "$n" -le 60 ]; do
+  mkdir -p "$S/repositories/r$n"
+  printf -- '---\nrepository_name: project-%s\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' "$n" > "$S/repositories/r$n/recall.md"
+  n=$((n + 1))
+done
+out=$(cd_run) || { echo "FAIL hook exit with 60 due repositories"; exit 1; }
+case "$out" in *'60 repository/ies ('*', and 55 more)'*) ;; *) echo "FAIL many-repository nudge: $out"; exit 1 ;; esac
+[ "${#out}" -lt 600 ] || { echo "FAIL many-repository nudge is ${#out} bytes"; exit 1; }
+rm -rf "$S/repositories"/r*
+n=1
+while [ "$n" -le 5 ]; do
+  mkdir -p "$S/repositories/r$n"
+  printf -- '---\nrepository_name: p%s\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' "$n" > "$S/repositories/r$n/recall.md"
+  n=$((n + 1))
+done
+out=$(cd_run) || exit 1
+case "$out" in *'5 repository/ies (p1, p2, p3, p4, p5).'*) echo "hook names: 60 due gives 5 names and a count; 5 due names all" ;; *) echo "FAIL five-repository nudge: $out"; exit 1 ;; esac
