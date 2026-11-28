@@ -9,7 +9,7 @@ sec=$(awk '/^## Requirements and platforms/{f=1;next} /^## /{f=0} f' "$doc")
 [ -n "$sec" ] || { echo "FAIL quickstart has no Requirements and platforms section" >&2; exit 1; }
 files="$root/install.sh $(ls "$root"/save-point/scripts/*.sh) $root/hooks/hooks.json"
 # Commands that count as external tools if a script calls them.
-vocab="awk sed tr cut grep sort head tail wc date sha256sum shasum git python3 iconv cat cp mv rm mkdir mktemp find dirname basename curl wget jq perl ln od xargs uniq stat readlink realpath openssl uname cmp diff touch chmod tee"
+vocab="awk sed tr cut grep sort head tail wc date sha256sum shasum git python3 iconv cat cp mv rm mkdir mktemp find dirname basename jq perl ln od xargs uniq stat readlink realpath openssl uname cmp diff touch chmod tee"
 used() { # tool: is it called in a non-comment line
   # shellcheck disable=SC2086
   grep -vE '^[[:space:]]*#' $files | grep -qE "(^|[^A-Za-z0-9_./-])$1([[:space:];)|]|\$)"
