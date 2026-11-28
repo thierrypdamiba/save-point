@@ -150,6 +150,25 @@ chk "quoted and commented values that allow a nudge" nudge
 printf -- '---\nrepository_name: a\nnext_due_at: "2020-01-01T00:00:00Z"\n---\n' > "$S/repositories/x/recall.md"
 rm -f "$S/profile.md"
 chk "quoted next_due_at" nudge
+# Leading zeros in hand-edited numbers must not break shell arithmetic (08 is a bad octal number in dash).
+# The hook must not exit nonzero, and 08m reads as 8 minutes: a prompt 5 minutes ago is still inside the gap.
+rm -f "$S/profile.md"
+for v in 08m 09m 0010m 008h 000m; do
+  printf -- '---\nminimum_gap: %s\n---\n' "$v" > "$S/profile.md"
+  rm -f "$S/scheduler.md"
+  chk "minimum_gap with leading zeros: $v" nudge
+done
+printf -- '---\nminimum_gap: 08m\n---\n' > "$S/profile.md"
+printf -- '---\nlast_prompt_at: %s\n---\n' "$(date -u -d '@'$(( $(date +%s) - 300 )) +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -r $(( $(date +%s) - 300 )) +%Y-%m-%dT%H:%M:%SZ)" > "$S/scheduler.md"
+chk "gap 08m, prompted 5 minutes ago" quiet
+printf -- '---\ndaily_limit: 08\nquestions_per_interruption: 01\n---\n' > "$S/profile.md"
+printf -- '---\nprompts_today: 07\nprompt_date: %s\n---\n' "$today" > "$S/scheduler.md"
+chk "daily_limit 08, prompts_today 07" nudge
+printf -- '---\nprompts_today: 08\nprompt_date: %s\n---\n' "$today" > "$S/scheduler.md"
+chk "daily_limit 08, prompts_today 08" quiet
+printf -- '---\ndaily_limit: 00\n---\n' > "$S/profile.md"; rm -f "$S/scheduler.md"
+chk "daily_limit 00" quiet
+rm -f "$S/profile.md" "$S/scheduler.md"
 # A cross_repo_recall value that is not on or off reads as off. The other repository (x) must stay quiet.
 rm -f "$S/profile.md"
 printf -- '---\nrepository_name: a\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"

@@ -43,7 +43,13 @@ iso_to_epoch() {
 }
 
 # Non-numbers and numbers over 9 digits (which could overflow shell arithmetic) give the default.
-digits_or() { case "$1" in ''|*[!0-9]*) echo "$2" ;; *) [ "${#1}" -gt 9 ] && echo "$2" || echo "$1" ;; esac; }
+# Leading zeros are dropped: shell arithmetic reads 08 as a bad octal number and the hook would exit 2.
+digits_or() {
+  case "$1" in ''|*[!0-9]*) echo "$2"; return ;; esac
+  n=$1
+  while [ "${#n}" -gt 1 ] && [ "${n#0}" != "$n" ]; do n=${n#0}; done
+  [ "${#n}" -gt 9 ] && echo "$2" || echo "$n"
+}
 
 # Profile: manual-only means never nudge.
 style=$(setting "$root/profile.md" interruption_style)

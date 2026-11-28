@@ -2,10 +2,11 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-27 (run 33).
+Last updated: 2026-11-28 (run 34).
 
 ## On dev now
 
+- Fix: the recall hook could block your prompt if `minimum_gap` had a leading zero, such as `08m`. It now reads that as 8 minutes.
 - Fix: the answer digest script now gives a plain one line error for a mistyped file path. Digests are unchanged.
 - Tests only: the recall hook output is now checked as valid JSON for odd repository names. Nothing you run changed.
 - CI only: a check that fails when a link in a Markdown file points at a missing file. All links are fine today. Plus one new question for you in ROADMAP.md item 38: what `daily_limit: off` should mean.
