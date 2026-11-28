@@ -90,10 +90,19 @@ install_to() {
   fi
   [ -d "$dest" ] && echo "replacing existing install at $dest"
   mkdir -p "$base"
+  # Build the new copy beside the old one and swap only when it is complete, so a
+  # failed copy (full disk, bad permissions) leaves the working install in place.
+  stage="$base/.save-point-new.$$"
+  rm -rf "$stage"
+  if ! { cp -R "$src" "$stage" \
+    && rm -rf "$stage/features" "$stage/reference" "$stage/.claude-plugin" \
+    && printf '%s\n' "$version" > "$stage/VERSION"; }; then   # maintainer docs and packaging are not runtime context
+    rm -rf "$stage"
+    echo "error: could not write the new install for $host; the existing install was left as it was" >&2
+    exit 1
+  fi
   rm -rf "$dest"
-  cp -R "$src" "$dest"
-  rm -rf "$dest/features" "$dest/reference" "$dest/.claude-plugin"   # maintainer docs and packaging, not runtime context
-  printf '%s\n' "$version" > "$dest/VERSION"
+  mv "$stage" "$dest" || { echo "error: could not move the new install into $dest" >&2; exit 1; }
   echo "installed for $host: $dest (version $version)"
   installed=$((installed + 1))
 }

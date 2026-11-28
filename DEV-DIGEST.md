@@ -2,10 +2,11 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-28 (run 45).
+Last updated: 2026-11-28 (fresh audit).
 
 ## On dev now
 
+- Fix: upgrading Save Point no longer deletes your working install first. If the copy fails, for example on a full disk, the old install stays and the installer says so and exits with an error. Before, you could end up with no skill and a success message.
 - Fix: a repository name with a byte that is not valid text could make the recall hook send broken output on every prompt. The hook now drops such bytes. Normal names are unchanged.
 - Fix: the recall nudge now names at most 5 repositories and says how many more are due. Before, someone with many repositories paid for a long line on every prompt.
 - Eval: the full 15 scenario eval was run once and recorded: 15 of 15 passed on the default model. One run is not a pass rate, and model replies vary. Also fixed `eval/record-results.sh`, which was not executable.
