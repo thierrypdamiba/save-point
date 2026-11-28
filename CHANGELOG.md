@@ -4,6 +4,9 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 ## Unreleased
 
+### Security
+- MCP server dependencies updated to clear two high severity `npm audit` findings: `@modelcontextprotocol/server` 2.0.0 to 2.4.0 and `zod` 4.4.3 to 4.6.7 (dev client 2.0.0 to 2.4.0). The server uses stdio only, so the HTTP advisories likely did not apply. Tools, resources and behavior are unchanged. `npm audit` now reports 0 vulnerabilities.
+
 ### Changed
 - Docs: `docs/quickstart.md` now has a "Requirements and platforms" section. It lists every tool the scripts call, says Linux is tested in CI, macOS is written for but not tested, and Windows is not supported. A new CI step checks the list against the scripts. No script changed.
 - Fix: `stats.sh` with no argument now prints one usage line and exits 1. Before, it printed a shell error with a file and line number and exited 2, unlike every other script. Correct calls give the same output. New check in `scripts/test-stats.sh`.
