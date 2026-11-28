@@ -143,3 +143,7 @@ jobs:
         run: sh scripts/test-check-links.sh
       - name: verify script modes
         run: sh scripts/test-check-modes.sh
+      - name: verify requirements section
+        run: |
+          sh scripts/check-requirements.sh
+          sh scripts/test-check-requirements.sh

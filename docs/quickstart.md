@@ -76,6 +76,27 @@ In `~/.save-point/`, as plain Markdown. Do not sync or share that folder. See [s
 
 This removes the skill and the hook entry. Your records in `~/.save-point/` stay. Delete that folder yourself if you want them gone.
 
+## Requirements and platforms
+
+Save Point is shell scripts and Markdown. It calls only the tools below.
+
+| Tool | Used by | Required |
+| --- | --- | --- |
+| `sh` (POSIX) | every script | yes |
+| `awk`, `sed`, `tr`, `cut`, `grep`, `sort`, `head`, `tail`, `wc`, `date` | recall, scheduling, stats and install scripts | yes |
+| `sha256sum` or `shasum` | answer, source and repository id hashes | yes, one of them |
+| `git` | repository id | yes |
+| `cat`, `chmod`, `cp`, `mv`, `rm`, `mkdir`, `mktemp`, `find`, `dirname`, `basename` | installer and snapshot scripts | yes |
+| `python3` | installer hook merge only | only to register the recall hook |
+| `iconv` | recall hook output cleanup | no. Without it the hook keeps printable ASCII only |
+| Node 20 or newer | the MCP server only | only if you use the MCP server |
+
+What is tested: Linux. CI runs the scripts and the MCP server tests on ubuntu. The MCP server is also tested on Node 20.
+
+What is written for but not tested: macOS. The scripts have `shasum` and `date -j` branches for it. No CI job runs on macOS.
+
+Windows is untested and not supported. Running the agent inside WSL is also untested.
+
 ## Troubleshooting
 
 **The agent says it does not know `/save-point`.**

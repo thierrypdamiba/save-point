@@ -332,7 +332,7 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: add a short "Requirements and platforms" section to `docs/quickstart.md` and link it from the README. List what the scripts call: a POSIX `sh`, `awk`, `sed`, `date`, `sha256sum` or `shasum`, `git` (repository id), `python3` (installer hook merge only), `iconv` (optional), and Node 20 or newer (MCP server only). Say what is tested: Linux, by CI on ubuntu. Say what is written for but not tested: macOS (the scripts have `date -j` and `shasum` branches). Say Windows is untested and not supported except where the person runs the agent inside WSL, which is also untested. State no claim CI does not back.
 - Who benefits: an engineer at a company who must tell their team whether it runs on their laptops before installing it. Today no document says, and a Windows user finds out when the hook errors.
 - Verify: a CI step that fails if the section is missing or if a tool the doc lists is not used by any script (grep over `install.sh`, `save-point/scripts/` and `hooks/`), and a check that every external command those scripts call appears in the list. The step must be shown to fail on a doc with a tool removed.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). `scripts/check-requirements.sh` and 7 cases in `scripts/test-check-requirements.sh`, run as one CI step. Each broken copy (tool removed from the doc, an unused tool listed, a script that calls an unlisted tool, section missing, no Windows line) fails. The call check scans a fixed list of common command names, so a command outside that list is not caught.
 
 ## Needs the owner
 
