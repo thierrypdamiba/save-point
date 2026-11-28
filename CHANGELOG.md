@@ -6,6 +6,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 
 ### Changed
+- Fix: the recall hook no longer exits 2 on a hand-edited number with a leading zero, such as `minimum_gap: 08m`. Exit 2 blocks the prompt. `08m` now reads as 8 minutes. Other values behave the same.
 - Tests: `scripts/test-reschedule.sh` now parses the recall hook output as JSON for seven hostile repository names. Test only. No skill script changed.
 - CI now checks that relative links in Markdown files point at files that exist (`scripts/check-links.sh`, tested by `scripts/test-check-links.sh`). CI and tests only. No skill script changed.
 - Fix: `stats.sh` reads a `recall.md` field that ends in a hand-written note, such as `- stage: 2 # note`. Before, that stage was not counted and the quality was counted under the word `note`. Files without notes give the same numbers.

@@ -256,6 +256,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: `sh scripts/test-hash-answer.sh` prints `18 checks passed`. On the old script the new check fails with `exit 2, want 1`.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 41. Recall hook must survive a number with a leading zero
+- Change: `check-due.sh` exited 2 on `minimum_gap: 08m` (or `09m`, `008h`). Dash reads `08` as a bad octal number in `$(( ))`. Exit 2 blocks the person's prompt in Claude Code. `digits_or` now drops leading zeros, so `08m` is 8 minutes. Numbers without a leading zero behave as before. Found in the run 34 audit by feeding the hook odd hand-edited values.
+- Benefits: anyone who hand-edits `profile.md` and pads a number, and so would otherwise find every prompt blocked.
+- Verify: `sh scripts/test-reschedule.sh` runs 9 new checks. On the old script the first fails with `check-due exit`.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.
