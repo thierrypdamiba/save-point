@@ -4,6 +4,8 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 ## Unreleased
 
+### Docs
+- ROADMAP.md: new item 47 (scripts that ignore extra arguments) and a new question for the owner, item 9 (what the recall hook should do when a nudge is not acted on). No code changed.
 
 ### Changed
 - CI now fails if a script that is run directly (`save-point/scripts/*.sh`, `install.sh`) loses its executable bit in git (`scripts/check-modes.sh`, tested by `scripts/test-check-modes.sh`). CI and tests only. No skill script changed.
