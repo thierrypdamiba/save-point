@@ -4,6 +4,9 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 ## Unreleased
 
+### Changed
+- Fix: the recall hook now shows a hand-edited `repository_name` without its quotes or trailing note. Before, `"acme"  # client` appeared as written in the nudge. Normal names are unchanged. New check in `scripts/test-reschedule.sh`.
+
 ### Docs
 - ROADMAP.md: new item 47 (scripts that ignore extra arguments) and a new question for the owner, item 9 (what the recall hook should do when a nudge is not acted on). No code changed.
 

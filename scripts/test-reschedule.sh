@@ -223,3 +223,11 @@ if command -v python3 >/dev/null 2>&1; then
 else
   echo "hook JSON check not run: python3 not found"
 fi
+# A hand-edited repository_name in quotes, with a trailing note, must show as the bare name in the nudge.
+rm -f "$S/profile.md" "$S/scheduler.md"
+printf -- '---\nrepository_name: "acme"  # client\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
+out=$(cd_run) || { echo "FAIL hook exit for quoted repository_name"; exit 1; }
+case "$out" in
+  *'acme).'*) echo "hook name: quoted and commented repository_name reads as acme" ;;
+  *) echo "FAIL repository_name kept its quotes or note: $out"; exit 1 ;;
+esac

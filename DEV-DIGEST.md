@@ -2,10 +2,11 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-28 (run 41).
+Last updated: 2026-11-28 (run 42).
 
 ## On dev now
 
+- Fix: if you wrote a repository name in quotes or with a note in `recall.md`, the recall nudge showed the quotes and the note. It now shows the plain name.
 - Fix: the repository id, answer digest and stats scripts now refuse extra arguments with one usage line. Before, a second path was silently ignored, which could send records to the wrong folder. Correct calls are unchanged.
 - Docs only: a fresh audit found no new defect in the code. It added one small roadmap item (three scripts silently ignore extra arguments) and one question for you, Needs the owner 9: the recall hook adds its nudge to every prompt until a question is delivered. Nothing you run changed.
 - CI only: a check that the recall hook script and the installer keep their executable bit. If it were lost, the hook would error on every prompt. Both are fine today.
