@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 40 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 43 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -266,6 +266,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: with a wrong `SAVE_POINT_SKILL_DIR`, or a build moved away from the checkout, the server started and then answered every client with `Internal server error`. The cause was only on stderr, which many hosts hide. `src/index.ts` now checks for `SKILL.md` first. If it is missing, the server prints one line naming the folder and the variable, and exits 1. A good folder behaves as before. Found in the run 35 audit by starting the server with a bad path.
 - Benefits: an admin who sets up the MCP server for a team and mistypes a path, and would otherwise see an unexplained error.
 - Verify: `cd mcp-server && npm test` runs 3 new tests in `test/startup.test.ts`. With the old `index.ts`, 2 of them fail.
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 43. Recall hook must read the minimum_gap unit in any case
+- Change: `check-due.sh` read `minimum_gap: 3H` or `90M` as the 90 minute default, because only lowercase `m` and `h` matched. A person who asked for a longer gap got nudges sooner. It now lowercases the value and drops spaces first. Lowercase values and unreadable values behave as before. Found in the run 36 audit by trying capital units.
+- Benefits: a person or team admin who hand-edits `profile.md` to space prompts out, and would otherwise get more of them than they set.
+- Verify: `sh scripts/test-reschedule.sh` runs 9 new checks. On the old script the first fails with `not quiet: minimum_gap 3H`.
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
