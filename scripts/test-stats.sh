@@ -66,3 +66,10 @@ rc=0; out=$(sh save-point/scripts/stats.sh "$x" "$x" 2>"$x.err") || rc=$?
 [ -z "$out" ] || { echo "FAIL extra args stdout"; exit 1; }
 [ "$(wc -l < "$x.err" | tr -d ' ')" = 1 ] || { echo "FAIL extra args stderr not one line"; exit 1; }
 grep -q '^usage: stats.sh' "$x.err" || { echo "FAIL extra args message"; exit 1; }
+
+# No argument: one usage line, exit 1, nothing on stdout.
+rc=0; out=$(sh save-point/scripts/stats.sh 2>"$x.err2") || rc=$?
+[ "$rc" = 1 ] || { echo "FAIL no args exit $rc"; exit 1; }
+[ -z "$out" ] || { echo "FAIL no args stdout"; exit 1; }
+[ "$(wc -l < "$x.err2" | tr -d ' ')" = 1 ] || { echo "FAIL no args stderr not one line"; exit 1; }
+grep -q '^usage: stats.sh' "$x.err2" || { echo "FAIL no args message"; exit 1; }

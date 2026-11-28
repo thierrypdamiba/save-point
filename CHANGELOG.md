@@ -5,6 +5,9 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 ## Unreleased
 
 ### Changed
+- Fix: `stats.sh` with no argument now prints one usage line and exits 1. Before, it printed a shell error with a file and line number and exited 2, unlike every other script. Correct calls give the same output. New check in `scripts/test-stats.sh`.
+
+### Changed
 - Fix: `install.sh` now copies the new skill to a staging folder and swaps it in only when the copy is complete. Before, it deleted the old install first, so a failed copy (for example a full disk) left no skill and still looked like success. Now the old install stays and the installer exits 1 with one error line. Normal installs, upgrades, dry runs and uninstalls are unchanged. New checks in `scripts/test-install.sh`.
 - Fix: the recall hook drops bytes that are not valid UTF-8 from a repository name. Before, a name with such a byte (for example from a hand edit in a Latin-1 editor) made the hook output invalid UTF-8, which a host may refuse on every prompt. Valid names, including accented ones, are unchanged. New check in `scripts/test-reschedule.sh`.
 - Fix: the recall hook names at most 5 due repositories, then `, and N more`. Before it named all of them, so 60 due repositories added a 1.9 KB line to the agent context on every prompt. Five or fewer are unchanged. New checks in `scripts/test-reschedule.sh`.

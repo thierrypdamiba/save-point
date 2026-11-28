@@ -6,8 +6,8 @@
 # conversationally on top of this baseline. Counting is deliberately here,
 # not model-side: the HUD's lifetime numbers must not drift between sessions.
 set -eu
-[ $# -le 1 ] || { echo "usage: stats.sh <state-repo-dir>" >&2; exit 1; }
-dir=${1:?usage: stats.sh <state-repo-dir>}
+[ $# -eq 1 ] || { echo "usage: stats.sh <state-repo-dir>" >&2; exit 1; }
+dir=$1
 # A wrong path must not look like a repository with no history.
 [ -d "$dir" ] || { echo "error: not a directory: $dir" >&2; exit 1; }
 w="$dir/savepoint.md"
