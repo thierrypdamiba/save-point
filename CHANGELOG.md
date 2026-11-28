@@ -8,6 +8,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 - ROADMAP.md: new item 47 (scripts that ignore extra arguments) and a new question for the owner, item 9 (what the recall hook should do when a nudge is not acted on). No code changed.
 
 ### Changed
+- Fix: `derive-repo-id.sh`, `hash-answer.sh` and `stats.sh` now print one usage line and exit 1 when given more arguments than they take. Before, `derive-repo-id.sh /a /b` used `/a` and exited 0, `hash-answer.sh a b` hashed only `a`, and `stats.sh d1 d2` reported only `d1`. Correct calls give the same output. New checks in `scripts/test-repo-id.sh`, `scripts/test-hash-answer.sh` and `scripts/test-stats.sh`.
 - CI now fails if a script that is run directly (`save-point/scripts/*.sh`, `install.sh`) loses its executable bit in git (`scripts/check-modes.sh`, tested by `scripts/test-check-modes.sh`). CI and tests only. No skill script changed.
 - Fix: the recall hook reads `profile.md` and `scheduler.md` files that start with a byte-order mark (some Windows editors add one). Before, every setting in such a file was missed, so `interruption_style: manual_only` or `daily_limit: 0` did not stop nudges. Files without a mark behave the same. 4 new checks in `scripts/test-reschedule.sh`.
 - Fix: `stats.sh` reads a recall.md field with quotes around the value, such as `stage: "2"` or `last_quality: 'solid'`. Before, the stage was missed and the quality was counted as `"solid"`. Unquoted files give the same output. 1 new check group in `scripts/test-stats.sh`.

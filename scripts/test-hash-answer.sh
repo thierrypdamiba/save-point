@@ -46,4 +46,11 @@ for bad in "$d/none" "$d"; do
   grep -q "^hash-answer.sh: not a file: $bad\$" "$d/err" || { echo "FAIL $bad message"; exit 1; }
   pass=$((pass + 3))
 done
+# Extra arguments are refused: one usage line, exit 1, no digest.
+printf 'abc' > "$d/a"
+out=$(sh "$H" "$d/a" "$d/a" 2>"$d/err") && { echo "FAIL two args exited 0"; exit 1; }
+[ -z "$out" ] || { echo "FAIL two args printed stdout"; exit 1; }
+[ "$(wc -l < "$d/err" | tr -d ' ')" -eq 1 ] || { echo "FAIL two args stderr not one line"; exit 1; }
+grep -q '^usage: hash-answer.sh' "$d/err" || { echo "FAIL two args message"; exit 1; }
+pass=$((pass + 3))
 echo "hash-answer: $pass checks passed"

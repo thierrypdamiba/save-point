@@ -9,6 +9,7 @@
 # itself is not followed. Keep in exact agreement with SKILL.md.
 set -eu
 
+[ $# -le 2 ] || { echo "usage: derive-repo-id.sh [repo-dir] | --doc <file-or-folder>" >&2; exit 1; }
 doc=""
 if [ "${1:-}" = "--doc" ]; then
   [ $# -eq 2 ] && [ -n "$2" ] || { echo "usage: derive-repo-id.sh --doc <file-or-folder>" >&2; exit 1; }
@@ -22,6 +23,7 @@ if [ "${1:-}" = "--doc" ]; then
   fi
   url=""
 else
+  [ $# -le 1 ] || { echo "usage: derive-repo-id.sh [repo-dir] | --doc <file-or-folder>" >&2; exit 1; }
   root=$(cd "${1:-.}" 2>/dev/null && git rev-parse --show-toplevel 2>/dev/null) || {
     echo "derive-repo-id.sh: not a git repository: ${1:-.} (for a folder of documents, use --doc <file-or-folder>)" >&2; exit 1
   }
