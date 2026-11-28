@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 53 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 54 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -334,6 +334,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: a CI step that fails if the section is missing or if a tool the doc lists is not used by any script (grep over `install.sh`, `save-point/scripts/` and `hooks/`), and a check that every external command those scripts call appears in the list. The step must be shown to fail on a doc with a tool removed.
 - Size: small. Status: done (dev, see CHANGELOG). `scripts/check-requirements.sh` and 7 cases in `scripts/test-check-requirements.sh`, run as one CI step. Each broken copy (tool removed from the doc, an unused tool listed, a script that calls an unlisted tool, section missing, no Windows line) fails. The call check scans a fixed list of common command names, so a command outside that list is not caught.
 
+### 54. Update MCP server dependencies with known advisories
+- Change: `npm audit --omit=dev` reported 2 high severity findings: `@modelcontextprotocol/server` 2.0.0 (four advisories, all in its HTTP transport and bearer auth) and `zod` 4.4.3 (memory use on oversized collections). Found in the run 54 audit. Pinned exact versions moved to `@modelcontextprotocol/server` 2.4.0, `@modelcontextprotocol/client` 2.4.0 (dev) and `zod` 4.6.7. The Save Point server uses stdio only, so the HTTP findings likely did not apply here, but a company scanner would flag them.
+- Benefits: a security reviewer at a company who runs `npm audit` before approving the server.
+- Verify: `npm audit` reports 0 vulnerabilities, `npm run check` passes, and all 13 tests pass. Node 20 is checked by the `mcp-node20` CI job.
+- Size: small. Status: done (dev, see CHANGELOG). Not done: a CI step that runs `npm audit`. It needs the network and would fail unrelated pull requests when a new advisory appears, so it is a call for the owner (Needs the owner 10).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.
@@ -345,3 +351,4 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 7. Whether `hash-source.sh` should verify an existing snapshot against its name and replace it if damaged (item 27). It is a safe change in my view, but snapshots are study evidence, so you decide.
 8. What a non-numeric `daily_limit` such as `off`, `none` or `-1` should mean (item 38): no unsolicited prompts, or the default of 3. Today it is the default. It only affects hand-edited files.
 9. How the recall hook should behave when its nudge is not acted on (found in the run 40 audit). The hook writes nothing, and the skill updates `last_prompt_at` only when it delivers a question. If the agent holds back (tests failing, user mid-task), `last_prompt_at` does not move, so the nudge is added again on every later prompt until a question is delivered. That costs tokens and may annoy. Options: leave it (the hook stays write-free, as `docs/security-and-privacy.md` says), have the skill record a suppressed check in `scheduler.md` so the gap applies, or let the hook write one small stamp. The last two change delivery behavior and the hook's "writes nothing" statement, so this is yours to decide.
+10. Whether CI should run `npm audit --omit=dev --audit-level=high` (found in the run 54 audit). It would catch new advisories early, but it needs the network and would turn CI red on pull requests that did not cause the finding. A scheduled weekly job is another option.
