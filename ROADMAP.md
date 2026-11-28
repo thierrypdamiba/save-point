@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 45 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 46 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -284,6 +284,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `check-due.sh` did not see the opening `---` of a file that began with a byte-order mark, so every setting read as missing. A `manual_only` opt-out or `daily_limit: 0` was ignored and the hook still nudged. Now the mark is dropped before the fence is read. Files without a mark give the same output.
 - Who benefits: anyone who edits `profile.md` or `scheduler.md` in Windows Notepad or another editor that adds a mark, and who turned nudges off.
 - Verify: `sh scripts/test-reschedule.sh`. 4 new checks. The old script failed the first one (it nudged with `manual_only` set).
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 46. Scripts that are run directly must keep their executable bit
+- Change: `scripts/check-modes.sh` fails when a tracked `save-point/scripts/*.sh` or `install.sh` is not mode 100755 in git. CI runs `scripts/test-check-modes.sh`. The recall hook runs `check-due.sh` by path, so a lost bit means a "permission denied" error on every prompt. Found in the run 39 audit. All 8 files are correct today.
+- Who benefits: anyone with the hook installed, and a contributor who edits a script on Windows or through a tool that drops the bit.
+- Verify: `sh scripts/test-check-modes.sh` runs 5 checks. Clearing the bit on `check-due.sh` or `install.sh` in a fixture makes `check-modes.sh` exit 1.
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner

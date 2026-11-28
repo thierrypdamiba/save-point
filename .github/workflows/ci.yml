@@ -141,3 +141,5 @@ jobs:
         run: sh scripts/test-hash-source.sh
       - name: verify Markdown links
         run: sh scripts/test-check-links.sh
+      - name: verify script modes
+        run: sh scripts/test-check-modes.sh
