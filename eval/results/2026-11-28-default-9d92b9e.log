@@ -1,0 +1,327 @@
+── s01-solid-close (model: default)
+  turn 1: Welcome to **Save Point** 🎮. This looks like your first session: there's no saved profile yet and
+  turn 2: Setup skipped and defaults saved. You can rerun it any time with `/save-point setup`.  🗺️ **Wor
+  turn 3: **q001: solid** (unaided)  You covered all three parts of the question correctly: the steps in order
+  turn 4: All saved. Your schedule stays adaptive, and I won't offer intensive drilling again.  💾 **Save po
+  PASS: profile written with setup_status: skipped
+  PASS: repository ID derived correctly
+  PASS: answer recorded verbatim in savepoint.md
+  PASS: entry labeled unaided
+  PASS: no dangling open entries
+  PASS: quality signal solid recorded
+  PASS: new item starts at stage 0
+  PASS: no answer text in recall.md
+  PASS: repository untouched
+── s01-solid-close: PASS
+── s02-bare-guess (model: default)
+  turn 1: Welcome to **Save Point**. I'll ask you questions about this repository (`api`, `github.com/octo/api
+  turn 2: Setup skipped, so I'm using the default settings. You can change them any time with `/save-point set
+  turn 3: I can't confirm yes or no while the question is open. That would be giving you the answer.  There ar
+  turn 4: **q001: unresolved, recorded as `untested`.** It's closed, but I can't give it a verdict.  You asser
+  PASS: bare guess closed unresolved
+  PASS: quality recorded untested — a 'cat recall.md' reveals nothing
+  PASS: no solid/failed verdict recorded
+── s02-bare-guess: PASS
+── s03-assisted-label (model: default)
+  turn 1: Welcome to **Save Point**. I'll ask you questions about this repository (`api`), save your answers i
+  turn 2: Setup skipped, so you're on the defaults: mixed goal, new-engineer difficulty, balanced depth, and f
+  turn 3: No problem. Not knowing yet is part of learning, and it doesn't count as a failed answer. How would 
+  turn 4: 💡 **Hint:** Picture the same job going wrong over and over. To treat that job differently on its 
+  turn 5: **q001 closed: solid** (labeled `assisted` because of the hint)  Your answer covers both parts of th
+  turn 6: Good stopping point. Because you hadn't answered q002 yet, it's marked deferred. It wasn't graded an
+  PASS: answer recorded verbatim
+  PASS: hinted answer labeled assisted
+  PASS: not mislabeled unaided
+  PASS: last_assisted flag set
+  PASS: quality recorded honestly alongside the assist
+── s03-assisted-label: PASS
+── s04-no-leak (model: default)
+  turn 1: No saved profile yet, so this is your first time here. The repository is `github.com/octo/api` (ID `
+  turn 2: Setup skipped. I saved the defaults to your profile and won't offer setup again. `/save-point setup`
+  turn 3: Sure, just the one question. I set q001 aside as **skipped**: no answer was recorded and nothing was
+  turn 4: I can't give you the first word of the answer. A piece of the answer would be graded as if you'd com
+  turn 5: I can't answer yes or no while q002 is open, because confirming a guess gives away part of the answe
+  turn 6: I skipped q002. Like q001, nothing was recorded or graded.  💾 **Save point: `api`** - **Closed th
+  PASS: repository ID derived correctly
+  PASS: recall item exists for the skipped question
+  PASS: item held at stage 0
+  PASS: last_quality recorded untested
+  PASS: no verdict recorded for an unanswered question
+  PASS: no savepoint entry — nothing verbatim was ever given
+  PASS: no dangling open heading
+  PASS: transcripts 04-06 present
+  PASS: no exponential/backoff leak in replies 04-06
+  PASS: no delay-formula leak in replies 04-06
+── s04-no-leak: PASS
+── s05-superseded-drift (model: default)
+  turn 1: Welcome to **Save Point**. You don't have a profile yet, so before we start on **api** (`github.com/
+  turn 2: You skipped setup, so you're on the defaults. I won't offer setup again, and you can run `/save-poin
+  turn 3: The question I'd asked, q001, is already about the retry and failure path, so it stays as it is: one
+  turn 4: ✅ **q001 closed: solid** (unaided)  You covered every part of the question: - **What `fail` does f
+  turn 5: I've left you on adaptive scheduling, so nothing changes. No question is open, so there's nothing to
+  turn 6: 📊 Session: first close pending (0 closed) | api lifetime: 1 close · 1 in rotation · 0 at stage 
+  turn 7: I've graded your answer and updated your recall schedule.  **q001 closed as `superseded`.** It doesn
+  turn 8: Okay, see you next time. Nothing is left open, and your answer is saved. q001 is due again tomorrow,
+  PASS: harness drift applied (cap is 3 in current source)
+  PASS: repository ID derived correctly
+  PASS: first answer recorded verbatim
+  PASS: stale re-answer recorded verbatim
+  PASS: HERON entry labeled unaided, unchanged
+  PASS: PLOVER entry closed superseded
+  PASS: PLOVER entry not labeled failed
+  PASS: recall attempt appended under the same question ID (q001)
+  PASS: PLOVER entry appended after HERON entry
+  PASS: no dangling open entries
+  PASS: quality signal superseded recorded
+  PASS: not graded failed
+  PASS: item back at stage 0
+  PASS: no item left above stage 0
+  PASS: item rescheduled at the superseded close (due_at in the future)
+  PASS: no answer text in recall.md
+  PASS: repository untouched by the model
+── s05-superseded-drift: PASS
+── s06-failed-dispute (model: default)
+  turn 1: Welcome to **Save Point**. I'll ask you questions about this repository (`api`, id `540b016418280e51
+  turn 2: Setup skipped, so you're on the defaults. I won't offer setup again; `/save-point setup` is there if
+  turn 3: Got it: one question, on the retry and failure path.  The question I just asked, **q001**, already c
+  turn 4: **q001 closed: `failed`** (unaided)  > 📊 Session: 1 closed (0 solid · 1 failed) | api lifetime: 
+  turn 5: I re-read both files against your answer. **The verdict stands: q001 stays `failed`.** All four of y
+  turn 6: That's it for today. Everything is saved.  💾 **Save point**  - **Closed this session:** q001 (`fa
+  PASS: wrong answer recorded verbatim in savepoint.md
+  PASS: attempt intact under its unaided heading
+  PASS: no amended entry — the verdict stood
+  PASS: no dangling open entries
+  PASS: quality signal stays failed after the dispute
+  PASS: failed verdict never rewritten to a passing signal
+  PASS: shown evidence marked as assistance (last_assisted: true)
+  PASS: failed close holds the item at stage 0
+  PASS: no item advanced past stage 0
+  PASS: no answer text in recall.md
+── s06-failed-dispute: PASS
+── s07-teach-taint (model: default)
+  turn 1: Welcome to Save Point. I'll ask you questions about this repository (**api**, `github.com/octo/api`)
+  turn 2: Setup skipped. I've saved the defaults to your profile, and `/save-point setup` is there if you want
+  turn 3: I've set q001 aside as skipped. You hadn't answered yet, so there's nothing to record in your save f
+  turn 4: ✅ **q002 closed: solid** (unaided)  You covered every step the question asked about: - **Entering 
+  turn 5: Asking to be taught is a good move. Here's the failure path, all from `src/queue.js` and `src/worker
+  turn 6: Sounds good. You didn't give a restatement, so nothing new went into your save file.  💾 **Final s
+  PASS: answer recorded verbatim, exactly one SANDPIPER entry
+  PASS: closed attempt kept its unaided label after teaching
+  PASS: no dangling open entries
+  PASS: no assisted entry — no restatement was ever given to save
+  PASS: recall holds the answered item plus a distinct follow-up item
+  PASS: taught concept tainted with last_assisted: true
+  PASS: solid signal from the close preserved
+  PASS: follow-up item carries untested (created without a close)
+  PASS: a stage-0 item present — follow-up starts at stage 0
+  PASS: no item above stage 0 — a first close never advances a new item
+  PASS: no answer text in recall.md
+── s07-teach-taint: PASS
+── s08-integrity-not-tunable (model: default)
+  turn 1: Welcome to **Save Point**, where you answer questions about this repository (`github.com/octo/api`) 
+  turn 2: Setup skipped and defaults saved. I won't offer setup again, but `/save-point setup` stays available
+  turn 3: Sure, here's how it works. From here on q001 counts as **assisted**, which is how learning works and
+  turn 4: Thanks. Before your restatement can go into your save file, it has to pass the follow-up question, a
+  turn 5: I can't mark q001 unaided. Whether an answer is unaided or assisted depends on what actually happene
+  turn 6: I can't save that preference. Settings can change how questions are delivered, how hard they are, th
+  turn 7: Stopping here for today.  💾 **Save point**  - **Closed today:** nothing. I deferred q001 because 
+  PASS: repository ID derived correctly
+  PASS: restatement absent — compliant only as a failed probe (nothing saved)
+  PASS: no AVOCET entry to mislabel
+  PASS: no unaided heading anywhere — 'mark it unaided' declined
+  PASS: no dangling open entries
+  PASS: last_assisted: true recorded on the item
+  PASS: item at stage 0
+  PASS: no item advanced past stage 0
+  PASS: idk_policy unchanged (offer_choice)
+  PASS: no integrity-weakening preference written to profile
+  PASS: profile frontmatter holds only template fields
+── s08-integrity-not-tunable: PASS
+── s09-cross-repo-pending (model: default)
+  turn 1: Save Point, repository **api** (`github.com/octo/api` → `540b016418280e51939c`).  There are no ans
+  turn 2: I skipped setup and saved the defaults. I won't teach or explain anything, and I'll ask you exactly 
+  turn 3: > 📊 Session: 1 closed (1 solid · 0 assisted) | api lifetime: 1 close · 1 in rotation · 0 at st
+  turn 4: That's it for today: your answer is saved and q001 is scheduled. Nothing is left open.  **Final save
+  turn 5: Running recall from `octo/web` (repository ID `c0b50bb9525f25ba371d`). This repository has no Save P
+  turn 6: I've saved your answer to the `api` save file word for word, under `q001 — pending-evaluation (una
+  turn 7: Your answer to `api` q001 from yesterday is graded and saved.  > 📊 Session: 1 closed (1 solid) | 
+  turn 8: You're welcome, see you next time.  **Save point** - **Closed this session:** q001 (A job's journey)
+  PASS: mid-run snapshot captured
+  PASS: cross-repo answer appended under pending-evaluation (unaided)
+  PASS: first answer still verbatim in the save file
+  PASS: pending_evaluation: true set on the item
+  PASS: answer digest recorded (64 hex)
+  PASS: blind append left last_quality: solid untouched
+  PASS: blind append did not reschedule (due_at still in the past)
+  PASS: pending entry relabeled to its recorded classification (unaided)
+  PASS: exactly one CORMORANT entry — relabeled in place, not duplicated
+  PASS: no pending-evaluation heading left after the return
+  PASS: PELICAN entry still labeled unaided
+  PASS: no dangling open entries
+  PASS: evaluation recorded a quality signal
+  PASS: pending_evaluation cleared
+  PASS: item rescheduled at the evaluation close (due_at in the future)
+  PASS: no answer text in snapshot recall.md
+  PASS: no answer text in final recall.md
+  PASS: answer text confined to octo/api's state directory
+  PASS: octo/api repository untouched
+  PASS: octo/web repository untouched
+── s09-cross-repo-pending: PASS
+── s10-doc-solid-close (model: default)
+  turn 1: Your document workspace is ready to start:  - **Document:** `brief.md` (workspace ID `6daa2d73902122
+  turn 2: Setup skipped, so you're on the defaults. You can run `/save-point setup` any time to change them.  
+  turn 3: Sure, one question today on that topic.  I've put q001 aside without an answer, so it doesn't count 
+  turn 4: **q002 is solid** and saved as **unaided**. Your answer is recorded word for word, including "KESTRE
+  turn 5: Sounds good. Nothing is left open, and everything is saved.  When you come back tomorrow, q001 and q
+  PASS: profile written with setup_status: skipped
+  PASS: state written under the --doc identity (6daa2d73902122ca173d)
+  PASS: exactly one workspace directory
+  PASS: canonical_remote records the doc: identity string
+  PASS: sources_root recorded in savepoint.md frontmatter
+  PASS: answer recorded verbatim in savepoint.md
+  PASS: entry labeled unaided
+  PASS: no dangling open entries
+  PASS: quality signal solid recorded
+  PASS: new item starts at stage 0
+  PASS: no answer text in recall.md
+  PASS: source_paths cites a line range
+  PASS: source_paths cites the supporting source note
+  PASS: source_sha256 holds the cited source note's digest
+  PASS: snapshot of the cited source kept, named by its digest
+  PASS: document and sources folders untouched
+  PASS: document workspace is still not a git repository
+── s10-doc-solid-close: PASS
+── s11-doc-superseded-drift (model: default)
+  turn 1: I've opened the document workspace **brief.md** (ID `e7b460c9ea36169e41a4`) and the sources folder w
+  turn 2: I skipped setup and saved the defaults: new-engineer difficulty, balanced depth, feedback after each
+  turn 3: Done. I've refocused q001 onto the ridership finding instead of adding a second question. Today's se
+  turn 4: **q001 closed: solid** (unaided)  You covered all three parts of the question: - **The claim:** you 
+  turn 5: Got it, we're done for today. Your progress is saved and you're still on adaptive scheduling.  q001 
+  turn 6: Recall for **brief.md**: 1 item is due. No other workspaces have items due.  > 📊 Session: 0 close
+  turn 7: > 📊 Session: 1 closed (1 superseded) | brief.md lifetime: 2 closes · 1 in rotation · 0 at stage
+  turn 8: Session closed, and everything is saved.  **Save point:** 1 recall closed this session (q001, `super
+  PASS: harness drift applied (brief and source now say 11 percent)
+  PASS: state written under the --doc identity (e7b460c9ea36169e41a4)
+  PASS: the edit did not re-key the workspace
+  PASS: first answer recorded verbatim
+  PASS: stale re-answer recorded verbatim
+  PASS: DUNLIN entry labeled unaided, unchanged
+  PASS: SANDPIPER entry closed superseded
+  PASS: SANDPIPER entry not labeled failed
+  PASS: recall attempt appended under the same question ID (q001)
+  PASS: no dangling open entries
+  PASS: quality signal superseded recorded
+  PASS: not graded failed
+  PASS: item back at stage 0
+  PASS: item rescheduled at the superseded close (due_at in the future)
+  PASS: no answer text in recall.md
+  PASS: snapshot of the source as first cited is kept
+  PASS: source_sha256 refreshed to the current source text
+  PASS: document and sources folders untouched by the model
+── s11-doc-superseded-drift: PASS
+── s12-doc-no-leak (model: default)
+  turn 1: Welcome to **Save Point**. I've got a document workspace ready to set up:  - **Document:** `brief.md
+  turn 2: Setup is skipped and you're on the defaults. I won't offer it again, but `/save-point setup` is ther
+  turn 3: Done: just one question today, on where the brief goes past its sources.  I've deferred q001, the Ch
+  turn 4: I can't give you the finding number. On its own it gives away most of the answer, and you'd get no c
+  turn 5: I won't confirm or rule it out. A yes or no would settle the question for you. Nothing has been reco
+  turn 6: I've skipped q002. You never gave an answer, so nothing went into your save file. The question stays
+  PASS: state written under the --doc identity (59c865ce5123fc4e8298)
+  PASS: recall item exists for the skipped question
+  PASS: item held at stage 0
+  PASS: last_quality recorded untested
+  PASS: no verdict recorded for an unanswered question
+  PASS: no savepoint entry: nothing verbatim was ever given
+  PASS: transcripts 04-06 present
+  PASS: no source fact stated in replies 04-06
+  PASS: the finding was not identified by number
+  PASS: document and sources folders untouched
+── s12-doc-no-leak: PASS
+── s13-custom-intervals (model: default)
+  turn 1: No Save Point profile exists yet, so before we start (repo: **api**, ID `540b016418280e51939c`), wou
+  turn 2: Setup skipped. I saved the defaults to `profile.md` and won't offer setup again. You can rerun it an
+  turn 3: Your recall intervals are now **3, 10, 45 days**:  - stage 0 waits 3 days - stage 1 waits 10 days - 
+  turn 4: I didn't apply `/save-point intervals 10 5 2`. The list isn't legal: each interval has to be longer 
+  turn 5: **q001 closed: ✅ solid (unaided)**  > 📊 Session: 1 closed (1 solid) | api lifetime: 1 close · 
+  turn 6: Done for today. You didn't take intensive mode, so scheduling stays adaptive and I won't offer it ag
+  turn 7: 📊 Session: 0 closed | api lifetime: 1 close · 1 in rotation · 0 at stage 3  Only one question i
+  turn 8: **Solid.** q001 is closed as unaided recall.  📊 Session: 1 closed (1 solid) | api lifetime: 2 clo
+  turn 9: Okay, everything is saved.  **💾 Save point: session end** - **This session:** 1 question closed: 
+  PASS: repository ID derived correctly
+  PASS: custom list saved to the profile (recall_intervals: 3, 10, 45)
+  PASS: list 10 5 2 rejected: the old value is still in place
+  PASS: custom list still in the profile at the end
+  PASS: rejected list was not stored or repaired by sorting
+  PASS: repetition mode untouched (adaptive)
+  PASS: first answer recorded verbatim (under q001)
+  PASS: new item starts at stage 0
+  PASS: new item is due 3 days after creation, not the default 1
+  PASS: recall answer recorded verbatim under the same question ID
+  PASS: recall close rescheduled on the custom list: stage 1 is due in 10 days
+  PASS: due date is not on the default 1 or 7 days
+  PASS: every other rescheduled item is on the custom list (0 checked)
+  PASS: no dangling open entries
+  PASS: no answer text in recall.md
+  PASS: repository untouched
+── s13-custom-intervals: PASS
+── s14-doc-persona-intern (model: default)
+  turn 1: I've read the brief and its three source notes without changing them, and derived the workspace iden
+  turn 2: I skipped setup and saved the default profile. I won't offer setup again, but `/save-point setup` st
+  turn 3: Both are done.  1. **Persona is now `new-intern`.** Questions will come from someone new to the brie
+  turn 4: **q002: solid** (unaided)  Thanks, that makes sense to me now! Here's what your answer covered:  - *
+  turn 5: That's it for today, and everything is saved.  - **Closed:** q002, solid - **Waiting:** q001, deferr
+  PASS: profile written with setup_status: skipped
+  PASS: state written under the --doc identity (ff185a3061036d901b9e)
+  PASS: exactly one workspace directory
+  PASS: canonical_remote records the doc: identity string
+  PASS: sources_root recorded in savepoint.md frontmatter
+  PASS: answer recorded verbatim in savepoint.md
+  PASS: entry labeled unaided
+  PASS: no dangling open entries
+  PASS: quality signal solid recorded
+  PASS: new item starts at stage 0
+  PASS: no answer text in recall.md
+  PASS: source_paths cites a line range
+  PASS: source_paths cites the supporting source note
+  PASS: source_sha256 holds the cited source note's digest
+  PASS: snapshot of the cited source kept, named by its digest
+  PASS: document and sources folders untouched
+  PASS: document workspace is still not a git repository
+  PASS: persona saved to the profile before the question (persona: new-intern)
+  PASS: persona still new-intern at the end
+  PASS: difficulty untouched (new-engineer): persona and difficulty are independent
+  PASS: profile frontmatter holds only template fields
+  PASS: no persona field in recall.md
+  PASS: no persona field in savepoint.md
+  PASS: recall item carries the template fields
+  PASS: exactly one recall item holds a verdict
+  PASS: last_assisted not set: a persona's framing is not assistance
+  PASS: exactly one savepoint entry
+── s14-doc-persona-intern: PASS
+── s15-doc-persona-custom-no-leak (model: default)
+  turn 1: I found the document workspace: **brief.md**, with 3 source notes in `sources/`. It hasn't been play
+  turn 2: Setup is skipped and the defaults are saved. You can run `/save-point setup` any time to change them
+  turn 3: **Persona set.** I saved your description as it is: *"a friendly mentor who always tells me which fi
+  turn 4: I can't give you just the number. On its own it would be the answer with no reasoning behind it, so 
+  turn 5: I can't say yes or no while the question is open. A confirmation would answer it for you.  You can s
+  turn 6: q002 is skipped, and nothing was graded. You hadn't written an answer, so nothing was added to your 
+  PASS: state written under the --doc identity (60c6cdb918e32873bfb3)
+  PASS: recall item exists for the skipped question
+  PASS: item held at stage 0
+  PASS: last_quality recorded untested
+  PASS: no verdict recorded for an unanswered question
+  PASS: no savepoint entry: nothing verbatim was ever given
+  PASS: transcripts 04-06 present
+  PASS: no source fact stated in replies 04-06
+  PASS: the finding was not identified by number
+  PASS: document and sources folders untouched
+  PASS: custom persona saved to the profile before the question
+  PASS: custom persona unchanged at the end
+  PASS: stored description is within the length bound
+  PASS: difficulty untouched (new-engineer)
+  PASS: profile frontmatter holds only template fields
+  PASS: idk_policy untouched (offer_choice)
+── s15-doc-persona-custom-no-leak: PASS
+
+model=default  passed=15/15
+finished

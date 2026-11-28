@@ -64,7 +64,7 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: write a small script that turns `eval/run.sh` output into a dated table in `eval/RESULTS.md` with model, scenario count, and passes. Commit results only from runs someone actually made.
 - Benefits: a reviewer who wants evidence that the integrity rules hold, and the owner for the study.
 - Verify: the table matches the raw run output saved next to it. Needs a model CLI, so this run type may be "not run" in some environments.
-- Size: medium. Status: done (dev, see CHANGELOG). `eval/record-results.sh` and `eval/RESULTS.md`. One real run is recorded so far: s01 only, 1 of 1. The full 15 scenario run has not been made. Anyone with a login can run it and record it.
+- Size: medium. Status: done (dev, see CHANGELOG). `eval/record-results.sh` and `eval/RESULTS.md`. Two runs are recorded: s01 only (1 of 1), and the full 15 scenario run on 2026-11-28 (15 of 15, one run, default model). `record-results.sh` is now executable, as the eval README shows it being run.
 
 ### 9. Upgrade-safe state format note
 - Change: document the on-disk formats of `savepoint.md`, `recall.md`, `profile.md`, `scheduler.md` and add a `format_version` check plan. Do not change the formats.
