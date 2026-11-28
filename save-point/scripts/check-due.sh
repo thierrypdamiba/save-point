@@ -62,7 +62,9 @@ limit=$(digits_or "$(setting "$root/profile.md" daily_limit)" 3)
 qpi=$(digits_or "$(setting "$root/profile.md" questions_per_interruption)" 1)
 # Zero questions per interruption means no unsolicited prompts, like a daily limit of 0.
 [ "$qpi" -gt 0 ] || exit 0
-gap=$(setting "$root/profile.md" minimum_gap)
+# The unit is read in any case and spaces are dropped: `3H` is 3 hours and `90 m` is 90 minutes.
+# Reading `3H` as the 90m default would shorten a gap the person made longer.
+gap=$(setting "$root/profile.md" minimum_gap | tr '[:upper:]' '[:lower:]' | tr -d ' \t')
 case "$gap" in
   *m) gap_s=$(( $(digits_or "${gap%m}" 90) * 60 )) ;;
   *h) gap_s=$(( $(digits_or "${gap%h}" 2) * 3600 )) ;;

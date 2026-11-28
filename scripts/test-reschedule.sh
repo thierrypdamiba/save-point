@@ -169,6 +169,18 @@ chk "daily_limit 08, prompts_today 08" quiet
 printf -- '---\ndaily_limit: 00\n---\n' > "$S/profile.md"; rm -f "$S/scheduler.md"
 chk "daily_limit 00" quiet
 rm -f "$S/profile.md" "$S/scheduler.md"
+# The gap unit is read in any case, with spaces allowed. A prompt 100 minutes ago is inside a 3 hour gap
+# and outside a 1 hour gap, whatever the case of the unit.
+printf -- '---\nlast_prompt_at: %s\n---\n' "$(date -u -d '@'$(( $(date +%s) - 6000 )) +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -r $(( $(date +%s) - 6000 )) +%Y-%m-%dT%H:%M:%SZ)" > "$S/scheduler.md"
+for v in 3h 3H "3 h" "180M" "180 m"; do
+  printf -- '---\nminimum_gap: %s\n---\n' "$v" > "$S/profile.md"
+  chk "minimum_gap $v, prompted 100 minutes ago" quiet
+done
+for v in 1h 1H "60M" "1 H"; do
+  printf -- '---\nminimum_gap: %s\n---\n' "$v" > "$S/profile.md"
+  chk "minimum_gap $v, prompted 100 minutes ago" nudge
+done
+rm -f "$S/profile.md" "$S/scheduler.md"
 # A cross_repo_recall value that is not on or off reads as off. The other repository (x) must stay quiet.
 rm -f "$S/profile.md"
 printf -- '---\nrepository_name: a\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
