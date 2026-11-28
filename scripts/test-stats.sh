@@ -58,3 +58,11 @@ for l in 'items: 2' 'stage1: 1' 'stage2: 1' 'quality_solid: 1' 'quality_shaky: 1
   echo "$out" | grep -qx "$l" || { echo "FAIL quoted values: missing '$l'"; echo "$out"; exit 1; }
 done
 if echo "$out" | grep -q 'quality_["'"'"']'; then echo "FAIL quote kept in a quality name"; exit 1; fi
+
+# Extra arguments are refused: one usage line, exit 1, nothing on stdout.
+x=$(mktemp -d)
+rc=0; out=$(sh save-point/scripts/stats.sh "$x" "$x" 2>"$x.err") || rc=$?
+[ "$rc" = 1 ] || { echo "FAIL extra args exit $rc"; exit 1; }
+[ -z "$out" ] || { echo "FAIL extra args stdout"; exit 1; }
+[ "$(wc -l < "$x.err" | tr -d ' ')" = 1 ] || { echo "FAIL extra args stderr not one line"; exit 1; }
+grep -q '^usage: stats.sh' "$x.err" || { echo "FAIL extra args message"; exit 1; }

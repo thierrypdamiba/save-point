@@ -6,6 +6,8 @@
 # newlines removed. Keep in exact agreement with SKILL.md.
 set -eu
 
+[ $# -le 1 ] || { echo "usage: hash-answer.sh [file]" >&2; exit 1; }
+
 sha256() { if command -v shasum >/dev/null 2>&1; then shasum -a 256; else sha256sum; fi; }
 canon() { sed -e 's/\r$//' -e 's/^> \{0,1\}//' -e 's/^>$//'; }
 

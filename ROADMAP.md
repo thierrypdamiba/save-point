@@ -296,7 +296,7 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `derive-repo-id.sh`, `hash-answer.sh` and `stats.sh` ignore arguments after the first. `derive-repo-id.sh /a /b` prints the id of `/a` and exits 0. `hash-answer.sh a b` hashes only `a`. `stats.sh dir1 dir2` reports only `dir1`. Each should print one usage line and exit 1 when given more than it takes, as `install.sh` does after item 35. Output for correct calls must not change. Found in the run 40 audit by passing two paths to each script.
 - Who benefits: an agent or person who passes two paths by mistake. The repository id keys every record, so a silent wrong id sends answers to the wrong folder. A wrong digest or HUD would look right.
 - Verify: new cases in `scripts/test-repo-id.sh`, `scripts/test-hash-answer.sh` and `scripts/test-stats.sh`: exit 1, empty stdout, one stderr line. They fail on the current scripts (exit 0 today). Existing cases give identical output.
-- Size: small. Status: ready.
+- Size: small. Status: done (dev, see CHANGELOG). Each new case failed on the old scripts (exit 0) and passes now.
 
 ## Needs the owner
 

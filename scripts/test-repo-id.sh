@@ -57,3 +57,13 @@ test "$(wc -l < "$e.err" | tr -d ' ')" = 1 || { echo "FAIL non-repo stderr not o
 grep -q -- '--doc' "$e.err" || { echo "FAIL non-repo message lacks --doc"; exit 1; }
 grep -q 'fatal' "$e.err" && { echo "FAIL raw git error shown"; exit 1; }
 test -z "$(ls -A "$e")" || { echo "FAIL non-repo wrote files"; exit 1; }
+
+# Extra arguments are refused: one usage line, exit 1, nothing on stdout.
+x=$(mktemp -d)
+for args in "$x $x" "--doc $x $x"; do
+  rc=0; out=$(sh "$script" $args 2>"$x.err") || rc=$?
+  test "$rc" = 1 || { echo "FAIL extra args '$args' exit $rc"; exit 1; }
+  test -z "$out" || { echo "FAIL extra args '$args' stdout"; exit 1; }
+  test "$(wc -l < "$x.err" | tr -d ' ')" = 1 || { echo "FAIL extra args '$args' stderr not one line"; exit 1; }
+  grep -q '^usage: derive-repo-id.sh' "$x.err" || { echo "FAIL extra args '$args' message"; exit 1; }
+done
