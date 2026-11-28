@@ -192,6 +192,21 @@ for v in on On ON '"on"' ''; do
   printf -- '---\ncross_repo_recall: %s\n---\n' "$v" > "$S/profile.md"
   chk "cross_repo_recall allows: [$v]" nudge
 done
+# A byte-order mark on profile.md or scheduler.md must not hide the opening fence. Before the fix the
+# opt-out below was read as missing and the hook still nudged.
+rm -f "$S/profile.md" "$S/scheduler.md"
+printf -- '---\nrepository_name: a\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
+printf '\357\273\277---\r\ninterruption_style: manual_only\r\n---\r\n' > "$S/profile.md"
+chk "BOM profile, manual_only" quiet
+printf '\357\273\277---\ndaily_limit: 0\n---\n' > "$S/profile.md"
+chk "BOM profile, daily_limit 0" quiet
+rm -f "$S/profile.md"
+printf '\357\273\277---\nprompt_date: %s\nprompts_today: 3\n---\n' "$(date +%Y-%m-%d)" > "$S/scheduler.md"
+chk "BOM scheduler, daily cap reached" quiet
+rm -f "$S/scheduler.md"
+printf '\357\273\277---\ninterruption_style: natural_boundaries\n---\n' > "$S/profile.md"
+chk "BOM profile, natural_boundaries" nudge
+rm -f "$S/profile.md"
 # The hook output must be valid JSON whatever a repository_name holds: quotes, backslashes,
 # angle brackets, UTF-8 and control bytes. A broken line here would reach every prompt.
 if command -v python3 >/dev/null 2>&1; then

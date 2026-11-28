@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 44 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 45 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -278,6 +278,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `stats.sh` counted `- stage: "2"` as no stage and `- last_quality: "solid"` as a quality named `"solid"`. The recall hook already reads quoted hand edits (item 30). Now `stats.sh` drops one pair of surrounding quotes. Files without quotes give the same output.
 - Who benefits: anyone who hand edits recall.md, and the question HUD numbers they see.
 - Verify: `sh scripts/test-stats.sh`. The old script failed the new check group.
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 45. Recall hook must read state files that start with a byte-order mark
+- Change: `check-due.sh` did not see the opening `---` of a file that began with a byte-order mark, so every setting read as missing. A `manual_only` opt-out or `daily_limit: 0` was ignored and the hook still nudged. Now the mark is dropped before the fence is read. Files without a mark give the same output.
+- Who benefits: anyone who edits `profile.md` or `scheduler.md` in Windows Notepad or another editor that adds a mark, and who turned nudges off.
+- Verify: `sh scripts/test-reschedule.sh`. 4 new checks. The old script failed the first one (it nudged with `manual_only` set).
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner
