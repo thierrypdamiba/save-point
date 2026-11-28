@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 43 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 44 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -272,6 +272,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `check-due.sh` read `minimum_gap: 3H` or `90M` as the 90 minute default, because only lowercase `m` and `h` matched. A person who asked for a longer gap got nudges sooner. It now lowercases the value and drops spaces first. Lowercase values and unreadable values behave as before. Found in the run 36 audit by trying capital units.
 - Benefits: a person or team admin who hand-edits `profile.md` to space prompts out, and would otherwise get more of them than they set.
 - Verify: `sh scripts/test-reschedule.sh` runs 9 new checks. On the old script the first fails with `not quiet: minimum_gap 3H`.
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 44. Stats script must read a quoted field value
+- Change: `stats.sh` counted `- stage: "2"` as no stage and `- last_quality: "solid"` as a quality named `"solid"`. The recall hook already reads quoted hand edits (item 30). Now `stats.sh` drops one pair of surrounding quotes. Files without quotes give the same output.
+- Who benefits: anyone who hand edits recall.md, and the question HUD numbers they see.
+- Verify: `sh scripts/test-stats.sh`. The old script failed the new check group.
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner

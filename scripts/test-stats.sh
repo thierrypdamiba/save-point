@@ -48,3 +48,13 @@ for l in 'items: 1' 'stage2: 1' 'quality_solid: 1' 'tainted: 1'; do
   echo "$out" | grep -qx "$l" || { echo "FAIL trailing comment: missing '$l'"; echo "$out"; exit 1; }
 done
 if echo "$out" | grep -q 'quality_note'; then echo "FAIL comment text counted as a quality"; exit 1; fi
+
+# A quoted field value counts as the value, as the recall hook reads it. Before
+# the fix, stage "2" was missed and the quality was counted as `"solid"`.
+d=$(mktemp -d)
+printf -- '## q1\n- stage: "2"\n- last_quality: "solid"\n- last_assisted: "true"\n## q2\n- stage: '"'"'1'"'"'\n- last_quality: '"'"'shaky'"'"' # note\n' > "$d/recall.md"
+out=$(sh save-point/scripts/stats.sh "$d")
+for l in 'items: 2' 'stage1: 1' 'stage2: 1' 'quality_solid: 1' 'quality_shaky: 1' 'tainted: 1'; do
+  echo "$out" | grep -qx "$l" || { echo "FAIL quoted values: missing '$l'"; echo "$out"; exit 1; }
+done
+if echo "$out" | grep -q 'quality_["'"'"']'; then echo "FAIL quote kept in a quality name"; exit 1; fi

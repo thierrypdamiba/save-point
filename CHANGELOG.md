@@ -6,6 +6,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 
 ### Changed
+- Fix: `stats.sh` reads a recall.md field with quotes around the value, such as `stage: "2"` or `last_quality: 'solid'`. Before, the stage was missed and the quality was counted as `"solid"`. Unquoted files give the same output. 1 new check group in `scripts/test-stats.sh`.
 - Fix: the recall hook reads the `minimum_gap` unit in any case and ignores spaces, so `3H` is 3 hours and `90 M` is 90 minutes. Before, `3H` was read as the 90 minute default, which shortened a gap the person made longer. `3h`, `90m` and unreadable values behave as before. 9 new checks in `scripts/test-reschedule.sh`.
 - Fix: the MCP server now stops at start, with a plain message, when `SAVE_POINT_SKILL_DIR` (or the default skill folder) has no `SKILL.md`. Before, it started and every client got `Internal server error`. A good folder behaves the same. 3 new tests.
 - Fix: the recall hook no longer exits 2 on a hand-edited number with a leading zero, such as `minimum_gap: 08m`. Exit 2 blocks the prompt. `08m` now reads as 8 minutes. Other values behave the same.

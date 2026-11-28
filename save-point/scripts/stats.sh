@@ -2,7 +2,7 @@
 # stats.sh <state-repo-dir> — lifetime stats baseline for the question HUD.
 # Counts closes by status from savepoint.md and the current knowledge
 # state from recall.md (items, stages, latest qualities), template comment
-# blocks excluded. CRLF line endings, trailing spaces and a trailing ` # note` on a recall.md field are tolerated. Emits `key: value` lines; the session line is maintained
+# blocks excluded. CRLF line endings, trailing spaces and a trailing ` # note` on a recall.md field, and one pair of quotes around its value, are tolerated. Emits `key: value` lines; the session line is maintained
 # conversationally on top of this baseline. Counting is deliberately here,
 # not model-side: the HUD's lifetime numbers must not drift between sessions.
 set -eu
@@ -43,6 +43,8 @@ if [ -f "$r" ]; then
     { sub(/[ \t\r]+$/, "") }
     # A value a person annotated by hand ("stage: 2 # note") counts as the value. Headings keep their text.
     !/^##/ { sub(/[ \t]+#.*$/, "") }
+    # One pair of surrounding quotes is dropped, as the recall hook does ("stage: \"2\"" counts as 2).
+    !/^##/ && /^[^:]*:[ \t]*("[^"]*"|\047[^\047]*\047)$/ { sub(/:[ \t]*["\047]/, ": "); sub(/["\047]$/, "") }
     !c && /^## q[0-9]+/ { items++ }
     !c && /^[[:space:]]*([-*][[:space:]])?stage: [0-7]$/ { s = $NF; stage[s]++ }
     !c && /^[[:space:]]*([-*][[:space:]])?last_quality: / { quality[$NF]++ }
