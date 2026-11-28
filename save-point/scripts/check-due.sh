@@ -16,10 +16,13 @@ here=$(cd "$(dirname "$0")" && pwd)
 now=$(date +%s)
 today=$(date +%Y-%m-%d)
 
-# frontmatter <file> <key> -> value (CRLF-tolerant, trailing space trimmed; empty if missing)
+# frontmatter <file> <key> -> value (CRLF and byte-order-mark tolerant, trailing space trimmed; empty if missing)
+# A byte-order mark (Windows Notepad adds one) hid the opening fence, so every setting read as
+# missing and a `manual_only` opt-out was ignored.
 frontmatter() {
   [ -f "$1" ] || { echo ""; return; }
   awk -v key="$2" '
+    FNR == 1 { sub(/^\357\273\277/, "") }
     { sub(/\r$/, "") }
     /^---$/ { fence++; next }
     fence == 1 && index($0, key ":") == 1 {

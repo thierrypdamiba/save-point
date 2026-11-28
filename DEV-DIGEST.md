@@ -2,10 +2,11 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-28 (run 37).
+Last updated: 2026-11-28 (run 38).
 
 ## On dev now
 
+- Fix: if you saved `profile.md` in an editor that adds a hidden byte-order mark (some Windows editors do), the recall hook ignored the whole file, including a `manual_only` opt-out. It now reads those files correctly.
 - Fix: the stats numbers now read a recall field a person put in quotes, such as `stage: "2"`. Before, that stage was missed.
 - Fix: `minimum_gap: 3H` (capital unit) was read as the 90 minute default, so the hook nudged sooner than you asked. It now reads `3H` and `90 M` the same as `3h` and `90m`.
 - Fix: the MCP server now refuses to start, with a clear message, if its skill folder path is wrong. Before, it started and every client saw only "Internal server error".
