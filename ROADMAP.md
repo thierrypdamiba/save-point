@@ -262,6 +262,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: `sh scripts/test-reschedule.sh` runs 9 new checks. On the old script the first fails with `check-due exit`.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 42. MCP server must fail at start on a wrong skill folder
+- Change: with a wrong `SAVE_POINT_SKILL_DIR`, or a build moved away from the checkout, the server started and then answered every client with `Internal server error`. The cause was only on stderr, which many hosts hide. `src/index.ts` now checks for `SKILL.md` first. If it is missing, the server prints one line naming the folder and the variable, and exits 1. A good folder behaves as before. Found in the run 35 audit by starting the server with a bad path.
+- Benefits: an admin who sets up the MCP server for a team and mistypes a path, and would otherwise see an unexplained error.
+- Verify: `cd mcp-server && npm test` runs 3 new tests in `test/startup.test.ts`. With the old `index.ts`, 2 of them fail.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

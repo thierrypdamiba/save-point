@@ -2,10 +2,11 @@
 
 What is on `dev` and not yet on `main`. Written for a two-minute read.
 
-Last updated: 2026-11-28 (run 34).
+Last updated: 2026-11-28 (run 35).
 
 ## On dev now
 
+- Fix: the MCP server now refuses to start, with a clear message, if its skill folder path is wrong. Before, it started and every client saw only "Internal server error".
 - Fix: the recall hook could block your prompt if `minimum_gap` had a leading zero, such as `08m`. It now reads that as 8 minutes.
 - Fix: the answer digest script now gives a plain one line error for a mistyped file path. Digests are unchanged.
 - Tests only: the recall hook output is now checked as valid JSON for odd repository names. Nothing you run changed.
