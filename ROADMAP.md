@@ -4,13 +4,13 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 51 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 53 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
 - Version `0.12.0` is written in four places by hand: `.claude-plugin/plugin.json`, `mcp-server/package.json`, `mcp-server/package-lock.json`, `mcp-server/src/server.ts`. The only git tag is `v0.9.0`. CI now checks that they agree.
 - SECURITY.md and `docs/security-and-privacy.md` now exist (item 2). CHANGELOG.md exists.
-- `install.sh` has an uninstall (item 3) and `--ref` pinning (item 4). It has no dry run. The curl one-liner installs whatever is on `main` unless `--ref` is given.
+- `install.sh` has an uninstall (item 3) and `--ref` pinning (item 4). It has `--dry-run`. The curl one-liner installs whatever is on `main` unless `--ref` is given.
 - The installer's hook merge is now tested (item 3).
 - CI runs shell checks and the MCP tests on one OS (ubuntu). The scripts target macOS users too. `sh -n` and `shellcheck` now run in CI (item 7); there is still no macOS job.
 - The eval harness is not run in CI. `eval/RESULTS.md` now holds one recorded run (s01, 1/1). The full suite is not yet recorded.
@@ -321,6 +321,18 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Who benefits: a person upgrading Save Point on a nearly full disk, and an admin rolling out an upgrade across machines who would otherwise find some with no skill.
 - Verify: new cases in `scripts/test-install.sh` put a failing `cp` first in PATH. They check a nonzero exit, the old install and a marker file kept, the error text, no stage folder left, and a clean reinstall afterwards. The four failure cases fail on the old script. Fresh install, reinstall, dry run and uninstall cases are unchanged.
 - Size: small. Status: done (dev, see CHANGELOG). The swap itself is two commands, so a crash between them can still leave no install. That window is tiny and a rerun fixes it.
+
+### 52. Stats script with no argument must print one usage line and exit 1
+- Change: `save-point/scripts/stats.sh` with no argument prints `stats.sh: 10: 1: usage: stats.sh <state-repo-dir>` (a shell error with a file and line number) and exits 2. Every other script uses one usage line and exit 1. Change the arity check from `-le 1` to `-eq 1` and drop the `${1:?}` form. Output for correct calls must not change. Found in a fresh audit by running each script with no arguments.
+- Who benefits: an agent or person who calls the stats script before it has a repository directory. The shell noise reads like a crash, and exit 2 differs from the other scripts, so a wrapper that treats 1 as "usage" would miss it.
+- Verify: a new case in `scripts/test-stats.sh`: no arguments gives exit 1, empty stdout, one stderr line that starts with `usage: stats.sh`. It fails on the current script (exit 2, message starts with the script path). Existing cases give identical output.
+- Size: small. Status: ready.
+
+### 53. State which platforms Save Point supports and what it needs
+- Change: add a short "Requirements and platforms" section to `docs/quickstart.md` and link it from the README. List what the scripts call: a POSIX `sh`, `awk`, `sed`, `date`, `sha256sum` or `shasum`, `git` (repository id), `python3` (installer hook merge only), `iconv` (optional), and Node 20 or newer (MCP server only). Say what is tested: Linux, by CI on ubuntu. Say what is written for but not tested: macOS (the scripts have `date -j` and `shasum` branches). Say Windows is untested and not supported except where the person runs the agent inside WSL, which is also untested. State no claim CI does not back.
+- Who benefits: an engineer at a company who must tell their team whether it runs on their laptops before installing it. Today no document says, and a Windows user finds out when the hook errors.
+- Verify: a CI step that fails if the section is missing or if a tool the doc lists is not used by any script (grep over `install.sh`, `save-point/scripts/` and `hooks/`), and a check that every external command those scripts call appears in the list. The step must be shown to fail on a doc with a tool removed.
+- Size: small. Status: ready.
 
 ## Needs the owner
 
