@@ -219,6 +219,12 @@ if command -v python3 >/dev/null 2>&1; then
       || { echo "FAIL hook output is not valid JSON for name: $nm"; echo "$out"; exit 1; }
     json_n=$((json_n + 1))
   done
+  # A name with bytes that are not valid UTF-8 must still give output that decodes as UTF-8.
+  printf -- '---\nrepository_name: bad\377name\nnext_due_at: 2020-01-01T00:00:00Z\n---\n' > "$S/repositories/x/recall.md"
+  out=$(cd_run) || { echo "FAIL hook exit for invalid UTF-8 name"; exit 1; }
+  printf '%s' "$out" | python3 -c 'import sys,json; d=json.loads(sys.stdin.buffer.read().decode("utf-8")); assert "badname" in d["hookSpecificOutput"]["additionalContext"]' \
+    || { echo "FAIL hook output is not valid UTF-8 JSON for an invalid UTF-8 name"; exit 1; }
+  json_n=$((json_n + 1))
   echo "hook JSON: $json_n names parsed"
 else
   echo "hook JSON check not run: python3 not found"
