@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 47 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 50 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -308,6 +308,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Change: `check-due.sh` named every due repository in the nudge. With 60 due repositories the line was about 1.9 KB, and it is added to the agent's context on every prompt until questions are delivered. The nudge now names the first 5 and adds `, and N more`. The count in front is unchanged. Found in the run 44 audit by creating 60 due repositories and running the hook.
 - Who benefits: a consultant or team member with many repositories, who would pay that cost on every prompt.
 - Verify: a new case in `scripts/test-reschedule.sh` checks 60 due repositories give `, and 55 more)` and a line under 600 bytes, and 5 due repositories name all 5. The new case fails on the old script. It does not change recall.md, scheduling or delivery.
+- Size: small. Status: done (dev, see CHANGELOG).
+
+### 50. Recall hook output must be valid UTF-8
+- Change: `check-due.sh` passed a `repository_name` with invalid UTF-8 bytes (for example a stray `\377`) into the hook JSON, so the output could not be decoded. Names now go through `iconv -c`, or keep printable ASCII when `iconv` is missing. Found in the run 45 audit by writing such a name and decoding the hook output.
+- Who benefits: a person who edits `recall.md` in a non-UTF-8 editor. The hook runs on every prompt, so one bad byte would be seen on every prompt.
+- Verify: `sh scripts/test-reschedule.sh` prints `hook JSON: 8 names parsed`. On the old script the new case fails with `invalid start byte`. The no-iconv path was tried by hand with a PATH that lacks it.
 - Size: small. Status: done (dev, see CHANGELOG).
 
 ## Needs the owner

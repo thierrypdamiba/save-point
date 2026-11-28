@@ -40,6 +40,13 @@ setting() {
     -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/"
 }
 
+# Drop bytes that are not valid UTF-8 from a name, so the hook JSON is always valid UTF-8.
+# Without iconv, keep printable ASCII only.
+utf8_clean() {
+  if command -v iconv >/dev/null 2>&1; then iconv -c -f UTF-8 -t UTF-8 2>/dev/null || true
+  else LC_ALL=C tr -cd '\040-\176'; fi
+}
+
 iso_to_epoch() {
   [ -n "$1" ] || { echo 0; return; }
   date -u -j -f %Y-%m-%dT%H:%M:%SZ "$1" +%s 2>/dev/null || date -u -d "$1" +%s 2>/dev/null || echo 0
@@ -109,7 +116,7 @@ for f in "$root"/repositories/*/recall.md; do
   fi
   next=$(iso_to_epoch "$(setting "$f" next_due_at)")
   [ "$next" -gt 0 ] && [ "$next" -le "$now" ] || continue
-  name=$(setting "$f" repository_name | tr -d '\000-\037\177' | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+  name=$(setting "$f" repository_name | tr -d '\000-\037\177' | utf8_clean | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
   # Name at most 5 repositories. Every prompt carries this line, so a long list costs tokens each time.
   [ "$due_count" -ge 5 ] || due_names="$due_names${due_names:+, }${name:-unknown}"
   due_count=$((due_count + 1))
