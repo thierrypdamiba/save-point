@@ -6,6 +6,7 @@ Last updated: 2026-11-28 (fresh audit).
 
 ## On dev now
 
+- Docs only: another audit found two small gaps and added them to the roadmap, items 52 and 53. The stats script gives a confusing error and exit code 2 when run with no argument. No document says which operating systems Save Point supports. Nothing you run changed.
 - Fix: upgrading Save Point no longer deletes your working install first. If the copy fails, for example on a full disk, the old install stays and the installer says so and exits with an error. Before, you could end up with no skill and a success message.
 - Fix: a repository name with a byte that is not valid text could make the recall hook send broken output on every prompt. The hook now drops such bytes. Normal names are unchanged.
 - Fix: the recall nudge now names at most 5 repositories and says how many more are due. Before, someone with many repositories paid for a long line on every prompt.
