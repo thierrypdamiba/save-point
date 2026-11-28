@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 46 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 47 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -292,6 +292,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: `sh scripts/test-check-modes.sh` runs 5 checks. Clearing the bit on `check-due.sh` or `install.sh` in a fixture makes `check-modes.sh` exit 1.
 - Size: small. Status: done (dev, see CHANGELOG).
 
+### 47. Identity and digest scripts must refuse extra arguments
+- Change: `derive-repo-id.sh`, `hash-answer.sh` and `stats.sh` ignore arguments after the first. `derive-repo-id.sh /a /b` prints the id of `/a` and exits 0. `hash-answer.sh a b` hashes only `a`. `stats.sh dir1 dir2` reports only `dir1`. Each should print one usage line and exit 1 when given more than it takes, as `install.sh` does after item 35. Output for correct calls must not change. Found in the run 40 audit by passing two paths to each script.
+- Who benefits: an agent or person who passes two paths by mistake. The repository id keys every record, so a silent wrong id sends answers to the wrong folder. A wrong digest or HUD would look right.
+- Verify: new cases in `scripts/test-repo-id.sh`, `scripts/test-hash-answer.sh` and `scripts/test-stats.sh`: exit 1, empty stdout, one stderr line. They fail on the current scripts (exit 0 today). Existing cases give identical output.
+- Size: small. Status: ready.
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.
@@ -302,3 +308,4 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 6. Whether a macOS CI runner is acceptable cost-wise.
 7. Whether `hash-source.sh` should verify an existing snapshot against its name and replace it if damaged (item 27). It is a safe change in my view, but snapshots are study evidence, so you decide.
 8. What a non-numeric `daily_limit` such as `off`, `none` or `-1` should mean (item 38): no unsolicited prompts, or the default of 3. Today it is the default. It only affects hand-edited files.
+9. How the recall hook should behave when its nudge is not acted on (found in the run 40 audit). The hook writes nothing, and the skill updates `last_prompt_at` only when it delivers a question. If the agent holds back (tests failing, user mid-task), `last_prompt_at` does not move, so the nudge is added again on every later prompt until a question is delivered. That costs tokens and may annoy. Options: leave it (the hook stays write-free, as `docs/security-and-privacy.md` says), have the skill record a suppressed check in `scheduler.md` so the gap applies, or let the hook write one small stamp. The last two change delivery behavior and the hook's "writes nothing" statement, so this is yours to decide.
