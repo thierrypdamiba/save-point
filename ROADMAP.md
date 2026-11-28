@@ -298,6 +298,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Verify: new cases in `scripts/test-repo-id.sh`, `scripts/test-hash-answer.sh` and `scripts/test-stats.sh`: exit 1, empty stdout, one stderr line. They fail on the current scripts (exit 0 today). Existing cases give identical output.
 - Size: small. Status: done (dev, see CHANGELOG). Each new case failed on the old scripts (exit 0) and passes now.
 
+### 48. Recall hook must show a hand-edited repository name without its quotes or note
+- Change: `check-due.sh` read `repository_name` raw, so `repository_name: "acme"  # client` appeared in the nudge as `("acme"  # client)`. Every other setting already drops one pair of quotes and a trailing note. Read the name the same way. Found in the run 42 audit by writing such a file and running the hook.
+- Who benefits: a person who edits `recall.md` by hand. The nudge goes into the agent's context on every prompt, so stray text there is noise and confuses the repository name.
+- Verify: a new case in `scripts/test-reschedule.sh` checks the nudge ends with `acme)` and has no quote or note. It fails on the old script and passes now. The JSON validity cases are unchanged.
+- Size: small. Status: done (dev, see CHANGELOG).
+
 ## Needs the owner
 
 1. Releases. Version is 0.12.0 but the latest tag is v0.9.0. Decide whether to tag a release from main, and who owns the changelog on release.

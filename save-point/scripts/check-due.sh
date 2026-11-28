@@ -109,7 +109,7 @@ for f in "$root"/repositories/*/recall.md; do
   fi
   next=$(iso_to_epoch "$(setting "$f" next_due_at)")
   [ "$next" -gt 0 ] && [ "$next" -le "$now" ] || continue
-  name=$(frontmatter "$f" repository_name | tr -d '\000-\037\177' | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+  name=$(setting "$f" repository_name | tr -d '\000-\037\177' | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
   due_names="$due_names${due_names:+, }${name:-unknown}"
   due_count=$((due_count + 1))
 done
