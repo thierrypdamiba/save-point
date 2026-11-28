@@ -6,6 +6,7 @@ Newest first. This file follows the idea of Keep a Changelog. Anything on `dev` 
 
 
 ### Changed
+- CI now fails if a script that is run directly (`save-point/scripts/*.sh`, `install.sh`) loses its executable bit in git (`scripts/check-modes.sh`, tested by `scripts/test-check-modes.sh`). CI and tests only. No skill script changed.
 - Fix: the recall hook reads `profile.md` and `scheduler.md` files that start with a byte-order mark (some Windows editors add one). Before, every setting in such a file was missed, so `interruption_style: manual_only` or `daily_limit: 0` did not stop nudges. Files without a mark behave the same. 4 new checks in `scripts/test-reschedule.sh`.
 - Fix: `stats.sh` reads a recall.md field with quotes around the value, such as `stage: "2"` or `last_quality: 'solid'`. Before, the stage was missed and the quality was counted as `"solid"`. Unquoted files give the same output. 1 new check group in `scripts/test-stats.sh`.
 - Fix: the recall hook reads the `minimum_gap` unit in any case and ignores spaces, so `3H` is 3 hours and `90 M` is 90 minutes. Before, `3H` was read as the 90 minute default, which shortened a gap the person made longer. `3h`, `90m` and unreadable values behave as before. 9 new checks in `scripts/test-reschedule.sh`.
