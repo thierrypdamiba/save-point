@@ -4,7 +4,7 @@ Ranked by what stands between today's Save Point and software a company could ad
 
 Status key: `ready` means a run can pick it up. `blocked` means it needs an owner decision first. `done` means merged to dev.
 
-Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 50 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
+Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. Items 17 to 51 added by later audits. Audited: README, SKILL.md, scripts, features, eval, install.sh, mcp-server, CI, plugin files.
 
 ## Facts found in the audit
 
@@ -315,6 +315,12 @@ Audit date: 2026-11-26 (first audit). Items 13 to 16 added by the run 13 audit. 
 - Who benefits: a person who edits `recall.md` in a non-UTF-8 editor. The hook runs on every prompt, so one bad byte would be seen on every prompt.
 - Verify: `sh scripts/test-reschedule.sh` prints `hook JSON: 8 names parsed`. On the old script the new case fails with `invalid start byte`. The no-iconv path was tried by hand with a PATH that lacks it.
 - Size: small. Status: done (dev, see CHANGELOG).
+
+### 51. Installer must not delete the working install when the copy fails
+- Change: `install.sh` removed the old install, then copied the new one. If the copy failed (full disk, bad permissions), the skill was gone, the recall hook still pointed at a missing script, and the installer carried on and printed success because `set -e` does not apply inside its `&&` chain. It now copies to a staging folder beside the old install, removes the maintainer folders there, and swaps only when that is complete. On failure it removes the stage, prints one error, exits 1, and leaves the old install. Found in a fresh audit by reading the installer.
+- Who benefits: a person upgrading Save Point on a nearly full disk, and an admin rolling out an upgrade across machines who would otherwise find some with no skill.
+- Verify: new cases in `scripts/test-install.sh` put a failing `cp` first in PATH. They check a nonzero exit, the old install and a marker file kept, the error text, no stage folder left, and a clean reinstall afterwards. The four failure cases fail on the old script. Fresh install, reinstall, dry run and uninstall cases are unchanged.
+- Size: small. Status: done (dev, see CHANGELOG). The swap itself is two commands, so a crash between them can still leave no install. That window is tiny and a rerun fixes it.
 
 ## Needs the owner
 

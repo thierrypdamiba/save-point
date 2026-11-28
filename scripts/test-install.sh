@@ -204,5 +204,20 @@ newhome; mkdir "$HOME/.claude"; inst claude >/dev/null 2>&1
 nocheck "uninstall with a trailing flag exits nonzero" inst --uninstall claude --bogus
 check "uninstall with a trailing flag keeps the skill" test -f "$HOME/.claude/skills/save-point/SKILL.md"
 
+nostage() { for d in "$1"/.save-point-new.*; do [ -e "$d" ] && return 1; done; return 0; }
+# 18. a failed copy must leave the existing install working and leave no stage folder behind
+newhome; mkdir "$HOME/.claude"; inst claude >/dev/null 2>&1
+printf 'marker\n' > "$HOME/.claude/skills/save-point/MARKER"
+fb=$(mktemp -d); printf '#!/bin/sh\nexit 1\n' > "$fb/cp"; chmod +x "$fb/cp"
+PATH="$fb:$PATH" sh "$root/install.sh" claude >/dev/null 2>"$HOME/err"; r=$?
+ok "$([ "$r" != 0 ] && echo 0 || echo 1)" "failed copy exits nonzero"
+check "failed copy keeps the old install" test -f "$HOME/.claude/skills/save-point/MARKER"
+check "failed copy keeps the old SKILL.md" test -f "$HOME/.claude/skills/save-point/SKILL.md"
+check "failed copy says the old install was kept" grep -q 'existing install was left' "$HOME/err"
+check "failed copy leaves no stage folder" nostage "$HOME/.claude/skills"
+inst claude >/dev/null 2>&1
+check "reinstall after a failed copy works" test -f "$HOME/.claude/skills/save-point/SKILL.md" -a ! -e "$HOME/.claude/skills/save-point/MARKER"
+check "reinstall leaves no stage folder" nostage "$HOME/.claude/skills"
+
 echo "install tests: $run run, $pass passed, $fail failed"
 [ "$fail" = 0 ]
